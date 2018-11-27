@@ -2,11 +2,23 @@
 ###############################################################################
 # Duckietown - Project intnav ETH
 # Author: Simon Schaefer
-# Configuration file for duckietown structure parameter (assuming a symmetric
-# structure of streets, intersections, etc.). Additionally, imap visualization
-# parameter. 
 ###############################################################################
 ---
+# Debug mode. 
+debug_mode: True                    # Enter debug mode (independent from ROS).
+
+# Feature detection parameters. 
+features: 
+  min_count: 10                     # Minimal number of features detected per image.
+  min_pixel_std_deviation: 20       # Check that detected keypoints are not on very few spot
+                                    # but evenly distributed over the image by sampling a few
+                                    # random keypoints and computing the average distance. 
+
+# iMap parameters. 
+imap: 
+  resolution: 0.2                   # map grid cell width in cm/cell, assuming 
+                                    # a quadratic grid cell structure.
+
 # Intersection width parameters.
 street:
   white_line: 2                     # White line width [cm]. 

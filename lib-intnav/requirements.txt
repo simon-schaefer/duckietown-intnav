@@ -2,6 +2,7 @@
 # -e git://github.com/duckietown/duckietown-world.git@master18d#egg=duckietown-world
 
 cv-bridge==1.13.0
+scipy==0.19.1
 
 # testing
 comptests==1.4.27

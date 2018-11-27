@@ -34,34 +34,32 @@ class IMap(object):
     v_coord_system = 70
     v_trajectory = 50
 
-    def __init__(self, itype, resolution): 
+    def __init__(self, itype): 
         ''' iMap class initialization: Build map of given type and given 
         resolution as internal numpy array. 
         @param[in]  itype       intersection type ("4","3LR","3SL","3SR"). 
-                                with L = left, R = right, S = straight. 
-        @param[in]  resolution  map grid cell width in cm/cell, assuming 
-                                a quadratic grid cell structure, float. '''
+                                with L = left, R = right, S = straight. '''
         # Load duckietown street parameter from pkg config file. 
-        self._dt_params = {}
+        params = {}
         try: 
             config_file = os.path.dirname(os.path.realpath(__file__))
-            config_file = os.path.join(config_file, "../data/imap_parameter.yaml")
+            config_file = os.path.join(config_file, "../data/parameter.yaml")
             with open(config_file, 'r') as stream:
-                self._dt_params = yaml.load(stream)
+                params = yaml.load(stream)
         except (IOError, yaml.YAMLError): 
-            raise IOError("Unknown or invalid duckietown structure file !")      
+            raise IOError("Unknown or invalid parameters file !")      
         # Set internal iMap parameters. Map width is exactly three times the
         # width of a street (= 6 times the width of half street width s).
         # According to the duckietown norms the red line height is exactly 
         # equal to the width of the white line. 
-        self.resolution = resolution
-        s = int((self._dt_params['street']['white_line'] 
-            + self._dt_params['street']['yellow_line_half']
-            + self._dt_params['street']['lane'])/resolution)
-        wl = int(self._dt_params['street']['white_line']/resolution)
-        yl = int(self._dt_params['street']['yellow_line_half']/resolution)
-        rh = int(self._dt_params['street']['white_line']/resolution)
-        yd = int(self._dt_params['street']['yellow_line_distance']/resolution) 
+        self.resolution = params['imap']['resolution']
+        s = int((params['street']['white_line'] 
+            + params['street']['yellow_line_half']
+            + params['street']['lane'])/self.resolution)
+        wl = int(params['street']['white_line']/self.resolution)
+        yl = int(params['street']['yellow_line_half']/self.resolution)
+        rh = int(params['street']['white_line']/self.resolution)
+        yd = int(params['street']['yellow_line_distance']/self.resolution) 
         self.width, self.height = 6*s, 6*s
         self.data = IMap.v_env*np.ones((self.width, self.height), dtype=np.uint8)
         # Loading map type to internal array, by exploiting map's symmetry. 
@@ -126,6 +124,7 @@ class IMap(object):
             self.data[4*s-wl:4*s,2*s:4*s] = IMap.v_whi            
         else:
             raise ValueError("Unknown intersection type %s !" % itype)
+        self.data = np.flip(self.data, 1)
         # Build colored map representation. 
         self.data_colored = np.zeros((self.width, self.height, 3), dtype=np.uint8)
         color_dict = {IMap.v_str: 'lane', 
@@ -138,7 +137,7 @@ class IMap(object):
                 if cell_type == IMap.v_env:
                     continue
                 classifier = color_dict[cell_type]
-                colors = self._dt_params['colors'][classifier]
+                colors = params['colors'][classifier]
                 self.data_colored[i,j,0] = colors['blue']
                 self.data_colored[i,j,1] = colors['green']
                 self.data_colored[i,j,2] = colors['red']
@@ -156,9 +155,9 @@ class IMap(object):
         # if updated trajectory happens to be the same already visualized
         # trajectory. 
         self._pre_image = None
-        self._vis_point_rad = int(self._dt_params['vis']['point_rad']/resolution) 
-        self._vis_car_w = int(self._dt_params['vis']['car_width']/resolution) 
-        self._vis_car_h = int(self._dt_params['vis']['car_height']/resolution) 
+        self._vis_point_rad = int(params['vis']['point_rad']/self.resolution) 
+        self._vis_car_w = int(params['vis']['car_width']/self.resolution) 
+        self._vis_car_h = int(params['vis']['car_height']/self.resolution) 
         self._pre_trajectory = []
         self.visualize_init()
 
@@ -304,7 +303,7 @@ class IMap(object):
                 if self.in_map_pixel(u,v): 
                     image[u-r:u+r,v-r:v+r] = IMap.v_trajectory
         # Transpose image as numpy convention is different than "norm". 
-        return np.transpose(image)
+        return image
 
     @staticmethod
     def imap_types(): 

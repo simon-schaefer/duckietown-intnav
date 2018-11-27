@@ -50,8 +50,7 @@ class Main():
         ''' Initialize imap based on type (msg) and resolution which 
         should be a parameter in the rosserver.'''
         rospy.loginfo("iMap type %s received, initializing ..." % msg.data)
-        resolution = float(rospy.get_param('imap_server/resolution_cm'))
-        self.imap = IMap(msg.data, resolution)
+        self.imap = IMap(msg.data)
         self.imap_type_sub.unregister()
         self.imap_initialized = True
         rospy.loginfo("iMap successfully initialized ...")
