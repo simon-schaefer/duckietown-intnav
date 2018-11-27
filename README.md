@@ -8,7 +8,7 @@
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/duckietown_intnav.svg)](https://pypi.python.org/pypi/duckietown_intnav/)
 
 
-# Project Unicorn
+# Project intnav
 
 Reliable and Efficient monocular-based Intersection navigation
 
@@ -40,7 +40,7 @@ using `pipenv`:
 
     $ pipenv install
     $ pipenv shell
-    $ cd lib-unicorn
+    $ cd lib-intnav
     $ pip install -r requirements.txt
     $ python setup.py develop --no-deps
     
@@ -49,6 +49,6 @@ using `pipenv`:
 
 Run this:
 
-    $ make -C lib-unicorn tests-clean tests
+    $ make -C lib-intnav tests-clean tests
     
-The output is generated in the folder in `lib-unicorn/out-comptests/`.
+The output is generated in the folder in `lib-intnav/out-comptests/`.

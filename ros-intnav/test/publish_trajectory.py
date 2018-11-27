@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 ###############################################################################
-# Duckietown - Project Unicorn ETH
+# Duckietown - Project intnav ETH
 # Author: Simon Schaefer
 # Publish imap type in order to test the map initialization.
 ###############################################################################

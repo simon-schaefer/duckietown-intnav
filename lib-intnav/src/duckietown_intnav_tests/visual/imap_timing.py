@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 ###############################################################################
-# Duckietown - Project Unicorn ETH
+# Duckietown - Project intnav ETH
 # Author: Simon Schaefer
 # Test imap performance i.e. the timing required for imap calls such as 
 # initialization, map coordinate transformation, etc. 
@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import time
 
-from duckietown_unicorn.algo.imap import IMap
+from duckietown_intnav.algo.imap import IMap
 
 # Test imap initialization time. 
 resolutions = np.arange(0.1, 2, 0.1)

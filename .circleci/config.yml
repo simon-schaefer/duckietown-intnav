@@ -30,72 +30,72 @@ jobs:
         name: Install deps
         command: |
           echo PATH=$PATH
-          cd lib-unicorn
+          cd lib-intnav
           pip install -q --user --upgrade -r requirements.txt
 
     - run:
         name: List deps
         command: |
-          cd lib-unicorn
+          cd lib-intnav
           mkdir -p artifacts
           pip freeze | tee artifacts/pip-freeze.txt
 
     - run:
         name: setup.py develop
         command: |
-          cd lib-unicorn
+          cd lib-intnav
           python setup.py develop --prefix ~/.local --no-deps
 
     - run:
         name: Run tests
         command: |
-          cd lib-unicorn
+          cd lib-intnav
           make tests-coverage-single-nocontracts
 
     - run:
         name: Notebooks
         command: |
-          cd lib-unicorn
+          cd lib-intnav
           make -C notebooks || true
 
     - run:
         name: Coverage analysis
         when: always
         command: |
-          cd lib-unicorn
+          cd lib-intnav
           make coverage-report
 
     - run:
         name: Coveralls submission
         when: always
         command: |
-          cd lib-unicorn
+          cd lib-intnav
           make coverage-coveralls
 
     - run:
         name: Create JUnit output
         when: always
         command: |
-          cd lib-unicorn
+          cd lib-intnav
           make junit
 
     - test-results-store:
-        path: lib-unicorn/out-comptests/junit
+        path: lib-intnav/out-comptests/junit
 
     - store_artifacts:
-        path: lib-unicorn/out-comptests/duckietown_intnav_tests
+        path: lib-intnav/out-comptests/duckietown_intnav_tests
         destination: duckietown_intnav_tests
 
     - store_artifacts:
-        path: lib-unicorn/artifacts
+        path: lib-intnav/artifacts
         destination: artifacts
 
     - store_artifacts:
-        path: lib-unicorn/out_coverage
+        path: lib-intnav/out_coverage
         destination: coverage
 
     - store_artifacts:
-        path: lib-unicorn/notebooks
+        path: lib-intnav/notebooks
         destination: notebooks
 
   test-2.7:

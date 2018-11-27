@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 ###############################################################################
-# Duckietown - Project Unicorn ETH
+# Duckietown - Project intnav ETH
 # Author: Simon Schaefer
 # Intersection map representation core class - Contains map array, world-map-
 # transformations, status and visualization methods. 
@@ -18,8 +18,8 @@ __all__ = [
 import os
 import numpy as np
 from PIL import Image, ImageDraw
-import rospy
 import sys
+import warnings
 import yaml
 
 class IMap(object):
@@ -126,6 +126,22 @@ class IMap(object):
             self.data[4*s-wl:4*s,2*s:4*s] = IMap.v_whi            
         else:
             raise ValueError("Unknown intersection type %s !" % itype)
+        # Build colored map representation. 
+        self.data_colored = np.zeros((self.width, self.height, 3), dtype=np.uint8)
+        color_dict = {IMap.v_str: 'lane', 
+                      IMap.v_whi: 'white_line', 
+                      IMap.v_red: 'red_line', 
+                      IMap.v_yel: 'yellow_line'}
+        for i in range(self.width): 
+            for j in range(self.height): 
+                cell_type = self.data[i][j]
+                if cell_type == IMap.v_env:
+                    continue
+                classifier = color_dict[cell_type]
+                colors = self._dt_params['colors'][classifier]
+                self.data_colored[i][j][0] = colors['blue']
+                self.data_colored[i][j][0] = colors['green']
+                self.data_colored[i][j][0] = colors['red']
         # Set origin position to midth of lower street. 
         self._origin_p = (3*s, 2*s)
         # Build special points dictionary. 
@@ -220,7 +236,7 @@ class IMap(object):
             if self.in_map_pixel(u,v): 
                 self._pre_image[u-r:u+r,v-r:v+r] = IMap.v_trajectory
             else: 
-                rospy.logwarn("Trajectory point (%f,%f) not in iMap !" % (x,y))
+                warnings.warn("Trajectory point (%f,%f) not in iMap !" % (x,y), Warning)
                 succeded = False
         # Update pre_rendered trajectory. 
         self._pre_trajectory = trajectory

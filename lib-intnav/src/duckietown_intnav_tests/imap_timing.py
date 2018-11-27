@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 ###############################################################################
-# Duckietown - Project Unicorn ETH
+# Duckietown - Project intnav ETH
 # Author: Simon Schaefer
 # Test imap performance i.e. the timing required for imap calls such as 
 # initialization, map coordinate transformation, etc. 
@@ -9,17 +9,16 @@ from comptests import comptest, run_module_tests, comptest_fails
 import numpy as np
 import time
 
-from duckietown_unicorn.algo.imap import IMap
-
+from duckietown_intnav.algo.imap import IMap
 
 @comptest
-def initialization_time(resolution=0.5):
+def imap_initialization_time(resolution=0.5):
     start_time = time.time()
     _ = IMap("4", resolution)
-    assert time.time() - start_time > 30
+    assert (time.time() - start_time)*1000 < 100
 
 @comptest
-def visualization_time(resolution=0.5):
+def imap_visualization_time(resolution=0.5):
     imap = IMap("4", resolution)
     N = 400
     step = 0.05
@@ -32,7 +31,7 @@ def visualization_time(resolution=0.5):
     start_time = time.time()
     imap.visualize_add_trajectory(trajectory)
     _ = imap.visualize()
-    assert time.time() - start_time > 20
+    assert (time.time() - start_time)*1000 < 20
 
 # use comptest_fails for a test that is supposed to fail
 #@comptest_fails

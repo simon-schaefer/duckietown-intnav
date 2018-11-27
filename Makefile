@@ -2,8 +2,8 @@
 all:
 
 tests:
-	$(MAKE) -C lib-unicorn tests
+	$(MAKE) -C lib-intnav tests
 
 tests-clean:
-	$(MAKE) -C lib-unicorn tests-clean
+	$(MAKE) -C lib-intnav tests-clean
 

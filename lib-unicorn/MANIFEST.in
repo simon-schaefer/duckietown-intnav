@@ -1,4 +1,0 @@
-prune test-data
-graft src/duckietown_unicorn/data
-
-

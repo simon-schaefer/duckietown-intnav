@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 ###############################################################################
-# Duckietown - Project Unicorn ETH
+# Duckietown - Project intnav ETH
 # Author: Simon Schaefer
 # Intersection map server node. 
 ###############################################################################
 import os
 import sys
-sys.path.append(os.path.dirname(sys.argv[0])  + '/../../lib-unicorn/src/')
+sys.path.append(os.path.dirname(sys.argv[0])  + '/../../lib-intnav/src/')
 
 import cv2
 from cv_bridge import CvBridge, CvBridgeError
@@ -19,7 +19,7 @@ from std_msgs.msg import String
 from std_srvs.srv import Trigger
 import time
 
-from duckietown_unicorn.algo.imap import IMap
+from duckietown_intnav.algo.imap import IMap
 
 class Main():
 

@@ -44,7 +44,7 @@ setup(name='duckietown_intnav',
 
       entry_points={
           'console_scripts': [
-              'dt-unicorn-cli = duckietown_intnav.cli:cli_main',
+              'dt-intnav-cli = duckietown_intnav.cli:cli_main',
           ]
       },
       classifiers=[
