@@ -1,8 +1,7 @@
 # coding=utf-8
 
 # add an import for each test file in this directory
-from .test1 import *
-from .test2 import *
+from .imap_timing import *
 
 
 def jobs_comptests(context):

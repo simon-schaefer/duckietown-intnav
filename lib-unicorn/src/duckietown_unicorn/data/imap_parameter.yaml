@@ -1,0 +1,22 @@
+#!/usr/bin/env python
+###############################################################################
+# Duckietown - Project Unicorn ETH
+# Author: Simon Schaefer
+# Configuration file for duckietown structure parameter (assuming a symmetric
+# structure of streets, intersections, etc.). Additionally, imap visualization
+# parameter. 
+###############################################################################
+---
+# Street width parameters.
+street:
+  white_line: 2                     # White line width [cm]. 
+  lane: 10                          # One lane width (between yellow & white) [cm]. 
+  yellow_line_half: 1               # Half width of yellow line [cm]. 
+  yellow_line_distance: 3           # Distance between yellow line segments [cm]. 
+
+# iMap visualization parameter. 
+vis: 
+  point_rad: 0.2                    # Minimal radius of visualized point [cm]. 
+  car_width: 7.0                    # Car rect visualization width [cm]. 
+  car_height: 5.0                   # Car rect visualization height [cm]. 
+...

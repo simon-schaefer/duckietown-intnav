@@ -1,0 +1,11 @@
+<launch>
+
+    <arg name="sleep_time_s" default="0.05" doc="pose update rate [s]" />
+    
+    <include file="$(find duckietown_intnav)/launch/test_initialization.launch" />
+
+    <node name="publish_trajectory" pkg="duckietown_intnav" type="publish_trajectory.py" >
+        <param name="sleep_time_s" value="$(arg sleep_time_s)"/>
+    </node>
+
+</launch>

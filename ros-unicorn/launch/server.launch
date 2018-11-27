@@ -1,0 +1,11 @@
+<launch>
+
+    <arg name="vis_update_s" default="0.01" doc="visualisation update rate [s]" />
+    <arg name="resolution_cm" default="0.2" doc="imap grid cell width [cm]" />
+
+    <node name="imap_server" pkg="duckietown_intnav" type="imap_server.py"  output="screen" required="true">
+        <param name="vis_update_s" value="$(arg vis_update_s)"/>
+        <param name="resolution_cm" value="$(arg resolution_cm)"/>
+    </node>
+
+</launch>
