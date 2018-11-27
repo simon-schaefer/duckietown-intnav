@@ -139,9 +139,9 @@ class IMap(object):
                     continue
                 classifier = color_dict[cell_type]
                 colors = self._dt_params['colors'][classifier]
-                self.data_colored[i][j][0] = colors['blue']
-                self.data_colored[i][j][0] = colors['green']
-                self.data_colored[i][j][0] = colors['red']
+                self.data_colored[i,j,0] = colors['blue']
+                self.data_colored[i,j,1] = colors['green']
+                self.data_colored[i,j,2] = colors['red']
         # Set origin position to midth of lower street. 
         self._origin_p = (3*s, 2*s)
         # Build special points dictionary. 

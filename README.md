@@ -29,7 +29,7 @@ iMap contains visualization functionalities for a planned trajectory, the duckie
 ### Demo
 
 ```
-roslaunch imap test_visualization.launch
+roslaunch duckietown-intnav test_visualization.launch
 ```
 
 
