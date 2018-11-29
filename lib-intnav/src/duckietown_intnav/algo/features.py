@@ -78,16 +78,18 @@ class Features:
         gradients = cv2.Laplacian(img,cv2.CV_64F)
         gradients = imresize(gradients, data.shape)
         kp = self._detector.detect(gradients, None)
-        keypoints, descs = self._descriptor.compute(gradients, kp)
+        keypoints, descs = self._descriptor.compute(data, kp)
         # Debug information. 
         if self._debug_mode: 
             num_kp = len(keypoints)
             if num_kp < self._min_num_keypoints:
                 warnings.warn("Small detected features count = %d !" % num_kp,RuntimeWarning)
-            samples = np.random.choice(keypoints, 10, replace=False)
-            distances = [point.pt[0] + point.pt[1]  for point in samples]
-            if np.std(distances) < self._min_pixel_std_dev: 
-                warnings.warn("Bad detected feature distribution !", RuntimeWarning)
+            else: 
+                num_samples = min(10, num_kp)
+                samples = np.random.choice(keypoints, num_samples, replace=False)
+                distances = [point.pt[0] + point.pt[1]  for point in samples]
+                if np.std(distances) < self._min_pixel_std_dev: 
+                    warnings.warn("Bad detected feature distribution !", RuntimeWarning)
         return keypoints, descs
 
     @staticmethod
@@ -100,17 +102,47 @@ class Features:
     class PatchDescriptor: 
         ''' Simple patch descriptor i.e. get adjacent pixel as descriptor 
         for each keypoint (colored patch !). '''
-        def __init__(self, patch_radius=1):
+        def __init__(self, patch_radius=2):
             self.patch_radius = patch_radius
 
         def compute(self, image, keypoints): 
             r = self.patch_radius
             N = len(keypoints)
-            descriptors = np.zeros((N,(2*r+1)**2*3), dtype=np.uint8)
+            patch_size = (2*r+1)**2
+            descriptors = np.zeros((N,patch_size*3), dtype=np.uint8)
+            keypoints_new = []
+            k = 0
             for i in range(N):
                 kp = keypoints[i]
                 x = int(kp.pt[0])
                 y = int(kp.pt[1])
                 patch = image[x-r:x+r+1, y-r:y+r+1,:]
-                descriptors[i,:] = patch.flatten()
-            return keypoints, descriptors
+                patch = np.reshape(patch, (patch_size,3))
+                if not self.check_patch(patch):
+                    continue
+                descriptors[k,:] = patch.flatten()
+                keypoints_new.append(kp)
+                k += 1
+            descriptors = descriptors[:k,:]
+            return keypoints_new, descriptors
+
+        @staticmethod
+        def check_patch(patch, min_num_colors=3): 
+            ''' Check whether patch is an acceptable (e.g. unique)
+            keypoint descriptor, since it contains at least 3 colors. 
+            It turned out that HSV or clustering based approaches are 
+            way too computationally expensive. 
+            @param[in]  patch       patch BGR array. '''
+            N = np.shape(patch)[0]
+            color_max = np.max(patch, axis=0)
+            color_min = np.min(patch, axis=0)
+            # For the pixel to be unique at least 3 colors have to 
+            # be contained in the patch. 
+            #contains = {'red': False, 'yellow': False, 'white': False, 'gray': False}
+            #return sum(contains.values()) >= min_num_colors
+            #return (color_max[0] > 200 and color_min[0] < 100) \
+            #    or (color_max[1] > 200 and color_min[1] < 100)
+            return (all(color_max > 200))
+
+            
+            
