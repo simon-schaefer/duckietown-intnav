@@ -2,8 +2,7 @@
 ###############################################################################
 # Duckietown - Project intnav ETH
 # Author: Simon Schaefer
-# Test imap performance i.e. the timing required for imap calls such as 
-# initialization, map coordinate transformation, etc. 
+# Test algorithm performance i.e. the timing required. 
 ###############################################################################
 from comptests import comptest, run_module_tests, comptest_fails
 import numpy as np
