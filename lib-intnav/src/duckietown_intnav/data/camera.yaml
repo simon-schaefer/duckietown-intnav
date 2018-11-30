@@ -1,0 +1,23 @@
+camera_matrix:
+  cols: 3
+  data: [333.6990741851609, 0.0, 324.34234277813664, 0.0, 333.7690744624864, 220.77122099741374,
+    0.0, 0.0, 1.0]
+  rows: 3
+camera_name: sebot/camera_node
+distortion_coefficients:
+  cols: 5
+  data: [-0.2852770691724207, 0.0635803564179798, 0.000916297268552439, -0.0009801406817102724,
+    0.0]
+  rows: 1
+distortion_model: plumb_bob
+image_height: 480
+image_width: 640
+projection_matrix:
+  cols: 4
+  data: [238.42787170410156, 0.0, 322.67256183640893, 0.0, 0.0, 271.3787841796875,
+    211.67249996658938, 0.0, 0.0, 0.0, 1.0, 0.0]
+  rows: 3
+rectification_matrix:
+  cols: 3
+  data: [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+  rows: 3

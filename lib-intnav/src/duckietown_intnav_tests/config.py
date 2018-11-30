@@ -1,0 +1,23 @@
+#!/usr/bin/env python
+###############################################################################
+# Duckietown - Project intnav ETH
+# Author: Simon Schaefer
+# Test configuration loading. 
+###############################################################################
+from comptests import comptest, run_module_tests, comptest_fails
+import time
+
+from duckietown_intnav.algo.camera_config import CameraConfig
+
+@comptest
+def load_camera_config_file():
+    config = CameraConfig.from_file()
+    assert (config.K != None).all()
+    assert (config.dist_params != None).all()
+    assert config.img_width != None
+    assert config.img_height != None
+    assert (config.projection_matrix != None).all()
+    assert (config.rect_matrix != None).all()
+
+if __name__ == '__main__':
+    run_module_tests()
