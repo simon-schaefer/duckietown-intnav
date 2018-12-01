@@ -12,7 +12,7 @@ import os
 from duckietown_intnav.algo.camera_config import CameraConfig
 from duckietown_intnav.algo.vcompass import VCompass
 
-R = 20
+R = 30
 
 @comptest
 def vcompass_functionality():
@@ -23,8 +23,8 @@ def vcompass_functionality():
     src_img = cv2.imread(os.path.join(imgs_dir, "imgs/116.png"), 0)
     dst_img = cv2.imread(os.path.join(imgs_dir, "imgs/118.png"), 0)
     # Process images. 
-    vcompass.process(src_img, r=R)
-    dth, var = vcompass.process(dst_img, r=R)
+    vcompass.process(src_img)
+    dth, var = vcompass.process(dst_img)
     print(dth, var)
     # Visualise results. 
     # cx = int(camera_config.K[0,2])
@@ -46,13 +46,13 @@ def vcompass_looping():
     # Load test images. 
     imgs_dir = os.path.dirname(os.path.realpath(__file__))
     src_img = cv2.imread(os.path.join(imgs_dir, "imgs/116.png"), 0)
-    vcompass.process(src_img, r=R)
+    vcompass.process(src_img)
     # Iterate over all test images and estimate overall rotation 
     # change. 
     angle_sum = 0.0
     for i in range(208): 
         img = cv2.imread(os.path.join(imgs_dir, "imgs/"+ str(i)+".png"), 0)
-        dth, var = vcompass.process(img, r=R)
+        dth, var = vcompass.process(img)
         if var > 1.0: 
             continue
         angle_sum = angle_sum + dth

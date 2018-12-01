@@ -12,14 +12,14 @@ import os
 from duckietown_intnav.algo.camera_config import CameraConfig
 from duckietown_intnav.algo.vcompass import VCompass
 
-R = 20
+R = 30
 
 camera_config = CameraConfig.from_file()
 vcompass = VCompass(camera_config)
 # Load test images. 
 imgs_dir = os.path.dirname(os.path.realpath(__file__))
 src_img = cv2.imread(os.path.join(imgs_dir, "../imgs/116.png"), 0)
-vcompass.process(src_img, r=R)
+vcompass.process(src_img)
 # Iterate over all test images and estimate overall rotation 
 # change. 
 angle_sum = 0.0
@@ -28,7 +28,7 @@ angle_lower = []
 angle_upper = []
 for i in range(208): 
     img = cv2.imread(os.path.join(imgs_dir, "../imgs/"+ str(i)+".png"), 0)
-    dth, var = vcompass.process(img, r=R)
+    dth, var = vcompass.process(img)
     if abs(var) >= 1.0: 
         continue
     angle_sum = angle_sum + dth

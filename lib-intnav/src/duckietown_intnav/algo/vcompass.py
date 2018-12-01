@@ -13,20 +13,34 @@ __all__ = [
 ]
 
 import cv2
+import os
 import numpy as np
+import yaml
 
 class VCompass(object): 
 
-    def __init__(self, camera_config):         
+    def __init__(self, camera_config): 
+        # Load class parameters. 
+        params = {}
+        try: 
+            config_file = os.path.dirname(os.path.realpath(__file__))
+            config_file = os.path.join(config_file, "../data/parameter.yaml")
+            with open(config_file, 'r') as stream:
+                params = yaml.load(stream)
+        except (IOError, yaml.YAMLError): 
+            raise IOError("Unknown or invalid parameters file !") 
+        self._num_patches = params['vcompass']['num_candidates']
+        self._patch_radius = params['vcompass']['patch_radius']
+        self._config_num_samples = params['vcompass']['num_config_samples']
+        # Class variables.     
         self.pixel_diff = None
         self._camera_config = camera_config
         self._prev_patch = None
         self._config_ssds = []
-        self._config_num_samples = 10
         self.is_initialised = False
         self.is_configured = False
 
-    def process(self, image, N=100, r=30):
+    def process(self, image):
         ''' Compare input image with center patch* in previous image, search for
         lowest SSD patch w.r.t. patch* in horizon (center) line in current image
         and estimate rigid transformation (rotation angle) from difference pixel 
@@ -37,6 +51,8 @@ class VCompass(object):
         @param[out]     angle_diff  rotation angle between both images [rad] or 
                                     None if no overlaying patch found. 
         @param[out]     variance    estimation of variance of angle diff estimate. '''
+        N = self._num_patches
+        r = self._patch_radius
         if not self.is_initialised:
             self._prev_patch = self._cut_center_patch(image, r)
             self.pixel_diff = 0
@@ -64,7 +80,7 @@ class VCompass(object):
                 self._config_ssds = np.mean(self._config_ssds)
                 self.is_configured = True
         # TODO: Estimate inaccuracy based on ssd. 
-        variance = min(5.0, min_ssd/np.mean(self._config_ssds)*1.0)
+        variance = min(10.0, min_ssd/np.mean(self._config_ssds)*1.0)
         # Based on minimal delta estimate rigid body rotation angle. 
         #wc = self._camera_config.convert_pixel_to_world((center_x, center_y))
         angle_diff = float(min_delta)/(self._camera_config.width/2)*60.0

@@ -12,6 +12,12 @@ imap:
   resolution: 0.5                   # map grid cell width in cm/cell, assuming 
                                     # a quadratic grid cell structure.
 
+# VCompass parameters. 
+vcompass: 
+  num_patches: 100                  # Divide horizon line in N candidates. 
+  patch_radius: 30                  # Candidate oatch size (2*r+1)^2.
+  num_config_samples: 10            # Number of samples to configure variance. 
+
 # Intersection width parameters.
 street:
   white_line: 2                     # White line width [cm]. 
