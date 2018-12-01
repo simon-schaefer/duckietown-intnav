@@ -17,14 +17,16 @@ import numpy as np
 
 class VCompass(object): 
 
-    def __init__(self, camera_config): 
-        self._prev_patch = None
+    def __init__(self, camera_config):         
         self.pixel_diff = None
-        self.rot_angle_absolute = 0.0
         self._camera_config = camera_config
+        self._prev_patch = None
+        self._config_ssds = []
+        self._config_num_samples = 10
         self.is_initialised = False
+        self.is_configured = False
 
-    def process(self, image, N=100, r=20):
+    def process(self, image, N=100, r=30):
         ''' Compare input image with center patch* in previous image, search for
         lowest SSD patch w.r.t. patch* in horizon (center) line in current image
         and estimate rigid transformation (rotation angle) from difference pixel 
@@ -33,16 +35,17 @@ class VCompass(object):
         @param[in]      N           number of patches to check for SSD (N-2). 
         @param[in]      r           patch radius (such that patch size = (2r+1)^2).
         @param[out]     angle_diff  rotation angle between both images [rad] or 
-                                    None if no overlaying patch found. '''
+                                    None if no overlaying patch found. 
+        @param[out]     variance    estimation of variance of angle diff estimate. '''
         if not self.is_initialised:
             self._prev_patch = self._cut_center_patch(image, r)
             self.pixel_diff = 0
             self.is_initialised = True
-            return 0.0
+            return 0.0, 0.0
         # Compute center points to iterate (along horizon line).
         center_x = int(self._camera_config.K[0,2])
         center_y = int(self._camera_config.K[1,2])
-        delta_x = float(self._camera_config.img_width-2*r)/N
+        delta_x = float(self._camera_config.width-2*r)/N
         centers = [(int(r+x*delta_x),center_y) for x in range(1,N-1)]
         # Iterate over all center point and determine smallest SSD. 
         min_ssd = np.Infinity
@@ -54,12 +57,20 @@ class VCompass(object):
                 min_ssd = ssd
                 min_delta = cx - center_x 
         self.pixel_diff = min_delta
+        # Gather configuration samples if in configuration phase. 
+        if not self.is_configured: 
+            self._config_ssds.append(min_ssd)
+            if len(self._config_ssds) >= self._config_num_samples: 
+                self._config_ssds = np.mean(self._config_ssds)
+                self.is_configured = True
         # TODO: Estimate inaccuracy based on ssd. 
+        variance = min(5.0, min_ssd/np.mean(self._config_ssds)*1.0)
         # Based on minimal delta estimate rigid body rotation angle. 
-        angle_diff = 
+        #wc = self._camera_config.convert_pixel_to_world((center_x, center_y))
+        angle_diff = float(min_delta)/(self._camera_config.width/2)*60.0
         # Reset previous patch to current image. 
         self._prev_patch = self._cut_center_patch(image, r)
-        return angle_diff
+        return angle_diff, variance
 
     def _cut_center_patch(self, image, r): 
         ''' Cut patch at images center (convergence point). '''
@@ -75,5 +86,5 @@ class VCompass(object):
         return image[center[1]-r-1:center[1]+r, center[0]-r-1:center[0]+r]
 
 
-# M = cv2.estimateRigidTransform(src_pts, dst_pts, False)
+# M = cv2.estimateRigidTransform(src_img, dst_img, False)
 # angle = np.arctan2(M[1,0],M[0,0])

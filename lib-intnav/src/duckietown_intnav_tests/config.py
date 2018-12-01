@@ -14,10 +14,11 @@ def load_camera_config_file():
     config = CameraConfig.from_file()
     assert (config.K != None).all()
     assert (config.dist_params != None).all()
-    assert config.img_width != None
-    assert config.img_height != None
-    assert (config.projection_matrix != None).all()
-    assert (config.rect_matrix != None).all()
+    assert config.width != None
+    assert config.width != None
+    assert (config.P != None).all()
+    assert (config.R != None).all()
+    assert (config.H != None).all()
 
 if __name__ == '__main__':
     run_module_tests()
