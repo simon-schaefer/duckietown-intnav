@@ -2,14 +2,17 @@
 ###############################################################################
 # Duckietown - Project intnav ETH
 # Author: Simon Schaefer
-# Visualise iMap as image and display it for testing. 
+# Transition tracking - Checks whether transition to lane following is 
+# possible based on ...
 ###############################################################################
+__all__ = [
+    'Transition',
+]
+
 import cv2
+import os
 import numpy as np
+import yaml
 
-from duckietown-intnav.algo.imap import IMap
-
-imap = IMap("4", 0.5)
-
-cv2.imshow("intersection", imap.data_colored)
-cv2.waitKey(0)
+class Transition(object): 
+    pass

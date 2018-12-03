@@ -19,7 +19,7 @@ from std_msgs.msg import String
 from std_srvs.srv import Trigger
 import time
 
-from duckietown_intnav.algo.imap import IMap
+from duckietown-intnav.algo.imap import IMap
 
 class Main():
 

@@ -7,7 +7,7 @@ logging.basicConfig()
 logger = logging.getLogger('dt-intnav')
 logger.setLevel(logging.DEBUG)
 
-logger.info('duckietown_intnav %s' % __version__)
+logger.info('duckietown-intnav %s' % __version__)
 
 from .algo import *
 

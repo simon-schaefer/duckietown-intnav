@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import time
 
-from duckietown_intnav.algo.imap import IMap
+from duckietown-intnav.algo.imap import IMap
 
 # Test imap initialization time. 
 resolutions = np.arange(0.1, 2, 0.1)

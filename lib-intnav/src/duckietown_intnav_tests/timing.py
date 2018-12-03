@@ -10,9 +10,9 @@ import numpy as np
 import os
 import time
 
-from duckietown_intnav.algo.camera_config import CameraConfig
-from duckietown_intnav.algo.imap import IMap
-from duckietown_intnav.algo.vcompass import VCompass
+from duckietown-intnav.algo.camera_config import CameraConfig
+from duckietown-intnav.algo.imap import IMap
+from duckietown-intnav.algo.vcompass import VCompass
 
 @comptest
 def imap_initialization_time():

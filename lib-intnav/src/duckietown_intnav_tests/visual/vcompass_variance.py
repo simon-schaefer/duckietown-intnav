@@ -9,8 +9,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 
-from duckietown_intnav.algo.camera_config import CameraConfig
-from duckietown_intnav.algo.vcompass import VCompass
+from duckietown-intnav.algo.camera_config import CameraConfig
+from duckietown-intnav.algo.vcompass import VCompass
 
 R = 30
 

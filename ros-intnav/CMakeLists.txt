@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(duckietown_intnav)
+project(duckietown-intnav)
 
 find_package(catkin REQUIRED COMPONENTS 
     rospy
@@ -7,6 +7,7 @@ find_package(catkin REQUIRED COMPONENTS
     nav_msgs
     sensor_msgs
     std_msgs
+    tf
 )
 
 catkin_python_setup()

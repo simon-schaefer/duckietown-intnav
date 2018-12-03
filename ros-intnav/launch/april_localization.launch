@@ -1,0 +1,17 @@
+<launch>
+    <arg name="duckiebot" default="duckiebot" />
+    <arg name="id" default="20" />
+
+    <node pkg="tf" type="static_transform_publisher" name="tf_trafo" args="1 0 0 0 0 0 1 Tag$(arg id) world 100" />
+
+    <node pkg="duckietown-intnav" name="rect" type="rect.py" args="$(arg duckiebot)" output="screen" />
+    
+    <include file="$(find apriltags2_ros)/launch/continuous_detection.launch"> 
+        <arg name="camera_name" value="/$(arg duckiebot)"/> 
+        <arg name="image_topic" value="camera_node/rect"/> 
+        <arg name="info_topic" value="/camera_info"/>
+    </include>
+    
+    <node pkg="duckietown-intnav" name="tf_to_pose" type="tf_to_pose_node.py" args="$(arg id)" output="screen" />
+
+</launch>
