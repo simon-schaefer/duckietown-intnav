@@ -274,7 +274,7 @@ class IMap(object):
         img = Image.fromarray(image)
         # Draw a rotated rectangle on the image.
         draw = ImageDraw.Draw(img)
-        rect = get_rect(x=vc-h/2, y=uc-w/2, width=w, height=h, angle=theta)
+        rect = get_rect(x=vc-w/2, y=uc-h/2, width=w, height=h, angle=theta)
         draw.polygon([tuple(p) for p in rect], fill=128)
         # Convert the Image data to a numpy array.
         return np.asarray(img), True

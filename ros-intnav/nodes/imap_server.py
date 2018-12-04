@@ -70,7 +70,9 @@ class Main():
         pos = msg.pose.position
         quat = msg.pose.orientation
         euler = euler_from_quaternion([quat.x, quat.y, quat.z, quat.w])
-        theta = euler[2]
+        euler = [x/np.pi*180.0 for x in euler]
+        #print(euler)
+        theta = 0.0 #euler[1]
         self.pose = [pos.x, pos.y, theta]
 
     def trajectory_callback(self, msg): 
