@@ -20,7 +20,17 @@ import numpy as np
 from PIL import Image, ImageDraw
 import sys
 import warnings
-import yaml
+
+# Define constant intersection parameters. 
+IMAP_DIS_WHITE = 0.05                # White line width [m]. 
+IMAP_DIS_LANE = 0.22                 # One lane width (between yellow & white) [m]. 
+IMAP_DIS_YELLOW = 0.025              # Half width of yellow line [m]. 
+IMAP_DIS_YEL_DIS = 0.03              # Distance between yellow line segments [m]. 
+
+IMAP_COLORS = {'white_line': (255,255,255), 
+               'lane': (130,130,130), 
+               'red_line': (0,0,255),
+               'yellow_line': (0,255,255)}
 
 class IMap(object):
 
@@ -34,32 +44,24 @@ class IMap(object):
     v_coord_system = 70
     v_trajectory = 50
 
-    def __init__(self, itype): 
+    def __init__(self, itype, resolution=0.005, 
+                vis_point_rad=0.001,vis_car_width=0.07, vis_car_height=0.05): 
         ''' iMap class initialization: Build map of given type and given 
         resolution as internal numpy array. 
         @param[in]  itype       intersection type ("4","3LR","3SL","3SR"). 
-                                with L = left, R = right, S = straight. '''
-        # Load duckietown street parameter from pkg config file. 
-        params = {}
-        try: 
-            config_file = os.path.dirname(os.path.realpath(__file__))
-            config_file = os.path.join(config_file, "../data/parameter.yaml")
-            with open(config_file, 'r') as stream:
-                params = yaml.load(stream)
-        except (IOError, yaml.YAMLError): 
-            raise IOError("Unknown or invalid parameters file !")      
+                                with L = left, R = right, S = straight. '''  
         # Set internal iMap parameters. Map width is exactly three times the
         # width of a street (= 6 times the width of half street width s).
         # According to the duckietown norms the red line height is exactly 
         # equal to the width of the white line. 
-        self.resolution = params['imap']['resolution']
-        s = int((params['street']['white_line'] 
-            + params['street']['yellow_line_half']
-            + params['street']['lane'])/self.resolution)
-        wl = int(params['street']['white_line']/self.resolution)
-        yl = int(params['street']['yellow_line_half']/self.resolution)
-        rh = int(params['street']['white_line']/self.resolution)
-        yd = int(params['street']['yellow_line_distance']/self.resolution) 
+        self.resolution = resolution
+        s = int((IMAP_DIS_WHITE
+            + IMAP_DIS_YELLOW/2
+            + IMAP_DIS_LANE)/self.resolution)
+        wl = int(IMAP_DIS_WHITE/self.resolution)
+        yl = int(IMAP_DIS_YELLOW/2/self.resolution)
+        rh = int(IMAP_DIS_WHITE/self.resolution)
+        yd = int(IMAP_DIS_YEL_DIS/self.resolution) 
         self.width, self.height = 6*s, 6*s
         self.data = IMap.v_env*np.ones((self.width, self.height), dtype=np.uint8)
         # Loading map type to internal array, by exploiting map's symmetry. 
@@ -84,7 +86,7 @@ class IMap(object):
             self.data[2*s:4*s,4*s:6*s] = np.flip(street_img, 1)
             self.data[0:2*s,2*s:4*s] = np.transpose(street_img)
             self.data[4*s:6*s,2*s:4*s] = np.flip(np.transpose(street_img), 0)
-            # Reconstruct white line edges and set red lines. s
+            # Reconstruct white line edges and set red lines. 
             self.data[2*s:3*s+yl,2*s:2*s+rh] = red_line_img
             self.data[3*s-yl:4*s,4*s-rh:4*s] = np.flip(red_line_img, 0)
             self.data[2*s:2*s+rh,3*s-yl:4*s] = np.flip(np.transpose(red_line_img), 1)
@@ -137,10 +139,10 @@ class IMap(object):
                 if cell_type == IMap.v_env:
                     continue
                 classifier = color_dict[cell_type]
-                colors = params['colors'][classifier]
-                self.data_colored[i,j,0] = colors['blue']
-                self.data_colored[i,j,1] = colors['green']
-                self.data_colored[i,j,2] = colors['red']
+                colors = IMAP_COLORS[classifier]
+                self.data_colored[i,j,0] = colors[0]
+                self.data_colored[i,j,1] = colors[1]
+                self.data_colored[i,j,2] = colors[2]
         # Set origin position to midth of lower street. 
         self._origin_p = (3*s, 2*s)
         # Build special points dictionary. 
@@ -155,9 +157,9 @@ class IMap(object):
         # if updated trajectory happens to be the same already visualized
         # trajectory. 
         self._pre_image = None
-        self._vis_point_rad = int(params['vis']['point_rad']/self.resolution) 
-        self._vis_car_w = int(params['vis']['car_width']/self.resolution) 
-        self._vis_car_h = int(params['vis']['car_height']/self.resolution) 
+        self._vis_point_rad = int(vis_point_rad/self.resolution)
+        self._vis_car_w = int(vis_car_width/self.resolution) 
+        self._vis_car_h = int(vis_car_height/self.resolution) 
         self._pre_trajectory = []
         self.visualize_init()
 
@@ -176,8 +178,8 @@ class IMap(object):
         here whether the stated coordinates are within the imap !
         @param[in]  u       pixel width coordinate, int.  
         @param[in]  v       pixel height coordinate, int.
-        @param[out] x       world coordiantes [cm]. 
-        @param[out] y       world coordiantes [cm]. '''
+        @param[out] x       world coordiantes [m]. 
+        @param[out] y       world coordiantes [m]. '''
         x = (v - self._origin_p[1])*self.resolution
         y = (u - self._origin_p[0])*self.resolution
         return float(x), float(y)
@@ -186,10 +188,10 @@ class IMap(object):
         ''' Transform world coordinates to pixel coordinates. 
         Attention: Due to timing considerations no check is done 
         here whether the stated coordinates are within the imap !
-        @param[out] x       world coordiantes [cm], float. 
-        @param[out] y       world coordiantes [cm], float. 
-        @param[in]  u       pixel width coordinate. 
-        @param[in]  v       pixel height coordinate. '''  
+        @param[in] x       world coordiantes [m], float. 
+        @param[in] y       world coordiantes [m], float. 
+        @param[out]  u       pixel width coordinate. 
+        @param[out]  v       pixel height coordinate. '''
         u = y/self.resolution + self._origin_p[0]
         v = x/self.resolution + self._origin_p[1]
         return int(u), int(v)
@@ -198,10 +200,10 @@ class IMap(object):
         ''' Adding coordinate system to visualization. '''
         x,y = self._origin_p
         # Draw x-axis. 
-        u,v = self.transform_world_pixel(2.0, 0.5)
+        u,v = self.transform_world_pixel(0.01, 0.05)
         self._pre_image[x:u,y:v] = IMap.v_coord_system
         # Draw y-axis. 
-        u,v = self.transform_world_pixel(0.5, 2.0)
+        u,v = self.transform_world_pixel(0.05, 0.01)
         self._pre_image[x:u,y:v] = IMap.v_coord_system
         return True
 
@@ -246,7 +248,7 @@ class IMap(object):
         rendered image !) using PIL library. 
         @param[in]  image           image to add robot to.
         @param[in]  pose            robot's pose description in world 
-                                    coordinates [cm,rad] (x,y,thetha). '''
+                                    coordinates [m,rad] (x,y,thetha). '''
         def get_rect(x, y, width, height, angle):
             rect = np.array([(0, 0), (width, 0), (width, height), (0, height)])
             R = np.array([[np.cos(theta), -np.sin(theta)],
@@ -259,6 +261,7 @@ class IMap(object):
         if not len(pose) == 3: 
             return image, False
         x,y,theta = pose
+        theta = -theta # due to different coordinate conventions in PIL.
         uc,vc = self.transform_world_pixel(x,y)
         if not self.in_map_pixel(uc,vc): 
             return image, False
@@ -276,15 +279,13 @@ class IMap(object):
         # Convert the Image data to a numpy array.
         return np.asarray(img), True
 
-    def visualize(self, pose=[], additional_points=[]): 
+    def visualize(self, pose=None): 
         ''' Return rendered image as numpy array in order to visualize
         it (by matplotlib or by sensor_msgs::Image conversion). For efficiency
         reasons a prerendered image is used that is merely changed when a
-        new trajectory or new additional points to publish are added to the
-        visualisation, not at every call of the visualize function. 
-        However, additional_points offers the possibility to draw add
-        further points to this specific visualization, such as features.'''
-        if len(additional_points) == 0 and len(pose) == 0: 
+        new trajectory or a new pose to publish are added to the
+        visualisation, not at every call of the visualize function. '''
+        if pose is None: 
             # Transpose image as numpy convention is different than "norm". 
             return np.transpose(self._pre_image)
         # When additional feature should be drawn, the prerendered image 
@@ -294,16 +295,8 @@ class IMap(object):
         # Add robots pose if necessary. 
         if len(pose) > 0: 
             image, _ = self.visualize_add_robot(image, pose)
-        # Add additional points if necessary. 
-        if len(additional_points) > 0: 
-            r = self._vis_point_rad
-            for point in additional_points: 
-                x,y = point
-                u,v = self.transform_world_pixel(x,y)
-                if self.in_map_pixel(u,v): 
-                    image[u-r:u+r,v-r:v+r] = IMap.v_trajectory
         # Transpose image as numpy convention is different than "norm". 
-        return image
+        return np.transpose(image)
 
     @staticmethod
     def imap_types(): 

@@ -12,7 +12,6 @@ __all__ = [
 import cv2
 import os
 import numpy as np
-import yaml
 
 class Transition(object): 
     pass

@@ -7,7 +7,7 @@
 from comptests import comptest, run_module_tests, comptest_fails
 import time
 
-from duckietown-intnav.algo.camera_config import CameraConfig
+from duckietown_intnav.camera_config import CameraConfig
 
 @comptest
 def load_camera_config_file():

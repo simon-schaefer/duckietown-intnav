@@ -9,8 +9,8 @@ import cv2
 import numpy as np
 import os
 
-from duckietown-intnav.algo.camera_config import CameraConfig
-from duckietown-intnav.algo.vcompass import VCompass
+from duckietown_intnav.camera_config import CameraConfig
+from duckietown_intnav.vcompass import VCompass
 
 R = 30
 

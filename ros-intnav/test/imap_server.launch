@@ -1,9 +1,0 @@
-<launch>
-
-    <arg name="vis_update_s" default="0.01" doc="visualisation update rate [s]" />
-
-    <node name="imap_server" pkg="duckietown-intnav" type="imap_server.py"  output="screen" required="true">
-        <param name="vis_update_s" value="$(arg vis_update_s)"/>
-    </node>
-
-</launch>

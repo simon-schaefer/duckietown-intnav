@@ -15,23 +15,14 @@ __all__ = [
 import cv2
 import os
 import numpy as np
-import yaml
 
 class VCompass(object): 
 
-    def __init__(self, camera_config): 
-        # Load class parameters. 
-        params = {}
-        try: 
-            config_file = os.path.dirname(os.path.realpath(__file__))
-            config_file = os.path.join(config_file, "../data/parameter.yaml")
-            with open(config_file, 'r') as stream:
-                params = yaml.load(stream)
-        except (IOError, yaml.YAMLError): 
-            raise IOError("Unknown or invalid parameters file !") 
-        self._num_patches = params['vcompass']['num_candidates']
-        self._patch_radius = params['vcompass']['patch_radius']
-        self._config_num_samples = params['vcompass']['num_config_samples']
+    def __init__(self, camera_config, 
+                 num_patches=100, patch_radius=30, num_config_samples=10): 
+        self._num_patches = num_patches
+        self._patch_radius = patch_radius
+        self._config_num_samples = num_config_samples
         # Class variables.     
         self.pixel_diff = None
         self._camera_config = camera_config
@@ -79,7 +70,7 @@ class VCompass(object):
             if len(self._config_ssds) >= self._config_num_samples: 
                 self._config_ssds = np.mean(self._config_ssds)
                 self.is_configured = True
-        # TODO: Estimate inaccuracy based on ssd. 
+        # Estimate inaccuracy based on ssd. 
         variance = min(10.0, min_ssd/np.mean(self._config_ssds)*1.0)
         # Based on minimal delta estimate rigid body rotation angle. 
         #wc = self._camera_config.convert_pixel_to_world((center_x, center_y))

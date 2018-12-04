@@ -1,17 +1,26 @@
 <launch>
     <arg name="duckiebot" default="duckiebot" />
-    <arg name="id" default="20" />
+    <arg name="tag_id" default="20" doc="ID of tracked tag"/>
 
-    <node pkg="tf" type="static_transform_publisher" name="tf_trafo" args="1 0 0 0 0 0 1 Tag$(arg id) world 100" />
+    <arg name="cam_frame" default="camera" doc="tf frame id for camera frame" />
+    <arg name="vehicle_frame" default="car" doc="tf frame id for vehicle frame"/>
+    <arg name="world_frame" default="world" doc="tf frame id for world frame"/>
 
-    <node pkg="duckietown-intnav" name="rect" type="rect.py" args="$(arg duckiebot)" output="screen" />
-    
+    <node pkg="duckietown-intnav" name="april_activation" type="april_activator.py" />
+
     <include file="$(find apriltags2_ros)/launch/continuous_detection.launch"> 
         <arg name="camera_name" value="/$(arg duckiebot)"/> 
         <arg name="image_topic" value="camera_node/rect"/> 
         <arg name="info_topic" value="/camera_info"/>
+        <arg name="camera_frame" value="$(arg cam_frame)" />
     </include>
     
-    <node pkg="duckietown-intnav" name="tf_to_pose" type="tf_to_pose_node.py" args="$(arg id)" output="screen" />
+    <node pkg="duckietown-intnav" name="tf_to_pose" type="tf_to_pose.py" output="screen" >
+        <param name="duckiebot" value="$(arg duckiebot)" />
+        <param name="tag_id" value="$(arg tag_id)" />
+        <param name="cam_frame" value="$(arg cam_frame)" />
+        <param name="vehicle_frame" value="$(arg vehicle_frame)" />
+        <param name="world_frame" value="$(arg world_frame)" />
+    </node>
 
 </launch>
