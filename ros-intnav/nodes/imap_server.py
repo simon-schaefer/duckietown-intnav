@@ -12,7 +12,7 @@ import cv2
 from cv_bridge import CvBridge, CvBridgeError
 import numpy as np
 import rospy
-from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import PoseWithCovarianceStamped
 from nav_msgs.msg import Path
 from sensor_msgs.msg import Image
 from std_msgs.msg import String
@@ -47,7 +47,7 @@ class Main():
         # constant such that [x,y,theta] in m and rad). 
         self.pose = []
         topic = str("/" + duckiebot + "/intnav/pose")
-        self.pose_sub = rospy.Subscriber(topic, PoseStamped, self.pose_callback)
+        self.pose_sub = rospy.Subscriber(topic, PoseWithCovarianceStamped, self.pose_callback)
         rospy.spin()
 
     def imap_type_callback(self, msg): 
@@ -67,8 +67,8 @@ class Main():
     def pose_callback(self, msg): 
         ''' Visualise pose in map by updating internal pose estimate
         and forward it while visualizing. '''
-        pos = msg.pose.position
-        quat = msg.pose.orientation
+        pos = msg.pose.pose.position
+        quat = msg.pose.pose.orientation
         euler = euler_from_quaternion([quat.x, quat.y, quat.z, quat.w])
         euler = [x/np.pi*180.0 for x in euler]
         #print(euler)
