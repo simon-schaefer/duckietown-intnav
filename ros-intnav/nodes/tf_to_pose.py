@@ -9,7 +9,7 @@ import rospy
 import tf
 from apriltags2_ros.msg import AprilTagDetectionArray
 from geometry_msgs.msg import Pose
-from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import PoseWithCovarianceStamped
 from nav_msgs.msg import Path
 
 class Main(): 
@@ -26,7 +26,7 @@ class Main():
         self.tf_listener = tf.TransformListener()
         self.tf_caster = tf.TransformBroadcaster()
         topic = str("/" + duckiebot + "/intnav/pose")
-        self.pose_pub = rospy.Publisher(topic, PoseStamped, queue_size=1)
+        self.pose_pub = rospy.Publisher(topic, PoseWithCovarianceStamped, queue_size=1)
         self.path = Path()
         topic = str("/" + duckiebot + "/intnav/trajectory")
         self.path_pub = rospy.Publisher(topic, Path, queue_size=1)
@@ -41,7 +41,7 @@ class Main():
         for detection in message.detections: 
             if not self.tag_id in detection.id: 
                 continue
-            pose_stamped = PoseStamped()
+            pose_stamped = PoseWithCovarianceStamped()
             #pose_stamped.pose = detection.pose.pose.pose
             pose_stamped.header = detection.pose.header
         if pose_stamped is None: 
@@ -60,12 +60,12 @@ class Main():
             rospy.logwarn("No transformation from %s to %s" % 
                           (self.world_frame,self.vehicle_frame))
             return False
+        # TODO: Link "singularity measurement" and covariance. 
         Rotmat = (2*rot[0]**2-1)*np.eye(3)+2*rot[0]*np.matrix([[0,-rot[3],rot[2]], [rot[3],0,-rot[1]], [-rot[2],rot[1],0]])+2*np.matmul(rot[1:3],np.transpose(rot[1:3]))
        	Tmat = np.zeros((4,4))
        	Tmat[:3,:3]=Rotmat
        	Tmat[3,3]=1
        	Tmat[:3,3]=trans
-       	#Tmat_inv = np.linalg.pinv(Tmat, rcond=0.001)
         if np.linalg.det(Tmat) < 0.001: 
             rospy.logwarn("Transformation close to singularity !")
         # Transform to world frame - Publish transform and listen to
@@ -77,20 +77,20 @@ class Main():
         #     rospy.logwarn("No transformation from %s to %s" % 
         #                   (self.world_frame,self.vehicle_frame))
         #     return False 
-        # Assign and publish transformed pose as pose and path.   
-        pose_stamped.pose.position.x = - trans[2] + 0.465
-        pose_stamped.pose.position.y = trans[0] + 0.2575
-        pose_stamped.pose.position.z = trans[1]
-        # pose_stamped.pose.position.x = trans[0]
-        # pose_stamped.pose.position.y = trans[1]
-        # pose_stamped.pose.position.z = trans[2]
-        pose_stamped.pose.orientation.x = rot[0]
-        pose_stamped.pose.orientation.y = rot[1]
-        pose_stamped.pose.orientation.z = rot[2]
-        pose_stamped.pose.orientation.w = rot[3]
+        # Assign and publish transformed pose as pose and path.
+        # pose_stamped.pose.pose.position.x = trans[0]
+        # pose_stamped.pose.pose.position.y = trans[1]
+        # pose_stamped.pose.pose.position.z = trans[2]   
+        pose_stamped.pose.pose.position.x = - trans[2] + 0.465
+        pose_stamped.pose.pose.position.y = trans[0] + 0.2575
+        pose_stamped.pose.pose.position.z = trans[1]
+        pose_stamped.pose.pose.orientation.x = rot[0]
+        pose_stamped.pose.pose.orientation.y = rot[1]
+        pose_stamped.pose.pose.orientation.z = rot[2]
+        pose_stamped.pose.pose.orientation.w = rot[3]
         pose_stamped.header.frame_id = self.world_frame
         self.path.header = pose_stamped.header
-        self.path.poses.append(pose_stamped)
+        self.path.poses.append(pose_stamped.pose)
         self.pose_pub.publish(pose_stamped)
         self.path_pub.publish(self.path)
 
