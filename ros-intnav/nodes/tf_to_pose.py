@@ -9,7 +9,7 @@ import rospy
 import tf
 from apriltags2_ros.msg import AprilTagDetectionArray
 from geometry_msgs.msg import Pose
-from geometry_msgs.msg import PoseWithCovarianceStamped
+from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
 from nav_msgs.msg import Path
 
 class Main(): 
@@ -90,8 +90,11 @@ class Main():
         pose_stamped.pose.pose.orientation.w = rot[3]
         pose_stamped.header.frame_id = self.world_frame
         self.path.header = pose_stamped.header
-        self.path.poses.append(pose_stamped.pose.pose)
         self.pose_pub.publish(pose_stamped)
+        path_pose = PoseStamped()
+        path_pose.header = pose_stamped.header
+        path_pose.pose  = pose_stamped.pose.pose
+        self.path.poses.append(path_pose)
         self.path_pub.publish(self.path)
 
 if __name__ == '__main__':
