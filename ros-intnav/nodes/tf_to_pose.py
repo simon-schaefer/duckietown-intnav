@@ -52,38 +52,19 @@ class Main():
         tf_exceptions = (tf.LookupException,
                          tf.ConnectivityException,
                          tf.ExtrapolationException)
-        # Determine norm of camera -> tag transformation to avoid singularities.
+        # Transform to world frame - Publish transform and listen to
+        # transformation to world frame. 
         try:
-            (trans,rot) = self.tf_listener.lookupTransformFull(
-                self.tag_frame,latest, self.cam_frame,latest, self.cam_frame)
+            (trans,rot) = self.tf_listener.lookupTransform(
+                self.vehicle_frame, self.world_frame, latest)
         except tf_exceptions:
             rospy.logwarn("No transformation from %s to %s" % 
                           (self.world_frame,self.vehicle_frame))
-            return False
-        # TODO: Link "singularity measurement" and covariance. 
-        Rotmat = (2*rot[0]**2-1)*np.eye(3)+2*rot[0]*np.matrix([[0,-rot[3],rot[2]], [rot[3],0,-rot[1]], [-rot[2],rot[1],0]])+2*np.matmul(rot[1:3],np.transpose(rot[1:3]))
-       	Tmat = np.zeros((4,4))
-       	Tmat[:3,:3]=Rotmat
-       	Tmat[3,3]=1
-       	Tmat[:3,3]=trans
-        if np.linalg.det(Tmat) < 0.001: 
-            rospy.logwarn("Transformation close to singularity !")
-        # Transform to world frame - Publish transform and listen to
-        # transformation to world frame. 
-        # try:
-        #     (trans,rot) = self.tf_listener.lookupTransform(
-        #         self.vehicle_frame, self.world_frame, latest)
-        # except tf_exceptions:
-        #     rospy.logwarn("No transformation from %s to %s" % 
-        #                   (self.world_frame,self.vehicle_frame))
-        #     return False 
+            return False 
         # Assign and publish transformed pose as pose and path.
-        # pose_stamped.pose.pose.position.x = trans[0]
-        # pose_stamped.pose.pose.position.y = trans[1]
-        # pose_stamped.pose.pose.position.z = trans[2]   
-        pose_stamped.pose.pose.position.x = - trans[2] + 0.465
-        pose_stamped.pose.pose.position.y = trans[0] + 0.2575
-        pose_stamped.pose.pose.position.z = trans[1]
+        pose_stamped.pose.pose.position.x = trans[0]
+        pose_stamped.pose.pose.position.y = trans[1]
+        pose_stamped.pose.pose.position.z = trans[2]   
         pose_stamped.pose.pose.orientation.x = rot[0]
         pose_stamped.pose.pose.orientation.y = rot[1]
         pose_stamped.pose.pose.orientation.z = rot[2]
