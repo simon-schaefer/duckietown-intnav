@@ -81,6 +81,9 @@ class Main():
         pose_stamped.pose.position.x = - trans[2] + 0.465
         pose_stamped.pose.position.y = trans[0] + 0.2575
         pose_stamped.pose.position.z = trans[1]
+        # pose_stamped.pose.position.x = trans[0]
+        # pose_stamped.pose.position.y = trans[1]
+        # pose_stamped.pose.position.z = trans[2]
         pose_stamped.pose.orientation.x = rot[0]
         pose_stamped.pose.orientation.y = rot[1]
         pose_stamped.pose.orientation.z = rot[2]
