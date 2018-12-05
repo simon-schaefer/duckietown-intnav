@@ -90,7 +90,7 @@ class Main():
         pose_stamped.pose.pose.orientation.w = rot[3]
         pose_stamped.header.frame_id = self.world_frame
         self.path.header = pose_stamped.header
-        self.path.poses.append(pose_stamped.pose)
+        self.path.poses.append(pose_stamped.pose.pose)
         self.pose_pub.publish(pose_stamped)
         self.path_pub.publish(self.path)
 
