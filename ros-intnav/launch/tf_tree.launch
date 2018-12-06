@@ -4,13 +4,13 @@
 
     <!-- Trafo world>tag -->
     <arg name="tag_id" default="20" doc="ID of tracked tag" />
-    <arg name="tag_x" default="-0.2575" doc="Position of tag in imap frame [m]."/>
-    <arg name="tag_y" default="0.1" doc="Position of tag in imap frame [m]."/>
-    <arg name="tag_z" default="0.515" doc="Position of tag in imap frame [m]."/>
+    <arg name="tag_x" default="0.32" doc="Position of tag in imap frame [m]."/>
+    <arg name="tag_y" default="-0.0725" doc="Position of tag in imap frame [m]."/>
+    <arg name="tag_z" default="0.59" doc="Position of tag in imap frame [m]."/>
     <arg name="tag_qx" default="-0.5" doc="Orientation of tag in imap frame."/>
-    <arg name="tag_qy" default="-0.5" doc="Orientation of tag in imap frame."/>
+    <arg name="tag_qy" default="0.5" doc="Orientation of tag in imap frame."/>
     <arg name="tag_qz" default="0.5" doc="Orientation of tag in imap frame."/>
-    <arg name="tag_qw" default="-0.5" doc="Orientation of tag in imap frame."/>
+    <arg name="tag_qw" default="0.5" doc="Orientation of tag in imap frame."/>
 
     <!-- Trafo cam>vehicle -->
     <!-- with alpha = tilting angle of camera = 12° -->
