@@ -7,14 +7,28 @@
     <arg name="world_frame" default="world" doc="tf frame id for world frame"/>
 
     <node pkg="duckietown-intnav" name="april_activation" type="april_activator.py" />
-
-    <include file="$(find apriltags2_ros)/launch/continuous_detection.launch"> 
-        <arg name="camera_name" value="/$(arg duckiebot)"/> 
-        <arg name="image_topic" value="camera_node/rect"/> 
-        <arg name="info_topic" value="/camera_info"/>
-        <arg name="camera_frame" value="$(arg cam_frame)" />
-    </include>
     
+    <rosparam command="load" file="$(find duckietown-intnav)/config/apriltags.yaml" ns="apriltags2_continous_detection" />
+  
+    <node pkg="apriltags2_ros" type="apriltags2_ros_continuous_node" name="apriltags2_continous_detection" 
+        clear_params="true" output="screen" launch-prefix="" required="true">
+        <remap from="image_rect" to="/$(arg duckiebot)/camera_node/rect" />
+        <remap from="camera_info" to="/$(arg duckiebot)/camera_node/camera_info" />
+        <param name="camera_frame" type="str" value="$(arg cam_frame)" />
+        
+        <param name="publish_tag_detections_image" type="bool" value="true" /> 
+        <param name="publish_tf" type="bool" value="true" />
+        <param name="tag_family" type="str" value="tag36h11" />
+        <param name="tag_border" type="int" value="1" />
+        <param name="tag_threads" type="int" value="2" />
+        <param name="tag_decimate" type="double" value="1.0" />
+        <param name="tag_blur" type="double" value="0.0" />
+        <param name="tag_refine_edges" type="bool" value="true" />
+        <param name="tag_refine_decode" type="bool" value="false" />
+        <param name="tag_refine_pose" type="bool" value="false" />
+        <param name="tag_debug" type="bool" value="false" />
+    </node>
+
     <node pkg="duckietown-intnav" name="tf_to_pose" type="tf_to_pose.py" output="screen" >
         <param name="duckiebot" value="$(arg duckiebot)" />
         <param name="tag_id" value="$(arg tag_id)" />
@@ -24,3 +38,4 @@
     </node>
 
 </launch>
+
