@@ -13,6 +13,14 @@
     <!-- Set sim_time if required (bag) -->
     <rosparam param="use_sim_time" subst_value="True">$(arg is_bag)</rosparam>
 
+    <!-- Tf static transformations -->
+    <include file="$(find duckietown-intnav)/launch/tf_tree.launch"> 
+        <arg name="duckiebot" value="$(arg duckiebot)" />
+        <arg name="cam_frame" value="$(arg cam_frame)" />
+        <arg name="vehicle_frame" value="$(arg vehicle_frame)" />
+        <arg name="world_frame" value="$(arg world_frame)" />
+    </include>
+
     <!-- Image preprocessing -->
     <include file="$(find duckietown-intnav)/launch/image_preprocessing.launch"> 
         <arg name="duckiebot" value="$(arg duckiebot)" />
@@ -31,14 +39,5 @@
         <arg name="vehicle_frame" value="$(arg vehicle_frame)" />
         <arg name="world_frame" value="$(arg world_frame)" />       
     </include>
-
-    <!-- Tf static transformations -->
-    <include file="$(find duckietown-intnav)/launch/tf_tree.launch"> 
-        <arg name="tag_id" value="$(arg tag_id)" />
-        <arg name="cam_frame" value="$(arg cam_frame)" />
-        <arg name="vehicle_frame" value="$(arg vehicle_frame)" />
-        <arg name="world_frame" value="$(arg world_frame)" />
-    </include>
- 
 
 </launch>

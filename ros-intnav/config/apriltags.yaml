@@ -23,27 +23,15 @@ standalone_tags:
     {id: 20, size: 0.065, name: Tag20},
   
   ]
-# ## Tag bundle definitions
-# ### Remarks
-#
-# - name is optional
-# - x, y, z have default values of 0 thus they are optional
-# - qw has default value of 1 and qx, qy, qz have default values of 0 thus they are optional
-#
-# ### Syntax
-#
-# tag_bundles:
-#   [
-#     {
-#       name: 'CUSTOM_BUNDLE_NAME',
-#       layout:
-#         [
-#           {id: ID, size: SIZE, x: X_POS, y: Y_POS, z: Z_POS, qw: QUAT_W_VAL, qx: QUAT_X_VAL, qy: QUAT_Y_VAL, qz: QUAT_Z_VAL},
-#           ...
-#         ]
-#     },
-#     ...
-#   ]
+
 tag_bundles:
   [
+  ]
+
+  # # Definition of tag positions and orientations (w.r.t. to world frame). 
+standalone_tag_poses: 
+  [
+
+    {id: 20, x: -0.2575, y: 0.1, z: 0.515, qx: -0.5, qy: -0.5, qz: 0.5, qw: -0.5}
+
   ]

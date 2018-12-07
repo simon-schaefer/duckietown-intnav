@@ -8,9 +8,9 @@
 
     <node pkg="duckietown-intnav" name="april_activation" type="april_activator.py" />
     
-    <rosparam command="load" file="$(find duckietown-intnav)/config/apriltags.yaml" ns="apriltags2_continous_detection" />
+    <rosparam command="load" file="$(find duckietown-intnav)/config/apriltags.yaml" ns="apriltags" />
   
-    <node pkg="apriltags2_ros" type="apriltags2_ros_continuous_node" name="apriltags2_continous_detection" 
+    <node pkg="apriltags2_ros" type="apriltags2_ros_continuous_node" name="apriltags" 
         clear_params="true" output="screen" launch-prefix="" required="true">
         <remap from="image_rect" to="/$(arg duckiebot)/camera_node/rect" />
         <remap from="camera_info" to="/$(arg duckiebot)/camera_node/camera_info" />

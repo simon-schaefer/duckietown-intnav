@@ -25,7 +25,7 @@ class Main():
         # Initialize tf listener and pose/path publisher.
         self.tf_listener = tf.TransformListener()
         self.tf_caster = tf.TransformBroadcaster()
-        topic = str("/" + duckiebot + "/intnav/pose")
+        topic = str("/" + duckiebot + "/intnav/pose_april")
         self.pose_pub = rospy.Publisher(topic, PoseWithCovarianceStamped, queue_size=1)
         self.path = Path()
         topic = str("/" + duckiebot + "/intnav/trajectory")
