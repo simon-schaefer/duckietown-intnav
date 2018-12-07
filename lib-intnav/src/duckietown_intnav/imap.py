@@ -287,7 +287,7 @@ class IMap(object):
         visualisation, not at every call of the visualize function. '''
         if pose is None: 
             # Transpose image as numpy convention is different than "norm". 
-            return np.transpose(self._pre_image)
+            return self._pre_image
         # When additional feature should be drawn, the prerendered image 
         # should not be changed, as it would have to be initialized again.
         # Therefore, new image is created. 
@@ -296,7 +296,7 @@ class IMap(object):
         if len(pose) > 0: 
             image, _ = self.visualize_add_robot(image, pose)
         # Transpose image as numpy convention is different than "norm". 
-        return np.transpose(image)
+        return image
 
     @staticmethod
     def imap_types(): 

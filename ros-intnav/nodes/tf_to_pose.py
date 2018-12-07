@@ -56,7 +56,7 @@ class Main():
         # transformation to world frame.
         try:
             (trans,rot) = self.tf_listener.lookupTransform(
-                self.world_frame, self.vehicle_frame, latest)
+                self.vehicle_frame, self.world_frame, latest)
         except tf_exceptions:
             rospy.logwarn("No transformation from %s to %s" %
                           (self.world_frame,self.vehicle_frame))
