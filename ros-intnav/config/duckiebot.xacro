@@ -2,22 +2,6 @@
 
 <robot name="duckiebot" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-  <xacro:property name="cameraSize" value="0.01"/>
-
-  <!-- Chassis properties -->
-  <xacro:property name="chassisHeight" value="0.0623"/>
-  <xacro:property name="chassisLength" value="0.198"/>
-  <xacro:property name="chassisWidth" value="0.119"/>
-
-  <!-- Caster wheel properties -->
-  <xacro:property name="casterRadius" value="0.021"/>
-  <xacro:property name="casterOffsetX" value="0.091"/>
-
-  <!-- Differential-drive wheels properties -->
-  <xacro:property name="wheelWidth" value="0.026"/>
-  <xacro:property name="wheelRadius" value="0.032"/>
-  <xacro:property name="wheelOffsetY" value="0.037"/>
-
   <material name="black">
     <color rgba="0.0 0.0 0.0 1.0"/>
   </material>
@@ -41,7 +25,7 @@
   <link name="left_wheel">
     <origin xyz="0 0 0" rpy="0 0 0"/>
     <visual name="left_wheel_visual">
-      <origin xyz="0 -0.11 0" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="package://duckietown-intnav/config/meshes/duckiebot_leftwheel.dae"/>      
       </geometry>
@@ -53,7 +37,7 @@
   <link name="right_wheel">
     <origin xyz="0 0 0" rpy="0 0 0"/>
     <visual name="right_wheel_visual">
-      <origin xyz="0 0.11 0" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="package://duckietown-intnav/config/meshes/duckiebot_rightwheel.dae"/>    
       </geometry>
@@ -62,38 +46,34 @@
   </link>
 
   <joint type="continuous" name="left_wheel_hinge">
-    <origin xyz="0.0 0.11 0" rpy="0 0 0"/>
+    <origin xyz="0.0 0 0" rpy="0 0 0"/>
     <child link="left_wheel"/>
     <parent link="car"/>
-    <axis xyz="0 1 0" rpy="0 0 0"/>
+    <axis xyz="0 0 0" rpy="0 0 0"/>
   </joint>
 
   <joint type="continuous" name="right_wheel_hinge">
-    <origin xyz="0.0 -0.11 0" rpy="0 0 0"/>
+    <origin xyz="0.0 0 0" rpy="0 0 0"/>
     <child link="right_wheel"/>
     <parent link="car"/>
-    <axis xyz="0 1 0" rpy="0 0 0"/>
+    <axis xyz="0 0 0" rpy="0 0 0"/>
   </joint>
 
-<!-- Camera sensor -->
-
-<link name="camera">
-    <pose>0 0 0 0 0 0</pose>
-
-    <visual name='camvisual'>
-      <origin xyz="-0.05 0 -0.055" rpy=" 0 -0.1 0"/>
+  <link name="duckie">
+    <visual name='chassis_visual'>
+      <origin xyz="0 0 0" rpy="1.57079633 0 0"/>
       <geometry>
-        <mesh filename="package://duckietown-intnav/config/meshes/duckiebot_camera.dae"/>
+        <mesh filename="package://duckietown-intnav/config/meshes/duck.dae" scale="0.0005 0.0005 0.0005"/>
       </geometry>
-      <material name="black"/>
+      <material name="red"/>
     </visual>
   </link>
 
-  <joint name="camera_joint" type="fixed">
-    <axis xyz="0 0 0" />
-    <origin xyz="0.05 0 0.05" rpy="0 0.1 0"/> 
+  <joint type="continuous" name="duckie_hinge">
+    <origin xyz="0.0 0 0" rpy="0 0 0"/>
+    <child link="duckie"/>
     <parent link="car"/>
-    <child link="camera"/>
+    <axis xyz="0 0 0" rpy="0 0 0"/>
   </joint>
 
 </robot>

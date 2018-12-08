@@ -21,12 +21,6 @@
             $(arg cam_qx) $(arg cam_qy) $(arg cam_qz) $(arg cam_qw)
             $(arg vehicle_frame) $(arg cam_frame) 100" />
 
-    <node pkg="tf" type="static_transform_publisher" name="tf_vehicle_leftwheel"
-        args="0 0.1 0 0 0 0 1 $(arg vehicle_frame) left_wheel 100" />
-
-    <node pkg="tf" type="static_transform_publisher" name="tf_vehicle_rightwheel"
-        args="0 -0.1 0 0 0 0 1 $(arg vehicle_frame) right_wheel 100" />
-
     <node pkg="duckietown-intnav" type="tf_static.py" name="april_static_trafo" output="screen" >
         <param name="world_frame" value="$(arg world_frame)" />
     </node>

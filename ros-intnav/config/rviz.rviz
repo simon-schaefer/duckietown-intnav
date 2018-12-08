@@ -9,6 +9,7 @@ Panels:
         - /RobotModel1
         - /TF1
         - /Map1
+        - /RobotModel2
       Splitter Ratio: 0.6067864298820496
     Tree Height: 586
   - Class: rviz/Selection
@@ -45,12 +46,12 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
-        camera:
+        car:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        car:
+        duckie:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -76,13 +77,47 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: true
+        Tag20:
+          Value: true
+        camera:
+          Value: true
+        car:
+          Value: true
+        duckie:
+          Value: true
+        duckie1:
+          Value: true
+        duckie2:
+          Value: true
+        left_wheel:
+          Value: true
+        right_wheel:
+          Value: true
+        world:
+          Value: true
+        world20:
+          Value: true
       Marker Scale: 0.20000000298023224
       Name: TF
       Show Arrows: false
       Show Axes: true
       Show Names: true
       Tree:
-        {}
+        car:
+          camera:
+            Tag20:
+              world20:
+                world:
+                  duckie1:
+                    {}
+                  duckie2:
+                    {}
+          duckie:
+            {}
+          left_wheel:
+            {}
+          right_wheel:
+            {}
       Update Interval: 0
       Value: true
     - Alpha: 0.699999988079071
@@ -95,6 +130,36 @@ Visualization Manager:
       Unreliable: false
       Use Timestamp: false
       Value: true
+    - Alpha: 1
+      Class: rviz/RobotModel
+      Collision Enabled: false
+      Enabled: true
+      Links:
+        All Links Enabled: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Link Tree Style: Links in Alphabetic Order
+        duckie1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        duckie2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        world:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+      Name: RobotModel
+      Robot Description: duckies_description
+      TF Prefix: ""
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -120,7 +185,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/XYOrbit
-      Distance: 1
+      Distance: 2
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -135,10 +200,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.19539815187454224
+      Pitch: 0.19479630887508392
       Target Frame: <Fixed Frame>
       Value: XYOrbit (rviz)
-      Yaw: 3.4890615940093994
+      Yaw: 3.9877030849456787
     Saved: ~
 Window Geometry:
   Displays:
