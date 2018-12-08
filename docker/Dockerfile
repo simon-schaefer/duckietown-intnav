@@ -5,7 +5,7 @@ RUN [ "cross-build-start" ]
 
 ENV READTHEDOCS True
 RUN /bin/bash -c "ls /"
-COPY src/duckietown-intnav/lib-intnav/requirements.txt /requirements.txt
+COPY src/duckietown-intnav/docker/requirements.txt /requirements.txt
 
 RUN pip install -r /requirements.txt
 
