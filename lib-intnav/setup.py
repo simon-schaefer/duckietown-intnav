@@ -16,17 +16,15 @@ def get_version(filename):
         raise ValueError(filename)
     return version
 
+version = get_version(filename='src/duckietown_intnav/__init__.py')
 
-version = get_version(filename='src/duckietown-intnav/__init__.py')
-
-setup(name='duckietown-intnav',
+setup(name='duckietown_intnav',
       description='Reliable and Efficient monocular-based Intersection navigation',
       version=version,
       download_url='http://github.com/duckietown/duckietown-intnav/tarball/%s' % version,
       package_dir={'': 'src'},
       packages=find_packages('src'),
       install_requires=[
-
       ],
 
       tests_require=[
@@ -42,11 +40,6 @@ setup(name='duckietown-intnav',
       # without this, the stuff is included but not installed
       include_package_data=True,
 
-      entry_points={
-          'console_scripts': [
-              'dt-intnav-cli = duckietown-intnav.cli:cli_main',
-          ]
-      },
       classifiers=[
           # How mature is this project? Common values are
           #   3 - Alpha
