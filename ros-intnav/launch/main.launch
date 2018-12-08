@@ -2,8 +2,6 @@
 
     <arg name="duckiebot" default="duckiebot" />
 
-    <arg name="tag_id" default="20" doc="ID of tracked tag" />
-
     <arg name="cam_frame" default="camera" doc="tf frame id for camera frame" />
     <arg name="vehicle_frame" default="car" doc="tf frame id for vehicle frame"/>
     <arg name="world_frame" default="world" doc="tf frame id for world frame"/>
@@ -26,18 +24,23 @@
         <arg name="duckiebot" value="$(arg duckiebot)" />
     </include>
 
-    <!-- Intersection Map visualization -->
-    <include file="$(find duckietown-intnav)/launch/imap_server.launch"> 
+    <!-- Interface -->
+    <include file="$(find duckietown-intnav)/launch/interface.launch"> 
         <arg name="duckiebot" value="$(arg duckiebot)" />
     </include>
 
     <!-- April tag localization -->
-    <include file="$(find duckietown-intnav)/launch/april_localization.launch"> 
+    <include file="$(find duckietown-intnav)/launch/localization.launch"> 
         <arg name="duckiebot" value="$(arg duckiebot)" />
-        <arg name="tag_id" value="$(arg tag_id)" />
         <arg name="cam_frame" value="$(arg cam_frame)" />
         <arg name="vehicle_frame" value="$(arg vehicle_frame)" />
         <arg name="world_frame" value="$(arg world_frame)" />       
+    </include>
+
+    <!-- Visualization -->
+    <include file="$(find duckietown-intnav)/launch/visualization.launch"> 
+        <arg name="duckiebot" value="$(arg duckiebot)" />
+        <arg name="world_frame" value="$(arg world_frame)" />
     </include>
 
 </launch>

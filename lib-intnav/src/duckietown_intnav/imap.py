@@ -36,13 +36,14 @@ class IMap(object):
 
     # Structure-based encodings.
     v_env = 0
-    v_str = 150
-    v_whi = 250
-    v_red = 225
-    v_yel = 200
+    v_str = 10
+    v_whi = 50
+    v_red = 99
+    v_yel = 100
     # Additional visualisation encodings (only in pre_image !).
-    v_coord_system = 70
-    v_trajectory = 50
+    v_coord_system = 20
+    v_trajectory = 21
+    v_path = 22
 
     def __init__(self, itype, resolution=0.005, 
                 vis_point_rad=0.001,vis_car_width=0.07, vis_car_height=0.05): 
@@ -57,75 +58,9 @@ class IMap(object):
         self.resolution = resolution
         s = int((IMAP_DIS_WHITE
             + IMAP_DIS_YELLOW/2
-            + IMAP_DIS_LANE)/self.resolution)
-        wl = int(IMAP_DIS_WHITE/self.resolution)
-        yl = int(IMAP_DIS_YELLOW/2/self.resolution)
-        rh = int(IMAP_DIS_WHITE/self.resolution)
-        yd = int(IMAP_DIS_YEL_DIS/self.resolution) 
-        self.width, self.height = 6*s, 6*s
-        self.data = IMap.v_env*np.ones((self.width, self.height), dtype=np.uint8)
-        # Loading map type to internal array, by exploiting map's symmetry. 
-        # Basically every map type can be represented by mirroring its smallest 
-        # symmetry element which is a street. 
-        street_img = IMap.v_str*np.ones((2*s,2*s), dtype=np.uint8)
-        street_img[s-yl:s+yl,:] = IMap.v_yel
-        street_img[0:wl,:] = IMap.v_whi
-        street_img[2*s-wl:2*s,:] = IMap.v_whi
-        red_line_img = IMap.v_red*np.ones((s+yl,rh), dtype=np.uint8)
-        red_line_img[0:wl,:] = IMap.v_whi
-        red_line_img[s-yl:s+yl,:] = IMap.v_yel
-        yellow_line_segements = 2*s/yd
-        for k in range(yellow_line_segements):
-            if k % 2 == 0: 
-                street_img[s-yl:s+yl,2*s-(k+1)*yd:2*s-k*yd] = IMap.v_str
-        # Build up high level structure from basic structure. 
-        if itype == "4":
-            # Build basic structure. 
-            self.data[2*s:4*s,2*s:4*s] = IMap.v_str
-            self.data[2*s:4*s,0:2*s] = street_img
-            self.data[2*s:4*s,4*s:6*s] = np.flip(street_img, 1)
-            self.data[0:2*s,2*s:4*s] = np.transpose(street_img)
-            self.data[4*s:6*s,2*s:4*s] = np.flip(np.transpose(street_img), 0)
-            # Reconstruct white line edges and set red lines. 
-            self.data[2*s:3*s+yl,2*s:2*s+rh] = red_line_img
-            self.data[3*s-yl:4*s,4*s-rh:4*s] = np.flip(red_line_img, 0)
-            self.data[2*s:2*s+rh,3*s-yl:4*s] = np.flip(np.transpose(red_line_img), 1)
-            self.data[4*s-rh:4*s,2*s:3*s+yl] = np.transpose(red_line_img)
-        elif itype == "3LR": 
-            # Build basic structure. 
-            self.data[2*s:4*s,2*s:4*s] = IMap.v_str
-            self.data[2*s:4*s,0:2*s] = street_img
-            self.data[0:2*s,2*s:4*s] = np.transpose(street_img)
-            self.data[4*s:6*s,2*s:4*s] = np.flip(np.transpose(street_img), 0)
-             # Reconstruct white line edges and set red lines. s
-            self.data[2*s:3*s+yl,2*s:2*s+rh] = red_line_img
-            self.data[2*s:2*s+rh,3*s-yl:4*s] = np.flip(np.transpose(red_line_img), 1)
-            self.data[4*s-rh:4*s,2*s:3*s+yl] = np.transpose(red_line_img)
-            self.data[2*s:4*s,4*s-wl:4*s] = IMap.v_whi
-        elif itype == "3SL": 
-            # Build basic structure. 
-            self.data[2*s:4*s,2*s:4*s] = IMap.v_str
-            self.data[2*s:4*s,0:2*s] = street_img
-            self.data[2*s:4*s,4*s:6*s] = np.flip(street_img, 1)
-            self.data[4*s:6*s,2*s:4*s] = np.flip(np.transpose(street_img), 0)
-            # Reconstruct white line edges and set red lines. s
-            self.data[2*s:3*s+yl,2*s:2*s+rh] = red_line_img
-            self.data[3*s-yl:4*s,4*s-rh:4*s] = np.flip(red_line_img, 0)
-            self.data[4*s-rh:4*s,2*s:3*s+yl] = np.transpose(red_line_img)
-            self.data[2*s:2*s+wl,2*s:4*s] = IMap.v_whi   
-        elif itype == "3SR": 
-            # Build basic structure. 
-            self.data[2*s:4*s,2*s:4*s] = IMap.v_str
-            self.data[2*s:4*s,0:2*s] = street_img
-            self.data[2*s:4*s,4*s:6*s] = np.flip(street_img, 1)
-            self.data[0:2*s,2*s:4*s] = np.transpose(street_img)
-            # Reconstruct white line edges and set red lines. s
-            self.data[2*s:3*s+yl,2*s:2*s+rh] = red_line_img
-            self.data[3*s-yl:4*s,4*s-rh:4*s] = np.flip(red_line_img, 0)
-            self.data[2*s:2*s+rh,3*s-yl:4*s] = np.flip(np.transpose(red_line_img), 1)
-            self.data[4*s-wl:4*s,2*s:4*s] = IMap.v_whi            
-        else:
-            raise ValueError("Unknown intersection type %s !" % itype)
+            + IMAP_DIS_LANE)/resolution) 
+        self.data, self.width, self.height = IMap.create_data_from_type(itype, 
+                                                                self.resolution)
         self.data = np.flip(self.data, 1)
         # Build colored map representation. 
         self.data_colored = np.zeros((self.width, self.height, 3), dtype=np.uint8)
@@ -161,7 +96,83 @@ class IMap(object):
         self._vis_car_w = int(vis_car_width/self.resolution) 
         self._vis_car_h = int(vis_car_height/self.resolution) 
         self._pre_trajectory = []
+        self._pre_path = []
         self.visualize_init()
+
+    @staticmethod
+    def create_data_from_type(itype, resolution): 
+        s = int((IMAP_DIS_WHITE
+            + IMAP_DIS_YELLOW/2
+            + IMAP_DIS_LANE)/resolution)
+        wl = int(IMAP_DIS_WHITE/resolution)
+        yl = int(IMAP_DIS_YELLOW/2/resolution)
+        rh = int(IMAP_DIS_WHITE/resolution)
+        yd = int(IMAP_DIS_YEL_DIS/resolution) 
+        width, height = 6*s, 6*s
+        data = IMap.v_env*np.ones((width, height), dtype=np.uint8)
+        # Loading map type to internal array, by exploiting map's symmetry. 
+        # Basically every map type can be represented by mirroring its smallest 
+        # symmetry element which is a street. 
+        street_img = IMap.v_str*np.ones((2*s,2*s), dtype=np.uint8)
+        street_img[s-yl:s+yl,:] = IMap.v_yel
+        street_img[0:wl,:] = IMap.v_whi
+        street_img[2*s-wl:2*s,:] = IMap.v_whi
+        red_line_img = IMap.v_red*np.ones((s+yl,rh), dtype=np.uint8)
+        red_line_img[0:wl,:] = IMap.v_whi
+        red_line_img[s-yl:s+yl,:] = IMap.v_yel
+        yellow_line_segements = 2*s/yd
+        for k in range(yellow_line_segements):
+            if k % 2 == 0: 
+                street_img[s-yl:s+yl,2*s-(k+1)*yd:2*s-k*yd] = IMap.v_str
+        # Build up high level structure from basic structure. 
+        if itype == "4":
+            # Build basic structure. 
+            data[2*s:4*s,2*s:4*s] = IMap.v_str
+            data[2*s:4*s,0:2*s] = street_img
+            data[2*s:4*s,4*s:6*s] = np.flip(street_img, 1)
+            data[0:2*s,2*s:4*s] = np.transpose(street_img)
+            data[4*s:6*s,2*s:4*s] = np.flip(np.transpose(street_img), 0)
+            # Reconstruct white line edges and set red lines. 
+            data[2*s:3*s+yl,2*s:2*s+rh] = red_line_img
+            data[3*s-yl:4*s,4*s-rh:4*s] = np.flip(red_line_img, 0)
+            data[2*s:2*s+rh,3*s-yl:4*s] = np.flip(np.transpose(red_line_img), 1)
+            data[4*s-rh:4*s,2*s:3*s+yl] = np.transpose(red_line_img)
+        elif itype == "3LR": 
+            # Build basic structure. 
+            data[2*s:4*s,2*s:4*s] = IMap.v_str
+            data[2*s:4*s,0:2*s] = street_img
+            data[0:2*s,2*s:4*s] = np.transpose(street_img)
+            data[4*s:6*s,2*s:4*s] = np.flip(np.transpose(street_img), 0)
+             # Reconstruct white line edges and set red lines. s
+            data[2*s:3*s+yl,2*s:2*s+rh] = red_line_img
+            data[2*s:2*s+rh,3*s-yl:4*s] = np.flip(np.transpose(red_line_img), 1)
+            data[4*s-rh:4*s,2*s:3*s+yl] = np.transpose(red_line_img)
+            data[2*s:4*s,4*s-wl:4*s] = IMap.v_whi
+        elif itype == "3SL": 
+            # Build basic structure. 
+            data[2*s:4*s,2*s:4*s] = IMap.v_str
+            data[2*s:4*s,0:2*s] = street_img
+            data[2*s:4*s,4*s:6*s] = np.flip(street_img, 1)
+            data[4*s:6*s,2*s:4*s] = np.flip(np.transpose(street_img), 0)
+            # Reconstruct white line edges and set red lines. s
+            data[2*s:3*s+yl,2*s:2*s+rh] = red_line_img
+            data[3*s-yl:4*s,4*s-rh:4*s] = np.flip(red_line_img, 0)
+            data[4*s-rh:4*s,2*s:3*s+yl] = np.transpose(red_line_img)
+            data[2*s:2*s+wl,2*s:4*s] = IMap.v_whi   
+        elif itype == "3SR": 
+            # Build basic structure. 
+            data[2*s:4*s,2*s:4*s] = IMap.v_str
+            data[2*s:4*s,0:2*s] = street_img
+            data[2*s:4*s,4*s:6*s] = np.flip(street_img, 1)
+            data[0:2*s,2*s:4*s] = np.transpose(street_img)
+            # Reconstruct white line edges and set red lines. s
+            data[2*s:3*s+yl,2*s:2*s+rh] = red_line_img
+            data[3*s-yl:4*s,4*s-rh:4*s] = np.flip(red_line_img, 0)
+            data[2*s:2*s+rh,3*s-yl:4*s] = np.flip(np.transpose(red_line_img), 1)
+            data[4*s-wl:4*s,2*s:4*s] = IMap.v_whi            
+        else:
+            raise ValueError("Unknown intersection type %s !" % itype)
+        return data, width, height
 
     def in_map_pixel(self, u, v): 
         ''' Check whether pixel coordinate is in map. '''
@@ -212,6 +223,36 @@ class IMap(object):
         structure and basic elements such as coordiate system. '''
         self._pre_image = np.copy(self.data)
         self.visualize_add_coord_system()
+
+    def visualize_add_path(self, path): 
+        ''' Adding path (target-trajectory) to visualization. 
+        @param[in]  path            trajectory world coordinates in
+                                    format [[x1,y1],[x2,y2],...]. '''
+        # Check whether redrawing is necessary, or already visualized
+        # path the same as new path. 
+        succeded = True
+        if len(self._pre_path) == len(path): 
+            diff = 0.0
+            for k in range(len(path)): 
+                pp, pt = self._pre_path[k], path[k]
+                diff += abs(pp[0]-pt[0]) + abs(pp[1]-pt[1])
+            if diff < 1.0:
+                return succeded
+        # Reinitialize visualization in case of "old" trajectories. 
+        self.visualize_init()
+        # Add every trajectory point to visualization. 
+        r = self._vis_point_rad
+        for point in path: 
+            x,y = point
+            u,v = self.transform_world_pixel(x,y)
+            if self.in_map_pixel(u,v): 
+                self._pre_image[u-r:u+r,v-r:v+r] = IMap.v_path
+            else: 
+                warnings.warn("Path point (%f,%f) not in iMap !" % (x,y), Warning)
+                succeded = False
+        # Update pre_rendered trajectory. 
+        self._pre_path = path
+        return succeded                                    
 
     def visualize_add_trajectory(self, trajectory): 
         ''' Adding trajectory data to visualization. 

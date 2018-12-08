@@ -38,11 +38,14 @@ class Main():
         update_rate = float(rospy.get_param('imap_server/vis_update_s'))
         self.bridge = CvBridge()
         self.vis_timer = rospy.Timer(rospy.Duration(update_rate), self.vis_callback)
-        # Initialize trajectory callback for visualization. Trajectory
+        # Initialize trajectory and path callback for visualization. Trajectory
         # should be in world iMap coordinates [m].
         topic = str("/" + duckiebot + "/intnav/trajectory")
         self.traj_sub = rospy.Subscriber(topic, Path,
                                         self.trajectory_callback)
+        topic = str("/" + duckiebot + "/intnav/path")
+        self.path_sub = rospy.Subscriber(topic, Path, 
+                                        self.path_callback)
         # Initialize pose callback for visualization (point as z coordinate is
         # constant such that [x,y,theta] in m and rad).
         self.pose = []
@@ -72,6 +75,17 @@ class Main():
         euler = euler_from_quaternion([quat.x, quat.y, quat.z, quat.w])
         theta = euler[2]
         self.pose = [pos.x, pos.y, theta]
+
+    def path_callback(self, msg): 
+        ''' Visualise path (target trajectory) in map using iMap path
+        visualization interface. Precheck whether map is initialized. '''
+        if not self.imap_initialized:
+            return
+        path = []
+        for pose_stamped in msg.poses:
+            x,y = pose_stamped.pose.position.x, pose_stamped.pose.position.y
+            path.append([x,y])
+        self.imap.visualize_add_path(path)        
 
     def trajectory_callback(self, msg):
         ''' Visualise trajectory in map using iMap trajectory
