@@ -2,10 +2,10 @@
 
 [![Coverage Status](https://coveralls.io/repos/github/duckietown/duckietown-intnav/badge.svg?branch=master18)](https://coveralls.io/github/duckietown/duckietown-intnav?branch=master18)
 
-[![PyPI status](https://img.shields.io/pypi/status/duckietown_intnav.svg)](https://pypi.python.org/pypi/duckietown_intnav/)
+[![PyPI status](https://img.shields.io/pypi/status/duckietown-intnav.svg)](https://pypi.python.org/pypi/duckietown-intnav/)
 
 
-[![PyPI pyversions](https://img.shields.io/pypi/pyversions/duckietown_intnav.svg)](https://pypi.python.org/pypi/duckietown_intnav/)
+[![PyPI pyversions](https://img.shields.io/pypi/pyversions/duckietown-intnav.svg)](https://pypi.python.org/pypi/duckietown-intnav/)
 
 
 # Project intnav

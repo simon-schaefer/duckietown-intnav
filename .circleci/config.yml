@@ -83,8 +83,8 @@ jobs:
         path: lib-intnav/out-comptests/junit
 
     - store_artifacts:
-        path: lib-intnav/out-comptests/duckietown_intnav_tests
-        destination: duckietown_intnav_tests
+        path: lib-intnav/out-comptests/duckietown-intnav_tests
+        destination: duckietown-intnav_tests
 
     - store_artifacts:
         path: lib-intnav/artifacts

@@ -1,6 +1,6 @@
 [run]
 
-source = duckietown_intnav
+source = duckietown-intnav
 
 concurrency = multiprocessing
 

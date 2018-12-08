@@ -1,0 +1,8 @@
+<launch>
+    <arg name="duckiebot" default="duckiebot" />
+
+    <node pkg="duckietown-intnav" name="image_processing" type="image_processing.py" output="screen" >
+        <param name="duckiebot" value="$(arg duckiebot)"/>
+    </node>
+
+</launch>

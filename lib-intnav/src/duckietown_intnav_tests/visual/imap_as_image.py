@@ -7,9 +7,10 @@
 import cv2
 import numpy as np
 
-from duckietown_intnav.algo.imap import IMap
+from duckietown_intnav.imap import IMap
 
-imap = IMap("4", 0.5)
+imap = IMap("4")
+image = imap.visualize(pose=(0.2, 0.1, 1.5*np.pi/4))
 
-cv2.imshow("intersection", imap.data_colored)
+cv2.imshow("intersection", image)
 cv2.waitKey(0)

@@ -17,9 +17,9 @@ def get_version(filename):
     return version
 
 
-version = get_version(filename='src/duckietown_intnav/__init__.py')
+version = get_version(filename='src/duckietown-intnav/__init__.py')
 
-setup(name='duckietown_intnav',
+setup(name='duckietown-intnav',
       description='Reliable and Efficient monocular-based Intersection navigation',
       version=version,
       download_url='http://github.com/duckietown/duckietown-intnav/tarball/%s' % version,
@@ -44,7 +44,7 @@ setup(name='duckietown_intnav',
 
       entry_points={
           'console_scripts': [
-              'dt-intnav-cli = duckietown_intnav.cli:cli_main',
+              'dt-intnav-cli = duckietown-intnav.cli:cli_main',
           ]
       },
       classifiers=[

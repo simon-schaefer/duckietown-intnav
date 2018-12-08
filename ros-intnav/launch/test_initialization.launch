@@ -1,7 +1,0 @@
-<launch>
-    
-    <include file="$(find duckietown_intnav)/launch/server.launch" />
-
-    <node name="publish_imap_type" pkg="duckietown_intnav" type="publish_type.py" />
-
-</launch>

@@ -9,16 +9,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 import time
 
-from duckietown_intnav.algo.imap import IMap
+from duckietown_intnav.imap import IMap
 
 # Test imap initialization time. 
-resolutions = np.arange(0.1, 2, 0.1)
+resolutions = np.arange(0.001, 2, 0.01)
 times = []
 for r in resolutions: 
     start_time = time.time()
-    imap = IMap("4", r)
+    imap = IMap("4", resolution=r)
     times.append((time.time() - start_time)*1000)
 plt.plot(resolutions, times)
-plt.xlabel("Resolutions [cm]")
+plt.xlabel("Resolutions [m]")
 plt.ylabel("Runtime [ms]")
 plt.show()

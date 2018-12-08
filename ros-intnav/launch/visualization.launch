@@ -1,0 +1,17 @@
+<launch>
+    <arg name="duckiebot" default="duckiebot" />
+    <arg name="world_frame" default="world" doc="tf frame id for world frame"/>
+
+    <arg name="grid_res" default="0.005" doc="resolution [m] of visualization grid" />
+
+    <param name="robot_description" command="$(find xacro)/xacro.py '$(find duckietown-intnav)/config/duckiebot.xacro'"/>
+
+    <node pkg="duckietown-intnav" type="imap_visualization.py" name="imap_visualization" output="screen" >
+        <param name="duckiebot" value="$(arg duckiebot)" />
+        <param name="world_frame" value="$(arg world_frame)" />
+        <param name="grid_res" value="$(arg grid_res)" />
+    </node>
+
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find duckietown-intnav)/config/rviz.rviz" />
+</launch>
+

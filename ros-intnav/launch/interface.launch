@@ -1,0 +1,10 @@
+<launch>
+
+    <arg name="duckiebot" default="duckiebot" />
+
+    <node name="itype_control" pkg="duckietown-intnav" type="itype_control.py"  output="screen">
+        <param name="duckiebot" value="$(arg duckiebot)"/>
+    </node>
+
+</launch>
+

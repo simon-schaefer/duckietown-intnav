@@ -1,0 +1,44 @@
+<launch>
+    <arg name="duckiebot" default="duckiebot" />
+
+    <arg name="cam_frame" default="camera" doc="tf frame id for camera frame" />
+    <arg name="vehicle_frame" default="car" doc="tf frame id for vehicle frame"/>
+    <arg name="world_frame" default="world" doc="tf frame id for world frame"/>
+
+    <arg name="num_init_estimates" default="10" doc="number of initial pose estimates 
+                                                     to initialize Kalman filter" />
+
+    <node pkg="duckietown-intnav" name="april_activation" type="april_activator.py" />
+    
+    <rosparam command="load" file="$(find duckietown-intnav)/config/apriltags.yaml" ns="apriltags" />
+    <rosparam command="load" file="$(find duckietown-intnav)/config/duckiebot.yaml" ns="$(arg duckiebot)/params" />
+  
+    <node pkg="apriltags2_ros" type="apriltags2_ros_continuous_node" name="apriltags" 
+        clear_params="true" output="screen" launch-prefix="" required="true">
+        <remap from="image_rect" to="/$(arg duckiebot)/camera_node/rect" />
+        <remap from="camera_info" to="/$(arg duckiebot)/camera_node/camera_info" />
+        <param name="camera_frame" type="str" value="$(arg cam_frame)" />
+        
+        <param name="publish_tag_detections_image" type="bool" value="true" /> 
+        <param name="publish_tf" type="bool" value="true" />
+        <param name="tag_family" type="str" value="tag36h11" />
+        <param name="tag_border" type="int" value="1" />
+        <param name="tag_threads" type="int" value="2" />
+        <param name="tag_decimate" type="double" value="1.0" />
+        <param name="tag_blur" type="double" value="0.0" />
+        <param name="tag_refine_edges" type="bool" value="true" />
+        <param name="tag_refine_decode" type="bool" value="false" />
+        <param name="tag_refine_pose" type="bool" value="false" />
+        <param name="tag_debug" type="bool" value="false" />
+    </node>
+
+    <node pkg="duckietown-intnav" name="localization" type="localization.py" output="screen">
+        <param name="duckiebot" value="$(arg duckiebot)" />
+        <param name="cam_frame" value="$(arg cam_frame)" />
+        <param name="vehicle_frame" value="$(arg vehicle_frame)" />
+        <param name="world_frame" value="$(arg world_frame)" />
+        <param name="num_init_estimates" value="$(arg num_init_estimates)" />
+    </node>
+
+</launch>
+

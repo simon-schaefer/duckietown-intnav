@@ -1,0 +1,37 @@
+# # Definitions of tags to detect
+#
+# ## General remarks
+#
+# - All length in meters
+# - Ellipsis (...) signifies that the previous element can be repeated multiple times.
+#
+# ## Standalone tag definitions
+# ### Remarks
+#
+# - name is optional
+#
+# ### Syntax
+#
+# standalone_tags:
+#   [
+#     {id: ID, size: SIZE, name: NAME},
+#     ...
+#   ]
+standalone_tags:
+  [
+
+    {id: 20, size: 0.065, name: Tag20},
+  
+  ]
+
+tag_bundles:
+  [
+  ]
+
+  # # Definition of tag positions and orientations (w.r.t. to world frame). 
+standalone_tag_poses: 
+  [
+
+    {id: 20, x: -0.2575, y: 0.1, z: 0.515, qx: -0.5, qy: -0.5, qz: 0.5, qw: -0.5}
+
+  ]

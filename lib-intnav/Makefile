@@ -16,10 +16,10 @@ upload:
 	twine upload dist/*
 
 
-comptest_package=duckietown_intnav_tests
+comptest_package=duckietown-intnav_tests
 out=out-comptests
 coverage_dir=out-coverage
-coverage_include='*src/duckietown_intnav*'
+coverage_include='*src/duckietown-intnav*'
 coveralls_repo_token=LEAVE-FOR-NOW-THEN-ASK-TA
 coverage_run=coverage run
 
