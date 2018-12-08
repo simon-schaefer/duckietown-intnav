@@ -4,7 +4,6 @@
 # Author: Simon Schaefer
 # Kalman filter implementation for localization postprocessing, based on 
 # differential drive vehicle model.
-# Differential Drive Vehicle Model: 
 # x_dot = cos(theta)*v_A
 # y_dot = sin(theta)*v_A
 # theta_dot = omege = (v_R - v_L)/(2R)
@@ -15,8 +14,93 @@ __all__ = [
     'KalmanFilter',
 ]
 
-class VehicleModel(object): 
-    pass 
+import numpy as np
 
+''' Vehicle model for differential drive duckiebot, with left wheel velocity v_L, 
+right wheel velocity v_R and wheel distance R. '''
+class VehicleModel(object): 
+    
+    def __init__(self, R):
+        self.R = R
+
+    def predict(self, state, inputs, dt): 
+        ''' Predict next state based on inputs and current state. 
+        @param[in]  state       (x, y, thetha) current state description. 
+        @param[in]  inputs      (vr, vl) velocity of left and right wheel. 
+        @param[in]  dt          time interval to predict [s]. 
+        @param[out] state_next  (xn, yn, thetan) next state description. '''
+        x, y, theta = state[0], state[1], state[2]
+        vr, vl = inputs[0], inputs[1]
+        va = (vr + vl)/2.0
+        omega = (vr - vl)/(self.R)
+        xn = x + np.cos(theta)*va*dt
+        yn = y + np.sin(theta)*va*dt
+        thetan = theta + omega*dt
+        return np.array([xn, yn, thetan])
+
+    def jacobian(self, state, inputs): 
+        ''' Return system dynamics Jacobian, evaluated at the given
+        state and inputs. '''
+        theta = state[2]
+        vr, vl = inputs[0], inputs[1]
+        va = (vr + vl)/2.0
+        F = np.zeros((3,3))
+        F[0,2] = -np.sin(theta)*va
+        F[1,2] =  np.cos(theta)*va
+        return F    
+
+''' Extended Kalman filter implementing vehicle dynamics of differential drive
+duckiebot, using the following discrete-time predict and update equations: 
+Predict
+- x_k| = f(x_k-1, u_k)
+- P_k| = F_k P_k-1 F_k^T + Q_k
+Update
+- y_k = z_k - h(x_k|)
+- S_k = H_k P_k| H_k^T + R_k
+- K_K = P_k| H_k^T S_k^(-1) 
+- x_k = x_k| + K_k y_k
+- P_k = (I - K_k H_k) P_k|
+with F_k = df/dx|x_k-1,u_k and H_k = dh/dx|x_k|. '''
 class KalmanFilter(object): 
-    pass
+    
+    def __init__(self, model_params, init_state, init_var=np.zeros((3,3))): 
+        ''' Access model class (= f, system dynamics) and initialize state
+        as well as variance. 
+        @param[in]  model_params    tuple of model parameters. 
+        @param[in]  init_state      (x0,y0,theta0) initial state, np.array.  
+        @param[in]  init_variance   initial variance [3x3], np.array. '''
+        self.model = VehicleModel(R=model_params['wheel_distance'])
+        self.state = init_state
+        self.var = init_var
+
+    def process(self, z, u, Q, R, dt):
+        ''' Extended Kalman filter prediction and update step. 
+        @param[in]  z           [(xm, ym, thetham), ...] measurement vector, np.array. 
+        @param[in]  u           (vr, vl) velocity of left and right wheel. 
+        @param[in]  Q           process uncertainties [3x3], np.array.
+        @param[in]  R           measurement uncertainties [3x3], np.array.
+        @param[in]  dt          time interval to predict [s]. 
+        Exclude prediction step (pure sensor fusion) for u = None by Q = inf.'''
+        xlast = self.state
+        Plast = self.var
+        # Check if open loop control. 
+        if u is None: 
+            u = np.array([0.0, 0.0])
+            Q = np.eye(3)*100.0
+        # Prediction step. 
+        F = self.model.jacobian(xlast, u)
+        xprior = self.model.predict(xlast, u, dt)
+        Pprior = F * Plast * np.transpose(F) + Q
+        # Prepare measurements vector.
+        assert np.shape(z)[0] % 3 == 0
+        num_measurements = np.shape(z)[0]/3
+        H = np.zeros((3*num_measurements,3))
+        Rnp = np.kron(np.eye(num_measurements), R)
+        for i in range(num_measurements): 
+            H[3*i:3*i+3,:] = np.eye(3)
+        # Update step (H = eye(3)).
+        y = z - np.matmul(H,xprior)
+        S = np.matmul(np.matmul(H,Pprior),np.transpose(H)) + Rnp
+        K = np.matmul(np.matmul(Pprior,np.transpose(H)),np.linalg.inv(S))
+        self.state = xprior + np.matmul(K,y)
+        self.var = np.matmul(np.eye(3) - np.matmul(K,H),Pprior)

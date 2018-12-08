@@ -1,14 +1,17 @@
 <launch>
     <arg name="duckiebot" default="duckiebot" />
-    <arg name="tag_id" default="20" doc="ID of tracked tag"/>
 
     <arg name="cam_frame" default="camera" doc="tf frame id for camera frame" />
     <arg name="vehicle_frame" default="car" doc="tf frame id for vehicle frame"/>
     <arg name="world_frame" default="world" doc="tf frame id for world frame"/>
 
+    <arg name="num_init_estimates" default="10" doc="number of initial pose estimates 
+                                                     to initialize Kalman filter" />
+
     <node pkg="duckietown-intnav" name="april_activation" type="april_activator.py" />
     
     <rosparam command="load" file="$(find duckietown-intnav)/config/apriltags.yaml" ns="apriltags" />
+    <rosparam command="load" file="$(find duckietown-intnav)/config/duckiebot.yaml" ns="$(arg duckiebot)/params" />
   
     <node pkg="apriltags2_ros" type="apriltags2_ros_continuous_node" name="apriltags" 
         clear_params="true" output="screen" launch-prefix="" required="true">
@@ -29,12 +32,12 @@
         <param name="tag_debug" type="bool" value="false" />
     </node>
 
-    <node pkg="duckietown-intnav" name="tf_to_pose" type="tf_to_pose.py" output="screen" >
+    <node pkg="duckietown-intnav" name="localization" type="localization.py" output="screen">
         <param name="duckiebot" value="$(arg duckiebot)" />
-        <param name="tag_id" value="$(arg tag_id)" />
         <param name="cam_frame" value="$(arg cam_frame)" />
         <param name="vehicle_frame" value="$(arg vehicle_frame)" />
         <param name="world_frame" value="$(arg world_frame)" />
+        <param name="num_init_estimates" value="$(arg num_init_estimates)" />
     </node>
 
 </launch>

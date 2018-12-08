@@ -1,0 +1,12 @@
+# Duckiebot parameter. 
+wheel_distance: 0.1           # Wheel distance in [m]. 
+
+# Differential vehicle model - Process noise. 
+process_noise_x: 0.05         # Variance of x estimate [m].  
+process_noise_y: 0.05         # Variance of y estimate [m].  
+process_noise_t: 0.1          # Variance of thetha estimate [rad].           
+
+# April tag localization - Measurement noise. 
+april_noise_x: 0.01           # Variance of x estimate [m].  
+april_noise_y: 0.01           # Variance of y estimate [m].  
+april_noise_t: 0.01           # Variance of thetha estimate [rad].      
