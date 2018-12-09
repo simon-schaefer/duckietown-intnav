@@ -4,9 +4,21 @@
     <arg name="world_frame" default="world" doc="tf frame id for world frame"/>
     <arg name="n_path_points" default="20" doc="number of path points" />
 
-    <node pkg="duckietown-intnav" type="path_planner.py" name="path_planner" >
+    <arg name="adm_error" default="0.005" doc="admissible error (perpendicular 
+                                distance of future point from the path) [m]" />
+    <arg name="la_dis" default="0.1" doc="look ahead distance [m]" />
+    <arg name="la_time" default="0.5" doc="time interval to calculate 
+                                           future point [s]" />
+    <arg name="target_vel" default="0.5" doc="output velocity as PP merely 
+                                        controls the steering angle [m/s]" />
+
+    <node pkg="duckietown-intnav" type="controller.py" name="controller" output="screen" >
         <param name="duckiebot" value="$(arg duckiebot)" />
         <param name="n_path_points" value="$(arg n_path_points)" />
+        <param name="adm_error" value="$(arg adm_error)" />
+        <param name="la_dis" value="$(arg la_dis)" />
+        <param name="la_time" value="$(arg la_time)" />
+        <param name="target_vel" value="$(arg target_vel)" />
         <param name="world_frame" value="$(arg world_frame)" />
     </node>
 

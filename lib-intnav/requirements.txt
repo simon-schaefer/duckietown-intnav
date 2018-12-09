@@ -3,3 +3,5 @@
 
 comptests==1.4.27
 matplotlib==1.5.1
+scipy==0.19.1
+shapely==1.6.4

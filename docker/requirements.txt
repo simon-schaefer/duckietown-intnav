@@ -30,3 +30,6 @@ graphviz==0.9
 
 picamera==1.13
 
+scipy==0.19.1
+shapely==1.6.4
+

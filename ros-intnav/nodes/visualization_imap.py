@@ -42,7 +42,8 @@ class Main():
         grid.data = gd
         self.imap_pub.publish(grid)
         self.imap_type_sub.unregister()
+        rospy.signal_shutdown("imap visualisation set !")
 
 if __name__ == '__main__':
-    rospy.init_node('imap_visualization', anonymous=True)
+    rospy.init_node('imap_visualization', anonymous=True, disable_signals=True)
     Main()

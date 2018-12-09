@@ -4,6 +4,10 @@
 # Author: Marta Tintore
 # Plan optimal path from start to goal point, depending on intersection type.
 ###############################################################################
+__all__ = [
+    'path_generate',
+]
+
 import numpy as np
 from scipy.misc import comb
 

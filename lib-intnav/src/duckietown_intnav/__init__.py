@@ -10,6 +10,7 @@ logger.setLevel(logging.DEBUG)
 logger.info('duckietown_intnav %s' % __version__)
 
 from .camera_config import *
+from .controller import *
 from .imap import *
 from .kalman import *
 from .planner import *
