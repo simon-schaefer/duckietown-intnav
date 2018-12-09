@@ -12,5 +12,6 @@ logger.info('duckietown_intnav %s' % __version__)
 from .camera_config import *
 from .imap import *
 from .kalman import *
+from .planner import *
 from .vcompass import *
 from .transition import *

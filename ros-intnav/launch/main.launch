@@ -37,6 +37,12 @@
         <arg name="world_frame" value="$(arg world_frame)" />       
     </include>
 
+    <!-- Controlling -->
+    <include file="$(find duckietown-intnav)/launch/controlling.launch"> 
+        <arg name="duckiebot" value="$(arg duckiebot)" />
+        <arg name="world_frame" value="$(arg world_frame)" />       
+    </include>
+
     <!-- Visualization -->
     <include file="$(find duckietown-intnav)/launch/visualization.launch"> 
         <arg name="duckiebot" value="$(arg duckiebot)" />

@@ -1,0 +1,13 @@
+<launch>
+    <arg name="duckiebot" default="duckiebot" />
+
+    <arg name="world_frame" default="world" doc="tf frame id for world frame"/>
+    <arg name="n_path_points" default="20" doc="number of path points" />
+
+    <node pkg="duckietown-intnav" type="path_planner.py" name="path_planner" >
+        <param name="duckiebot" value="$(arg duckiebot)" />
+        <param name="n_path_points" value="$(arg n_path_points)" />
+        <param name="world_frame" value="$(arg world_frame)" />
+    </node>
+
+</launch>
