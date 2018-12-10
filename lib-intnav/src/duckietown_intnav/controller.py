@@ -12,7 +12,7 @@ import numpy as np
 from shapely.geometry import LineString, Point 
 
 def pure_pursuit(pose, path_points, wheel_distance, 
-                 adm_error=0.005, la_dis=0.1, t_step=0.5, vel=0.5):
+                 adm_error=0.005, la_dis=0.1, t_step=0.5, vel=0.1):
     ''' Pure pursuit implementation determining control commands (v, tau)
     based on the current pose (x,y,thetha) and an target path. 
     @param[in]  pose            (x,y,thetha) current pose [m,rad]. 
