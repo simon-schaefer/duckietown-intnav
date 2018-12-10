@@ -2,6 +2,13 @@
 # -e git://github.com/duckietown/duckietown-world.git@master18d#egg=duckietown-world. 
 
 comptests==1.4.27
+coverage
+coveralls
+bumpversion
+jupyter
+nbconvert
+twine
+
 matplotlib==1.5.1
 scipy==0.19.1
-shapely==1.6.4
+
