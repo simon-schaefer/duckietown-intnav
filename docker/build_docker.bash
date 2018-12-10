@@ -12,6 +12,7 @@ cp $SCRIPTPATH/Dockerfile $WSPATH
 
 cd $WSPATH
 docker build -t $DOCKER_NAME/$PACKAGE:$TAG .
+docker push $DOCKER_NAME/$PACKAGE:$TAG
 
 rm $WSPATH/.dockerignore
 rm $WSPATH/Dockerfile

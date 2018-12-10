@@ -14,6 +14,7 @@ RUN mkdir -p /home/software/intersection_ws
 COPY . /home/software/intersection_ws
 
 ENV ROS_LANG_DISABLE=gennodejs:geneus:genlisp
+RUN echo "source /home/software/docker/env.sh" >> ~/.bashrc
 RUN /bin/bash -c "cd /home/software/ && source /opt/ros/kinetic/setup.bash && catkin_make -j -C intersection_ws/"
 RUN /bin/bash -c "cd /home/software/intersection_ws && source devel/setup.bash"
 
