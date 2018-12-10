@@ -18,7 +18,7 @@ def bernstein_poly(i, n, t):
 def bezier_curve(points, n_steps=20):
     """ Given a set of control points, return the bezier curve defined
     by the control points. Points should be a list of lists, or list of tuples
-    such as [ [1,1], [2,3], [4,5], ..[Xn, Yn] ]. 
+    such as [ [1,1], [2,3], [4,5], ..[Xn, Yn] ].
     @param[in]  n_steps         number of time steps. """
     n_points = len(points)
     xPoints = np.array([p[0] for p in points])
@@ -30,25 +30,27 @@ def bezier_curve(points, n_steps=20):
     return xvals, yvals
 
 def path_generate(direction, n_steps=20):
-    ''' Generate path given driving direction using bezier curves  
-    based on (hard coded) optimal path points. 
+    ''' Generate path given driving direction using bezier curves
+    based on (hard coded) optimal path points.
     @param[in]  direction       l=-1, r=1, s=0. '''
     xs, ys = None, None
-    # Case straight. 
+    # Case straight.
     if direction == 0:
         xs, ys = bezier_curve([(0,-0.1225),(0.715,-0.1225)], n_steps)
         xs, ys = np.insert(xs, 0, 0.865), np.insert(ys, 0, -0.1225)
-    # Case left. 
-    elif direction == -1: 
+    # Case left.
+    elif direction == -1:
         xs, ys = bezier_curve([(0,-0.1225),(0.18,-0.1225),(0.36,-0.0785),(0.405,0.1025),(0.405,0.2825)], n_steps)
         xs, ys = np.insert(xs, 0, 0.405), np.insert(ys, 0, 0.4325)
     # Case right
-    elif direction == +1: 
+    elif direction == +1:
         xs, ys = bezier_curve([(0,-0.1225),(0.0675,-0.1225),(0.135,-0.145),(0.16,-0.21),(0.16,-0.2825)], n_steps)
         xs, ys = np.insert(xs, 0, 0.16), np.insert(ys, 0, -0.4325)
-    else: 
+    else:
         raise ValueError("Invalid path direction !")
     assert len(xs) == len(ys)
     xs, ys = np.insert(xs, len(xs), -0.15), np.insert(ys, len(ys), -0.1225)
-    path = [(xs[i],ys[i]) for i in range(len(xs))]
+    path = np.zeros((len(xs),2))
+    path[:,0] = np.asarray(np.flip(xs))
+    path[:,1] = np.asarray(np.flip(ys))
     return path
