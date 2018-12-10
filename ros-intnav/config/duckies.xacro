@@ -1,0 +1,43 @@
+<?xml version='1.0'?>
+
+<robot name="duckiebot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <pose>0 0 0 0 0 0</pose>
+
+    <link name="world"/>
+
+    <link name="duckie1">
+        <visual name='chassis_visual'>
+        <origin xyz="0 0 0" rpy="1.57079633 0 0"/>
+        <geometry>
+            <mesh filename="package://duckietown-intnav/config/meshes/duck.dae" scale="0.0005 0.0005 0.0005"/>
+        </geometry>
+        <material name="red"/>
+        </visual>
+    </link>
+
+    <joint type="continuous" name="duckie1_hinge">
+        <origin xyz="-0.1 0.5 0" rpy="0 0 0"/>
+        <child link="duckie1"/>
+        <parent link="world"/>
+        <axis xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <link name="duckie2">
+        <visual name='chassis_visual'>
+        <origin xyz="0 0 0" rpy="1.57079633 0 0"/>
+        <geometry>
+            <mesh filename="package://duckietown-intnav/config/meshes/duck.dae" scale="0.0005 0.0005 0.0005"/>
+        </geometry>
+        <material name="red"/>
+        </visual>
+    </link>
+
+    <joint type="continuous" name="duckie2_hinge">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <child link="duckie2"/>
+        <parent link="world"/>
+        <axis xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+</robot>

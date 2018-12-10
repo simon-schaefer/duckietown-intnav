@@ -7,6 +7,7 @@
     <arg name="world_frame" default="world" doc="tf frame id for world frame"/>
 
     <arg name="is_bag" default="false" doc="program executed on bag (sim_time !)"/>
+    <arg name="no_vis" default="true" doc="do not render rviz visualization" />
 
     <!-- Set sim_time if required (bag) -->
     <rosparam param="use_sim_time" subst_value="True">$(arg is_bag)</rosparam>
@@ -20,7 +21,7 @@
     </include>
 
     <!-- Image preprocessing -->
-    <include file="$(find duckietown-intnav)/launch/image_preprocessing.launch"> 
+    <include file="$(find duckietown-intnav)/launch/preprocessing.launch"> 
         <arg name="duckiebot" value="$(arg duckiebot)" />
     </include>
 
@@ -37,9 +38,16 @@
         <arg name="world_frame" value="$(arg world_frame)" />       
     </include>
 
-    <!-- Visualization -->
-    <include file="$(find duckietown-intnav)/launch/visualization.launch"> 
+    <!-- Controlling -->
+    <include file="$(find duckietown-intnav)/launch/controlling.launch"> 
         <arg name="duckiebot" value="$(arg duckiebot)" />
+        <arg name="world_frame" value="$(arg world_frame)" />       
+    </include>
+
+    <!-- Visualization -->
+    <include file="$(find duckietown-intnav)/launch/visualization.launch" unless="$(arg no_vis)"> 
+        <arg name="duckiebot" value="$(arg duckiebot)" />
+        <arg name="vehicle_frame" value="$(arg vehicle_frame)" />
         <arg name="world_frame" value="$(arg world_frame)" />
     </include>
 

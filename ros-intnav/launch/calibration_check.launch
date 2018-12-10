@@ -1,0 +1,46 @@
+<launch>
+
+    <arg name="duckiebot" default="duckiebot" />
+
+    <arg name="cam_frame" default="camera" doc="tf frame id for camera frame" />
+    <arg name="vehicle_frame" default="car" doc="tf frame id for vehicle frame"/>
+    <arg name="world_frame" default="world" doc="tf frame id for world frame"/>
+
+    <arg name="is_bag" default="false" doc="program executed on bag (sim_time !)"/>
+    <arg name="no_vis" default="true" doc="do not render rviz visualization" />
+
+    <arg name="pos_range" default="0.05" doc="max position coord deviation [m]" />
+    <arg name="rot_range" default="0.08" doc="max orientation coord deviation [rad]" />
+
+    <!-- Set sim_time if required (bag) -->
+    <rosparam param="use_sim_time" subst_value="True">$(arg is_bag)</rosparam>
+
+    <!-- Tf static transformations -->
+    <include file="$(find duckietown-intnav)/launch/tf_tree.launch"> 
+        <arg name="duckiebot" value="$(arg duckiebot)" />
+        <arg name="cam_frame" value="$(arg cam_frame)" />
+        <arg name="vehicle_frame" value="$(arg vehicle_frame)" />
+        <arg name="world_frame" value="$(arg world_frame)" />
+    </include>
+
+    <!-- Image preprocessing -->
+    <include file="$(find duckietown-intnav)/launch/preprocessing.launch"> 
+        <arg name="duckiebot" value="$(arg duckiebot)" />
+    </include>
+
+    <!-- April tag localization -->
+    <include file="$(find duckietown-intnav)/launch/localization.launch"> 
+        <arg name="duckiebot" value="$(arg duckiebot)" />
+        <arg name="cam_frame" value="$(arg cam_frame)" />
+        <arg name="vehicle_frame" value="$(arg vehicle_frame)" />
+        <arg name="world_frame" value="$(arg world_frame)" />       
+    </include>
+
+    <!-- Calibration test -->
+    <node name="calibration_check" pkg="duckietown-intnav" type="calibration_check.py"  output="screen" required="true">
+        <param name="duckiebot" value="$(arg duckiebot)"/>
+        <param name="pos_range" value="$(arg pos_range)"/>
+        <param name="rot_range" value="$(arg rot_range)"/>
+    </node>    
+
+</launch>

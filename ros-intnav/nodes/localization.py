@@ -68,7 +68,7 @@ class Main():
             # transformation to world frame.
             try:
                 (trans,rot) = self.tf_listener.lookupTransform(
-                    self.vehicle_frame, world_frame, latest)
+                    world_frame, self.vehicle_frame, latest)
                 # Add estimate to pose estimates. 
                 euler = euler_from_quaternion([rot[0], rot[1], rot[2], rot[3]])
                 pose_estimates.append(np.array([trans[0], trans[1], euler[2]]))
@@ -108,6 +108,9 @@ class Main():
         pose_stamped.pose.pose.orientation.y = quat[1]
         pose_stamped.pose.pose.orientation.z = quat[2]
         pose_stamped.pose.pose.orientation.w = quat[3]
+        pose_stamped.pose.covariance[0] = self.kalman.var[0,0]
+        pose_stamped.pose.covariance[7] = self.kalman.var[1,1]
+        pose_stamped.pose.covariance[35] = self.kalman.var[2,2]
         pose_stamped.header.frame_id = self.world_frame
         self.pose_pub.publish(pose_stamped)
         path_pose = PoseStamped()
