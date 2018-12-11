@@ -29,6 +29,6 @@
         <param name="grid_res" value="$(arg grid_res)" />
     </node>
 
-    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find duckietown-intnav)/config/rviz.rviz" />
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find duckietown-intnav)/config/rviz_bot.rviz" />
 </launch>
 

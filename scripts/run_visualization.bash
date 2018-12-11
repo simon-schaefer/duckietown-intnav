@@ -8,4 +8,5 @@ SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 
 source $SCRIPTPATH/../../../devel/setup.bash
 source $SCRIPTPATH/connect_roscore.bash $DUCKIEBOT
+source $SCRIPTPATH/rviz_config.bash $DUCKIEBOT
 roslaunch duckietown-intnav visualization.launch duckiebot:=$DUCKIEBOT 

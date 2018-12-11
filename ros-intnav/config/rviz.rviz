@@ -129,7 +129,7 @@ Visualization Manager:
       Draw Behind: true
       Enabled: true
       Name: Map
-      Topic: /sebot/intnav/vis_grid
+      Topic: /DUCKIEBOT/intnav/vis_grid
       Unreliable: false
       Use Timestamp: false
       Value: true
@@ -183,7 +183,7 @@ Visualization Manager:
       Radius: 0.029999999329447746
       Shaft Diameter: 0.10000000149011612
       Shaft Length: 0.10000000149011612
-      Topic: /sebot/intnav/path
+      Topic: /DUCKIEBOT/intnav/path
       Unreliable: false
       Value: true
     - Alpha: 1
@@ -206,7 +206,7 @@ Visualization Manager:
       Radius: 0.029999999329447746
       Shaft Diameter: 0.10000000149011612
       Shaft Length: 0.10000000149011612
-      Topic: /sebot/intnav/trajectory
+      Topic: /DUCKIEBOT/intnav/trajectory
       Unreliable: false
       Value: true
   Enabled: true

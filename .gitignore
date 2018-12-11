@@ -9,3 +9,5 @@ out-*
 .compmake_history.txt
 testing-cookies/lib-*
 .vscode/
+
+ros-intnav/config/rviz_bot.rviz
