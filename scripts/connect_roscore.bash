@@ -1,6 +1,7 @@
 # /bin/bash
 if [ "$#" -ne 1 ]; then
     echo "Usage: bash connect_roscore.bash DUCKIEBOT"
+    exit 1
 fi
 
 DUCKIEBOT="$1"

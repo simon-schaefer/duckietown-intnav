@@ -58,7 +58,7 @@ def pure_pursuit(pose, path, wheel_distance,
     idx_shortest = np.where(dist_all==np.min(dist_all)) #what if 2 points at same distance
     #print('idx shortest', idx_shortest)
     projected_pt = path[idx_shortest[0],:]
-    print('projec point', projected_pt)
+    #print('projec point', projected_pt)
     dist_fromlookahead = cdist(path[int(idx_shortest[0]):,:],projected_pt,'euclidean')-la_dis
     neg_idx = np.where(dist_fromlookahead<0)
     dist_fromlookahead[neg_idx]=np.max(dist_fromlookahead)
@@ -67,7 +67,7 @@ def pure_pursuit(pose, path, wheel_distance,
     idx_next = int(idx_temp[0]) + int(idx_shortest[0])
     #print('idx next', idx_next)
     goal = path[idx_next,:]
-    print('goal point', goal)
+    #print('goal point', goal)
     # From goal point --> vehicle action (velocity & steering vector).
     sv = (goal[0]-actual[0,0],
           goal[1]-actual[0,1]) #Steering_vector
