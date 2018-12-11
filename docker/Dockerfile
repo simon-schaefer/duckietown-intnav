@@ -7,7 +7,7 @@ ENV READTHEDOCS True
 RUN /bin/bash -c "ls /"
 COPY src/duckietown-intnav/docker/requirements.txt /requirements.txt
 COPY src/duckietown-intnav/docker/misc/environment.sh /home/software/environment.sh
-COPY src/duckietown-intnav/docker/misc/duckie.art /home/software/docker/misc/duckie.art
+COPY src/duckietown-intnav/docker/misc/duckie.art /home/software/misc/duckie.art
 COPY src/duckietown-intnav/docker/misc/init_config_defaults.sh /home/software/docker/init_config_defaults.sh
 
 RUN pip install -r /requirements.txt

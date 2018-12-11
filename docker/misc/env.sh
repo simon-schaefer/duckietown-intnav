@@ -16,6 +16,9 @@ fi
 source /home/software/environment.sh
 export DUCKIEFLEET_ROOT=/data/config
 export VEHICLE_NAME=$HOSTNAME
-cat misc/duckie.art
+cat /home/software/misc/duckie.art
 
 /home/software/docker/init_config_defaults.sh
+
+cd /home/software/catkin_ws/src/duckietown-intnav/lib-intnav
+python setup.py develop --no-deps
