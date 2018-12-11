@@ -2,6 +2,7 @@
 
 if [ "$#" -ne 1 ]; then
     echo "Usage: bash rviz_config.bash DUCKIEBOT"
+    exit 1
 fi
 
 DUCKIEBOT="$1"

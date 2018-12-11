@@ -2,6 +2,7 @@
 
 if [ "$#" -ne 1 ]; then
     echo "Usage: bash run_visualization.bash DUCKIEBOT"
+    exit 1
 fi
 DUCKIEBOT="$1"
 SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
