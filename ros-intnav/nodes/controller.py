@@ -85,8 +85,8 @@ class Main():
         msg = Twist2DStamped()
         msg.v = (vl + vr)/2
         msg.omega = (vr - vl)/(self.wheel_distance/2)
-        msg.header.stamp = rospy.Time().now
-        msg.header.frame_id = self.world_frame
+        #msg.header.stamp = rospy.Time().now
+        #msg.header.frame_id = self.world_frame
         self.cmd_pub.publish(msg)
 
 if __name__ == '__main__':

@@ -51,6 +51,6 @@ def path_generate(direction, n_steps=20):
     assert len(xs) == len(ys)
     xs, ys = np.insert(xs, len(xs), -0.15), np.insert(ys, len(ys), -0.1225)
     path = np.zeros((len(xs),2))
-    path[:,0] = np.asarray(np.flip(xs))
-    path[:,1] = np.asarray(np.flip(ys))
+    path[:,0] = np.asarray(np.flipud(xs))
+    path[:,1] = np.asarray(np.flipud(ys))
     return path
