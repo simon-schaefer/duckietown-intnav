@@ -7,7 +7,7 @@ fi
 DUCKIEBOT="$1"
 DOCKER_NAME="seleschaefer"
 PACKAGE="intnav"
-TAG="0.4"
+TAG="0.5"
 
 docker -H $DUCKIEBOT.local start lane_follower
 docker -H $DUCKIEBOT.local start ros-picam
