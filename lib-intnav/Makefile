@@ -20,7 +20,7 @@ comptest_package=duckietown-intnav_tests
 out=out-comptests
 coverage_dir=out-coverage
 coverage_include='*src/duckietown-intnav*'
-coveralls_repo_token=LEAVE-FOR-NOW-THEN-ASK-TA
+coveralls_repo_token=Whbklz4NNnontnkhtwLTNeV9TE1oL24zl
 coverage_run=coverage run
 
 tests-clean:

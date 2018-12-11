@@ -13,6 +13,7 @@ from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
 from nav_msgs.msg import Path
 from std_msgs.msg import String
 
+from duckietown_msgs.msg import Twist2DStamped
 from duckietown_intnav.controller import pure_pursuit
 from duckietown_intnav.planner import path_generate
 
@@ -42,8 +43,8 @@ class Main():
         topic = str("/" + duckiebot + "/intnav/pose")
         rospy.Subscriber(topic, PoseWithCovarianceStamped, 
                          self.pose_callback)
-        topic = str("/" + duckiebot + "/intnav/control_cmds")
-        #self.cmd_pub = rospy.Publisher(topic, None, queue_size=1)
+        topic = str("/" + duckiebot + "/joy_mapper_node/car_cmd")
+        self.cmd_pub = rospy.Publisher(topic, Twist2DStamped, queue_size=1)
         rospy.spin()
 
     def direction_callback(self, msg): 
@@ -79,8 +80,14 @@ class Main():
         vr, vl = pure_pursuit(pose, self.path_points, self.wheel_distance,
                     adm_error=self.adm_error, la_dis=self.la_dis, 
                     t_step=self.la_time, vel=self.target_vel)
+        print("Velocity left and right")
         print(vl, vr)
-        #self.cmd_pub.publish()
+        msg = Twist2DStamped()
+        msg.v = (vl + vr)/2
+        msg.omega = (vr - vl)/(self.wheel_distance/2)
+        msg.header.stamp = rospy.Time().now
+        msg.header.frame_id = self.world_frame
+        self.cmd_pub.publish(msg)
 
 if __name__ == '__main__':
     rospy.init_node('controller', anonymous=True)

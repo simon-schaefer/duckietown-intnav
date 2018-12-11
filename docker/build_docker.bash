@@ -2,7 +2,7 @@
 
 DOCKER_NAME="seleschaefer"
 PACKAGE="intnav"
-TAG="0.1"
+TAG="0.3"
 
 SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 WSPATH="$SCRIPTPATH/../../../"
