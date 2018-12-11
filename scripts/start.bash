@@ -10,7 +10,7 @@ DOCKER_NAME="seleschaefer"
 PACKAGE="intnav"
 TAG="0.5"
 
-docker -H $DUCKIEBOT.local start lane_following
+#docker -H $DUCKIEBOT.local start lane_following
 docker -H $DUCKIEBOT.local start ros-picam
 docker -H $DUCKIEBOT.local start joystick
 docker -H $DUCKIEBOT.local start intnav
