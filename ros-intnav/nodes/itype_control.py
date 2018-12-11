@@ -29,5 +29,5 @@ if __name__ == '__main__':
         direction_pub.publish(direction_msg)
         rate.sleep()
         iteration = iteration + 1
-        if iteration >= 6:
+        if iteration >= 100:
             rospy.signal_shutdown("Type and Direction set !")
