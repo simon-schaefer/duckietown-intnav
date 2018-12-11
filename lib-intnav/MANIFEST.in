@@ -1,4 +1,2 @@
-prune test-data
-graft src/duckietown-intnav/data
 
 
