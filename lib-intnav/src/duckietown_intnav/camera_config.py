@@ -37,7 +37,7 @@ class CameraConfig:
         mapx = np.ndarray(shape=(self.height, self.width, 1), dtype='float32')
         mapy = np.ndarray(shape=(self.height, self.width, 1), dtype='float32')
         self._mapx, self._mapy = cv2.initUndistortRectifyMap(
-            self.K, self.D, self.R, self.P, (self.width, self.height), 
+            self.K, self.D, None, self.K, (self.width, self.height), 
             cv2.CV_32FC1, mapx, mapy)
 
     @classmethod
@@ -81,4 +81,3 @@ class CameraConfig:
     def rectify_image(self, image):
         image_rectified = np.zeros(np.shape(image)) 
         return cv2.remap(image, self._mapx, self._mapy, cv2.INTER_CUBIC, image_rectified)
-    
