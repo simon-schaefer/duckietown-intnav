@@ -97,9 +97,9 @@ class Main():
         self.kalman.process(z, None, self.process_noise, self.april_noise, 
                             dt=rospy.get_time() - self.last_update_time)
         self.last_update_time = rospy.get_time()
-        print("---------------------------------")
-        print("April: %f %f %f" % (pose_estimates[0][0],pose_estimates[0][1],pose_estimates[0][2]))
-        print("Kalman: %f %f %f" % (self.kalman.state[0], self.kalman.state[1], self.kalman.state[2]))
+        #print("---------------------------------")
+        #print("April: %f %f %f" % (pose_estimates[0][0],pose_estimates[0][1],pose_estimates[0][2]))
+        #print("Kalman: %f %f %f" % (self.kalman.state[0], self.kalman.state[1], self.kalman.state[2]))
         # Assign and publish transformed pose as pose and path.
         quat = quaternion_from_euler(0.0, 0.0, self.kalman.state[2])
         pose_stamped = PoseWithCovarianceStamped()
