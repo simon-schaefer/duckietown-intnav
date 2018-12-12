@@ -56,36 +56,37 @@ def pure_pursuit(pose, path, wheel_distance,
     dist_all = cdist(path,actual,'euclidean')
     #print('dist_all', dist_all)
     idx_shortest = np.where(dist_all==np.min(dist_all)) #what if 2 points at same distance
+    idx_shortest = idx_shortest[0]
     #print('idx shortest', idx_shortest)
     projected_pt = path[idx_shortest[0],:]
     #print('projec point', projected_pt)
-    dist_fromlookahead = cdist(path[int(idx_shortest[0]):,:],projected_pt,'euclidean')-la_dis
-    neg_idx = np.where(dist_fromlookahead<0)
-    dist_fromlookahead[neg_idx]=np.max(dist_fromlookahead)
-    #print('dist lookaheah', dist_fromlookahead)
-    idx_temp = np.where(dist_fromlookahead==np.min(dist_fromlookahead))
-    idx_next = int(idx_temp[0]) + int(idx_shortest[0])
-    #print('idx next', idx_next)
+    distance = 0
+
+    while(distance < la_dis and idx_shortest<len(path)-1):
+        distance += np.linalg.norm(path[idx_shortest+1,:]-path[idx_shortest,:])
+        idx_shortest += 1
+
+    idx_next = idx_shortest
     goal = path[idx_next,:]
-    #print('goal point', goal)
+    print('goal point', goal)
     # From goal point --> vehicle action (velocity & steering vector).
-    sv = (goal[0]-actual[0,0],
-          goal[1]-actual[0,1]) #Steering_vector
-    #print('sv:',sv)
+    sv = (goal[0,0]-actual[0,0],
+          goal[0,1]-actual[0,1]) #Steering_vector
+    print('sv:',sv)
     # New orientation for the car.
     # cosang = np.dot(sv, (1,0))
     # ori = np.arccos(cosang) /np.#In radians
-    ori = np.arctan2(sv[1],sv[0])
-    #print('orientation: ',ori)
+    ori = np.arctan(sv[1],sv[0])
+    print('orientation: ',ori)
     # Compute omega (pure pursuit geometry).
     l = np.linalg.norm(sv)
-    #print('l: ',l)
+    print('l: ',l)
     al = (np.pi/2) - (ori - car.a)
-    #print('al: ',al) #Complementary of current orientation and desired orientation
+    print('al: ',al) #Complementary of current orientation and desired orientation
     xL = l*np.sin(al)
     yL = l*np.cos(al)
     r = (xL**2)/(2*yL) + (yL/2)
-    #print('r: ',r)
+    print('r: ',r)
     tau = vel/r
-    #print('tau: ',tau)
+    print('tau: ',tau)
     return (vel-0.5*tau*wheel_distance),(vel+0.5*tau*wheel_distance)

@@ -80,11 +80,11 @@ class Main():
         vl, vr = pure_pursuit(pose, self.path_points, self.wheel_distance,
                     adm_error=self.adm_error, la_dis=self.la_dis,
                     t_step=self.la_time, vel=self.target_vel)
-        print("Velocity left and right")
-        print(vl, vr)
+        #print("Velocity left and right")
+        #print(vl, vr)
         msg = Twist2DStamped()
         msg.v = (vl + vr)/2
-        msg.omega = 2*(vr - vl)/(self.wheel_distance/2)
+        msg.omega = (vr - vl)/(self.wheel_distance/2)
         #msg.header.stamp = rospy.Time().now
         #msg.header.frame_id = self.world_frame
         self.cmd_pub.publish(msg)
