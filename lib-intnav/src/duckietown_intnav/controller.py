@@ -38,11 +38,11 @@ def pure_pursuit(pose, path, wheel_distance,
     car = Car(x,y,thetha,vel)
     # Predict future point location.
     actual = np.zeros((1,2))
-    future = np.zeros((1,2))
+    #future = np.zeros((1,2))
     actual[0,0]=car.x
     actual[0,1]=car.y
-    future[0,0] = actual[0,0]+(t_step*car.velx)
-    future[0,1] = actual[0,1]+(t_step*car.vely)
+    #future[0,0] = actual[0,0]+(t_step*car.velx)
+    #future[0,1] = actual[0,1]+(t_step*car.vely)
     ## Determine projection of future point + distance.
     #projected = path.interpolate(path.project(actual))
     ## If future and projected point are (nearly) the same no change
@@ -72,9 +72,9 @@ def pure_pursuit(pose, path, wheel_distance,
     sv = (goal[0]-actual[0,0],
           goal[1]-actual[0,1]) #Steering_vector
     # New orientation for the car.
-    cosang = np.dot(sv, (1,0))
-    sinang = np.linalg.norm(np.cross(sv, (1,0)))
-    ori = np.arctan2(sinang, cosang) #In radians
+    # cosang = np.dot(sv, (1,0))
+    # ori = np.arccos(cosang) /np.#In radians
+    ori = np.arctan(sv[1],sv[0])
     # Compute omega (pure pursuit geometry).
     l = np.linalg.norm(sv)
     al = (np.pi/2) - (ori - car.a) #Complementary of current orientation and desired orientation
@@ -82,4 +82,4 @@ def pure_pursuit(pose, path, wheel_distance,
     yL = l*np.cos(al)
     r = (xL**2)/(2*yL) + (yL/2)
     tau = vel/r
-    return vel + 0.5*tau*wheel_distance, vel - 0.5*tau*wheel_distance
+    return (vel-0.5*tau*wheel_distance),(vel+0.5*tau*wheel_distance)
