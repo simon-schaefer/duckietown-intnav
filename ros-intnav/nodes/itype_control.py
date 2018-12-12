@@ -23,11 +23,7 @@ if __name__ == '__main__':
     direction_msg = String()
     direction_msg.data = "L"
     rate = rospy.Rate(2.0)
-    iteration = 0
     while not rospy.is_shutdown():
         itype_pub.publish(itype_msg)
         direction_pub.publish(direction_msg)
         rate.sleep()
-        iteration = iteration + 1
-        if iteration >= 100:
-            rospy.signal_shutdown("Type and Direction set !")

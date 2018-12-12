@@ -22,3 +22,4 @@ cat /home/software/misc/duckie.art
 
 cd /home/software/catkin_ws/src/duckietown-intnav/lib-intnav
 python setup.py develop --no-deps
+cd /home/software/catkin_ws
