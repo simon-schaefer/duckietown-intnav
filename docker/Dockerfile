@@ -1,4 +1,3 @@
-# Note: this container will have the name duckietown/rpi-duckiebot-base
 FROM duckietown/rpi-ros-kinetic-base:master18
 
 RUN [ "cross-build-start" ]
