@@ -16,7 +16,7 @@ def pure_pursuit(pose, path, wheel_distance,
     ''' Pure pursuit implementation determining control commands (v, tau)
     based on the current pose (x,y,thetha) and an target path.
     @param[in]  pose            (x,y,thetha) current pose [m,rad].
-    @param[in]  path            [(x1,y1),(x2,y2),...] target path.
+    @param[in]  path            [[x,y],...] target path, numpy array. 
     @param[in]  wheel_distance  differential drive vehicle baseline [m].
     @param[in]  adm_error       admissible error (perpendicular distance
                                 of future point from the path) [m].
