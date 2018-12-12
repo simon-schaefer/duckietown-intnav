@@ -68,7 +68,7 @@ class Main():
         self.direction_sub.unregister()
         return True
 
-    def pose_callback(self, msg):
+    def pose_callback(self, msg):pose
         # If no target path has been created so far return.
         if self.path_points is None:
             return False
@@ -77,7 +77,7 @@ class Main():
         rot = msg.pose.pose.orientation
         euler = euler_from_quaternion([rot.x,rot.y,rot.z,rot.w])
         pose = (position.x, position.y, euler[2])
-        vr, vl = pure_pursuit(pose, self.path_points, self.wheel_distance,
+        vl, vr = pure_pursuit(pose, self.path_points, self.wheel_distance,
                     adm_error=self.adm_error, la_dis=self.la_dis,
                     t_step=self.la_time, vel=self.target_vel)
         print("Velocity left and right")

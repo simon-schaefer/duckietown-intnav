@@ -67,19 +67,25 @@ def pure_pursuit(pose, path, wheel_distance,
     idx_next = int(idx_temp[0]) + int(idx_shortest[0])
     #print('idx next', idx_next)
     goal = path[idx_next,:]
-    #print('goal point', goal)
+    print('goal point', goal)
     # From goal point --> vehicle action (velocity & steering vector).
     sv = (goal[0]-actual[0,0],
           goal[1]-actual[0,1]) #Steering_vector
+    print('sv:',sv)
     # New orientation for the car.
     # cosang = np.dot(sv, (1,0))
     # ori = np.arccos(cosang) /np.#In radians
     ori = np.arctan(sv[1],sv[0])
+    print('orientation: ',ori)
     # Compute omega (pure pursuit geometry).
     l = np.linalg.norm(sv)
-    al = (np.pi/2) - (ori - car.a) #Complementary of current orientation and desired orientation
+    print('l: ',l)
+    al = (np.pi/2) - (ori - car.a)
+    print('al: ',al) #Complementary of current orientation and desired orientation
     xL = l*np.sin(al)
     yL = l*np.cos(al)
     r = (xL**2)/(2*yL) + (yL/2)
+    print('r: ',r)
     tau = vel/r
+    print('tau: ',tau)
     return (vel-0.5*tau*wheel_distance),(vel+0.5*tau*wheel_distance)
