@@ -12,7 +12,7 @@ import numpy as np
 from scipy.spatial.distance import cdist
 
 def pure_pursuit(pose, path, wheel_distance,
-                 adm_error=0.005, la_dis=0.03, t_step=0.5, vel=0.025):
+                 adm_error=0.005, la_dis=0.03, t_step=0.5, min_r=0.1, vel=0.025):
     ''' Pure pursuit implementation determining control commands (v, tau)
     based on the current pose (x,y,thetha) and an target path.
     @param[in]  pose            (x,y,thetha) current pose [m,rad].
@@ -22,6 +22,7 @@ def pure_pursuit(pose, path, wheel_distance,
                                 of future point from the path) [m].
     @param[in]  la_dis          look ahead distance [m].
     @param[in]  t_step          time interval to calculate future point [s].
+    @param[in]	min_r           minimal turning radius [m].
     @param[in]  vel             output velocity as PP merely controls
                                 the steering angle [m/s].
     If no change of input is necessary return None, else (vr, vl). '''
@@ -72,21 +73,22 @@ def pure_pursuit(pose, path, wheel_distance,
     # From goal point --> vehicle action (velocity & steering vector).
     sv = (goal[0,0]-actual[0,0],
           goal[0,1]-actual[0,1]) #Steering_vector
-    print('sv:',sv)
+    #print('sv:',sv)
     # New orientation for the car.
     # cosang = np.dot(sv, (1,0))
     # ori = np.arccos(cosang) /np.#In radians
-    ori = np.arctan(sv[1],sv[0])
-    print('orientation: ',ori)
+    ori = np.arctan2(sv[1],sv[0])
+    #print('orientation: ',ori)
     # Compute omega (pure pursuit geometry).
     l = np.linalg.norm(sv)
-    print('l: ',l)
+    #print('l: ',l)
     al = (np.pi/2) - (ori - car.a)
-    print('al: ',al) #Complementary of current orientation and desired orientation
+    #print('al: ',al) #Complementary of current orientation and desired orientation
     xL = l*np.sin(al)
     yL = l*np.cos(al)
     r = (xL**2)/(2*yL) + (yL/2)
-    print('r: ',r)
+    r = max(r, min_r)
+    #print('r: ',r)
     tau = vel/r
-    print('tau: ',tau)
+    #print('tau: ',tau)
     return (vel-0.5*tau*wheel_distance),(vel+0.5*tau*wheel_distance)
