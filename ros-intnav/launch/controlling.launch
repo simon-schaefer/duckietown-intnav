@@ -6,10 +6,10 @@
 
     <arg name="adm_error" default="0.005" doc="admissible error (perpendicular 
                                 distance of future point from the path) [m]" />
-    <arg name="la_dis" default="0.06" doc="look ahead distance [m]" />
+    <arg name="la_dis" default="0.15" doc="look ahead distance [m]" />
     <arg name="la_time" default="0.5" doc="time interval to calculate 
                                            future point [s]" />
-    <arg name="target_vel" default="0.04" doc="output velocity as PP merely 
+    <arg name="target_vel" default="0.06" doc="output velocity as PP merely 
                                         controls the steering angle [m/s]" />
 
     <node pkg="duckietown-intnav" type="controller.py" name="controller" output="screen" >

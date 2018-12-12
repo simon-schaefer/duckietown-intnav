@@ -68,7 +68,7 @@ class Main():
         self.direction_sub.unregister()
         return True
 
-    def pose_callback(self, msg):pose
+    def pose_callback(self, msg):
         # If no target path has been created so far return.
         if self.path_points is None:
             return False
@@ -84,7 +84,7 @@ class Main():
         print(vl, vr)
         msg = Twist2DStamped()
         msg.v = (vl + vr)/2
-        msg.omega = (vr - vl)/(self.wheel_distance)
+        msg.omega = 2*(vr - vl)/(self.wheel_distance/2)
         #msg.header.stamp = rospy.Time().now
         #msg.header.frame_id = self.world_frame
         self.cmd_pub.publish(msg)
