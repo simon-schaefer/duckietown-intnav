@@ -6,7 +6,7 @@ if [ "$#" -ne 1 ]; then
 fi
 
 DUCKIEBOT="$1"
-CONTAINERS=( "ros-picam" "joystick" )
+CONTAINERS=( "ros-picam" "lane_following" )
 IMAGE_NAME="seleschaefer/intnav:0.5"
 
 # Stop and remove existing containers. 
@@ -20,13 +20,13 @@ done
 
 # Create all needed containers. 
 echo "Restart containers"
-#docker -H $DUCKIEBOT.local create -it --net host --memory="800m" --memory-swap="1.8g" --privileged -v /data:/data --name lane_following duckietown/rpi-duckiebot-lanefollowing-demo:master18
-docker -H $DUCKIEBOT.local run -dit --privileged --name joystick --network=host -v /data:/data duckietown/rpi-duckiebot-joystick-demo:master18
-docker -H $DUCKIEBOT.local start joystick
+docker -H $DUCKIEBOT.local create -it --net host --memory="800m" --memory-swap="1.8g" --privileged -v /data:/data --name lane_following duckietown/rpi-duckiebot-lanefollowing-demo:master18
+docker -H $DUCKIEBOT.local start lane_following
+#docker -H $DUCKIEBOT.local run -dit --privileged --name joystick --network=host -v /data:/data duckietown/rpi-duckiebot-joystick-demo:master18
+#docker -H $DUCKIEBOT.local start joystick
 docker -H $DUCKIEBOT.local create -it --name ros-picam --network=host  --device /dev/vchiq -v /data:/data  duckietown/rpi-duckiebot-ros-picam:master18
 docker -H $DUCKIEBOT.local start ros-picam
 docker -H $DUCKIEBOT.local run -dit --name intnav --network=host -v /data:/data $IMAGE_NAME
-docker -H $DUCKIEBOT.local start intnav
 
 # Execute bash in intnav container. 
 echo "Executing intnav"
