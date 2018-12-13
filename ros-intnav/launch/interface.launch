@@ -2,7 +2,7 @@
 
     <arg name="duckiebot" default="duckiebot" />
     <arg name="input_type" default="keyboard" doc="way of choosing direction 
-                                                  [keyboard, random]">
+                                                  [keyboard, random]" />
 
     <node name="interface" pkg="duckietown-intnav" type="interface.py"  output="screen">
         <param name="duckiebot" value="$(arg duckiebot)"/>
