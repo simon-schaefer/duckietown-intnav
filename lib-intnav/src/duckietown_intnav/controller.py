@@ -83,5 +83,5 @@ def pure_pursuit(pose, path, wheel_distance,
     yL = l*np.cos(al)
     r = (xL**2)/(2*yL) + (yL/2)
     r = max(r, min_r)
-    tau = 2*vel/r
+    tau = 2.2*vel/r
     return (vel-0.5*tau*wheel_distance),(vel+0.5*tau*wheel_distance)
