@@ -40,7 +40,7 @@ def path_generate(direction, n_steps=20):
         xs, ys = np.insert(xs, 0, 0.865), np.insert(ys, 0, -0.1225)
     # Case left.
     elif direction == -1:
-        xs, ys = bezier_curve([(0,-0.1225),(0.285,0.125),(0.37,0.32)], n_steps)
+        xs, ys = bezier_curve([(0.06,-0.1225),(0.285,0.125),(0.37,0.32)], n_steps)
         xs, ys = np.insert(xs, 0, 0.37), np.insert(ys, 0, 1.0)
     # Case right
     elif direction == +1:
