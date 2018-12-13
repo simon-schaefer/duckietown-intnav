@@ -32,7 +32,7 @@ class VehicleModel(object):
         x, y, theta = state[0], state[1], state[2]
         vr, vl = inputs[0], inputs[1]
         va = (vr + vl)/2.0
-        omega = (vr - vl)/(self.R)
+        omega = (vr - vl)/(self.R/2.0)
         xn = x + np.cos(theta)*va*dt
         yn = y + np.sin(theta)*va*dt
         thetan = theta + omega*dt
