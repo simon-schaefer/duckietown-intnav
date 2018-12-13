@@ -9,6 +9,10 @@
     <arg name="la_dis" default="0.30" doc="look ahead distance [m]" />
     <arg name="min_rad" default="0.07" doc="minimal navigation radius [m]" />
     <arg name="target_vel" default="0.2" doc="output velocity as PP merely 
+    <arg name="la_dis" default="0.2" doc="look ahead distance [m]" />
+    <arg name="la_time" default="0.5" doc="time interval to calculate 
+                                           future point [s]" />
+    <arg name="target_vel" default="0.1" doc="output velocity as PP merely 
                                         controls the steering angle [m/s]" />
 
     <node pkg="duckietown-intnav" type="controller.py" name="controller" output="screen" >

@@ -22,6 +22,8 @@ def pure_pursuit(pose, path, wheel_distance,
                                 of future point from the path) [m].
     @param[in]  la_dis          look ahead distance [m].
     @param[in]  min_r           minimal navigation radius [m].
+    @param[in]  t_step          time interval to calculate future point [s].
+    @param[in]	min_r           minimal turning radius [m].
     @param[in]  vel             output velocity as PP merely controls
                                 the steering angle [m/s].
     If no change of input is necessary return None, else (vr, vl). '''
