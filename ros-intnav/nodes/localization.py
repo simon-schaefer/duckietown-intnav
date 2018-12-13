@@ -3,6 +3,9 @@
 # Duckietown - Project intnav ETH
 # Author: Simon Schaefer
 # Postfiltering of pose estimate using extended Kalman filter. 
+# Due to highly accurate but low-frequent April tag pose estimation, predict 
+# the Kalman state open-loop with high frequency based on the last control inputs 
+# and "reset" it at every April tag update (meas_noise << proc_noise). 
 ###############################################################################
 import numpy as np
 import rospy
@@ -10,6 +13,7 @@ import time
 import tf
 from tf.transformations import euler_from_quaternion, quaternion_from_euler
 from apriltags2_ros.msg import AprilTagDetectionArray
+from duckietown_msgs.msg import WheelsCmdStamped
 from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
 from nav_msgs.msg import Path
 
@@ -22,6 +26,7 @@ class Main():
         duckiebot = rospy.get_param('localization/duckiebot')
         self.vehicle_frame = rospy.get_param('localization/vehicle_frame')
         self.world_frame = rospy.get_param('localization/world_frame')
+        self.olu_rate = rospy.get_param('localization/olu_rate')
         # Initialize tf listener and pose/trajectory publisher.
         self.tf_listener = tf.TransformListener()
         topic = str("/" + duckiebot + "/intnav/pose")
@@ -29,14 +34,20 @@ class Main():
         topic = str("/" + duckiebot + "/intnav/trajectory")
         self.traj_pub = rospy.Publisher(topic, Path, queue_size=1)
         self.traj = Path()
-        # Initialize april pose subscriber.
-        rospy.Subscriber("/tag_detections", AprilTagDetectionArray, self.tag_callback)
+        # Initialize control input subscriber. 
+        topic = str("/" + duckiebot + "/wheels_driver_node/wheels_cmd_executed")
+        rospy.Subscriber(topic, WheelsCmdStamped, self.controlCallback)
+        self.control_inputs = None
         # Initialize Kalman filter with none (initialization from
         # first pose estimates). 
         self.kalman = None
         self.inits = []
         self.num_init_estimates = rospy.get_param('localization/num_init_estimates')
         self.last_update_time = None
+        # Update Kalman filter timer - High-frequent update). 
+        rospy.Timer(self.olu_rate, self.open_loop_update)
+        # Initialize april pose subscriber - Low-frequent update. 
+        rospy.Subscriber("/tag_detections", AprilTagDetectionArray, self.tag_callback)
         # Initialize vehicle model parameters. 
         prefix = duckiebot + "/params/"
         self.process_noise = np.eye(3)
@@ -49,6 +60,22 @@ class Main():
         self.april_noise[2,2] = rospy.get_param(prefix + "april_noise_t")
         self.bot_params = {'wheel_distance': rospy.get_param(prefix + "wheel_distance")}
         rospy.spin()
+
+    def controlCallback(self, message): 
+        ''' Subscribe and update control inputs for (feed-forward) 
+        intermediate Kalman state update. '''
+        self.control_inputs = np.array([message.vel_right, message.vel_left])
+
+    def open_loop_update(self, event): 
+        ''' Intermediate high-frequent Kalman state update based on 
+        prediction internal vehicle model (predict) and control inputs. '''
+        if self.kalman is None: 
+            return False
+        self.kalman.predict(self.control_inputs, 
+                            dt=rospy.get_time() - self.last_update_time)
+        self.last_update_time = rospy.get_time() 
+        self.publish_pose_and_trajectory()
+        return True      
 
     def tag_callback(self, message):
         ''' Subscribe april tag detection message, but merely to get the detected
@@ -94,16 +121,19 @@ class Main():
         z = pose_estimates[0]
         for i in range(2, len(pose_estimates)): 
             z = np.vstack((z,pose_estimates[i]))
-        self.kalman.process(z, None, self.process_noise, self.april_noise, 
-                            dt=rospy.get_time() - self.last_update_time)
+        self.kalman.update(z, self.control_inputs, 
+                           self.process_noise, self.april_noise, 
+                           dt=rospy.get_time() - self.last_update_time)
         self.last_update_time = rospy.get_time()
-        #print("---------------------------------")
-        #print("April: %f %f %f" % (pose_estimates[0][0],pose_estimates[0][1],pose_estimates[0][2]))
-        #print("Kalman: %f %f %f" % (self.kalman.state[0], self.kalman.state[1], self.kalman.state[2]))
         # Assign and publish transformed pose as pose and path.
+        self.publish_pose_and_trajectory()
+        return True
+
+    def publish_pose_and_trajectory(self): 
         quat = quaternion_from_euler(0.0, 0.0, self.kalman.state[2])
         pose_stamped = PoseWithCovarianceStamped()
-        pose_stamped.header = detection.pose.header
+        pose_stamped.header.frame_id = self.world_frame
+        pose_stamped.header.stamp = rospy.Time().now() 
         pose_stamped.pose.pose.position.x = self.kalman.state[0]
         pose_stamped.pose.pose.position.y = self.kalman.state[1]
         pose_stamped.pose.pose.position.z = 0.0
@@ -122,7 +152,6 @@ class Main():
         self.traj.header = pose_stamped.header
         self.traj.poses.append(path_pose)
         self.traj_pub.publish(self.traj)
-        return True
 
 if __name__ == '__main__':
     rospy.init_node('localization', anonymous=True)

@@ -34,7 +34,7 @@ def kalman_functionality():
     measurements = np.hstack((z_1, z_2))
     R = np.eye(3)*2 # measurement noise. 
     Q = np.eye(3)*500.0 # process noise.
-    kalman.process(measurements, inputs, Q, R, dt=1.0)
+    kalman.update(measurements, inputs, Q, R, dt=1.0)
     assert sum(kalman.state - measurements[0]) < 1e-6
 
 @comptest
@@ -48,7 +48,7 @@ def kalman_functionality_2():
     measurements = np.hstack((z_1, z_2))
     R = np.eye(3)*2 # measurement noise. 
     Q = np.eye(3)*500.0 # process noise.
-    kalman.process(measurements, inputs, Q, R, dt=1.0)
+    kalman.update(measurements, inputs, Q, R, dt=1.0)
     assert np.linalg.norm(kalman.var - np.eye(3)) < 1e-2
 
 if __name__ == '__main__':

@@ -73,7 +73,7 @@ class KalmanFilter(object):
         self.state = init_state
         self.var = init_var
 
-    def process(self, z, u, Q, R, dt):
+    def update(self, z, u, Q, R, dt):
         ''' Extended Kalman filter prediction and update step. 
         @param[in]  z           [(xm, ym, thetham), ...] measurement vector, np.array. 
         @param[in]  u           (vr, vl) velocity of left and right wheel. 
@@ -104,3 +104,15 @@ class KalmanFilter(object):
         K = np.matmul(np.matmul(Pprior,np.transpose(H)),np.linalg.inv(S))
         self.state = xprior + np.matmul(K,y)
         self.var = np.matmul(np.eye(3) - np.matmul(K,H),Pprior)
+
+    def predict(self, u, Q, dt):
+        ''' Extended Kalman filter prediction step (pure state update).
+        @param[in]  u           (vr, vl) velocity of left and right wheel. 
+        @param[in]  dt          time interval to predict [s]. 
+        For u == None assume to stand still, i.e. u = (0,0). '''  
+        xlast = self.state
+        # Check if open loop control. 
+        if u is None: 
+            u = np.array([0.0, 0.0])
+        # Prediction step. 
+        self.state = self.model.predict(xlast, u, dt)

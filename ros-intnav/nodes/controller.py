@@ -45,6 +45,8 @@ class Main():
                          self.pose_callback)
         topic = str("/" + duckiebot + "/wheels_driver_node/wheels_cmd")
         self.cmd_pub = rospy.Publisher(topic, WheelsCmdStamped, queue_size=1)
+        # Final zero velocity command (on shutdown). 
+        rospy.on_shutdown(self.shutdown)
         rospy.spin()
 
     def direction_callback(self, msg):
@@ -86,6 +88,12 @@ class Main():
         #msg.header.stamp = rospy.Time().now
         #msg.header.frame_id = self.world_frame
         self.cmd_pub.publish(msg)
+
+    def shutdown(self): 
+        msg = WheelsCmdStamped()
+        msg.vel_left = 0.0
+        msg.vel_right = 0.0
+        self.cmd_pub.publish(msg)       
 
 if __name__ == '__main__':
     rospy.init_node('controller', anonymous=True)
