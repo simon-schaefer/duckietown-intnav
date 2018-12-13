@@ -75,7 +75,10 @@ class Main():
         self.kalman.predict(self.control_inputs, 
                             dt=rospy.get_time() - self.last_update_time)
         self.last_update_time = rospy.get_time() 
-        self.publish_pose_and_trajectory()
+        try: 
+            self.publish_pose_and_trajectory()
+        except IndexError: 
+            rospy.logwarn("Kalman open loop tries to preaccess variance ")
         return True      
 
     def tag_callback(self, message):
