@@ -7,7 +7,7 @@ fi
 
 DUCKIEBOT="$1"
 CONTAINERS=( "ros-picam" "lane_following" )
-IMAGE_NAME="seleschaefer/intnav:0.5"
+IMAGE_NAME="seleschaefer/intnav:0.6"
 
 # Stop and remove existing containers. 
 echo "Stop and remove existing containers"
