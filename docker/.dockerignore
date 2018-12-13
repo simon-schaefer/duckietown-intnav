@@ -1,4 +1,5 @@
 build 
 devel
+src/duckietown-intnav/lib-intnav/src/duckietown_intnav_tests
 
 *.pyc
