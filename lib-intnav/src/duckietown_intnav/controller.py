@@ -74,7 +74,7 @@ def pure_pursuit(pose, path, wheel_distance,
     sv = (goal[0,0]-actual[0,0],
           goal[0,1]-actual[0,1]) #Steering_vector
     # New orientation for the car.
-    ori = np.arctan(sv[1],sv[0])
+    ori = np.arctan2(sv[1],sv[0])
     # Compute omega (pure pursuit geometry).
     l = np.linalg.norm(sv)
     al = (np.pi/2) - (ori - car.a)
