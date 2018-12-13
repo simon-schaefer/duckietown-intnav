@@ -24,7 +24,7 @@ def direction_random():
 
 def direction_keyboard(): 
     directions = {"a": "L", "s": "S", "d": "R"}
-    rospy.sleep(2.0)
+    rospy.sleep(5.0)
     while True: 
         msg = "Choose direction [a = left, s = straight, d = right]: "
         input_dir = raw_input(msg)

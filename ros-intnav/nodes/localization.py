@@ -45,7 +45,7 @@ class Main():
         self.num_init_estimates = rospy.get_param('localization/num_init_estimates')
         self.last_update_time = None
         # Update Kalman filter timer - High-frequent update). 
-        rospy.Timer(rospy.Duration(1.0/float(self.olu_rate), self.open_loop_update)
+        rospy.Timer(rospy.Duration(1.0/float(self.olu_rate)), self.open_loop_update)
         # Initialize april pose subscriber - Low-frequent update. 
         rospy.Subscriber("/tag_detections", AprilTagDetectionArray, self.tag_callback)
         # Initialize vehicle model parameters. 
@@ -59,6 +59,7 @@ class Main():
         self.april_noise[1,1] = rospy.get_param(prefix + "april_noise_y")
         self.april_noise[2,2] = rospy.get_param(prefix + "april_noise_t")
         self.bot_params = {'wheel_distance': rospy.get_param(prefix + "wheel_distance")}
+        rospy.loginfo("Kalman waiting for %d init updates ..." % self.num_init_estimates)
         rospy.spin()
 
     def controlCallback(self, message): 
