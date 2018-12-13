@@ -4,18 +4,19 @@
     <arg name="vehicle_frame" default="car" doc="tf frame id for vehicle frame"/>
 
     <arg name="grid_res" default="0.005" doc="resolution [m] of visualization grid" />
+    <arg name="exclude_duckiebot" default="true" doc="include duckiebot 3D model" />
 
-    <param name="robot_description" command="$(find xacro)/xacro.py '$(find duckietown-intnav)/config/duckiebot.xacro'"/>
+    <param name="robot_description" command="$(find xacro)/xacro.py '$(find duckietown-intnav)/config/duckiebot.xacro'" unless="$(arg exclude_duckiebot)"/>
     <param name="duckies_description" command="$(find xacro)/xacro.py '$(find duckietown-intnav)/config/duckies.xacro'"/>
 
     <node pkg="tf" type="static_transform_publisher" name="tf_vehicle_leftwheel"
-        args="0 0 0 0 0 0 1 $(arg vehicle_frame) left_wheel 100" />
+        args="0 0 0 0 0 0 1 $(arg vehicle_frame) left_wheel 100" unless="$(arg exclude_duckiebot)" />
 
     <node pkg="tf" type="static_transform_publisher" name="tf_vehicle_rightwheel"
-        args="0 0 0 0 0 0 1 $(arg vehicle_frame) right_wheel 100" />
+        args="0 0 0 0 0 0 1 $(arg vehicle_frame) right_wheel 100" unless="$(arg exclude_duckiebot)" />
 
     <node pkg="tf" type="static_transform_publisher" name="tf_vehicle_duckie"
-        args="0 0 0.1 0 0 0 1 $(arg vehicle_frame) duckie 100" />
+        args="0 0 0.1 0 0 0 1 $(arg vehicle_frame) duckie 100"  unless="$(arg exclude_duckiebot)"/>
 
     <node pkg="tf" type="static_transform_publisher" name="tf_world_duckie1"
         args="-0.3 -0.5 0 0 0 0.2588223 0.9659249 $(arg world_frame) duckie1 1000" />
@@ -30,6 +31,9 @@
     </node>
 
     <node name="rviz" pkg="rviz" type="rviz" 
-        args="-d $(find duckietown-intnav)/config/rviz_bot.rviz" required="true" />
+        args="-d $(find duckietown-intnav)/config/rviz_bot.rviz" required="true" unless="$(arg exclude_duckiebot)" />
+
+    <node name="rviz" pkg="rviz" type="rviz" 
+        args="-d $(find duckietown-intnav)/config/rvizwo_bot.rviz" required="true" if="$(arg exclude_duckiebot)" />
 </launch>
 

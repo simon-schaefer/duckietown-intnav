@@ -11,3 +11,4 @@ testing-cookies/lib-*
 .vscode/
 
 ros-intnav/config/rviz_bot.rviz
+ros-intnav/config/rvizwo_bot.rviz

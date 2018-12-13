@@ -10,3 +10,4 @@ SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 cd $SCRIPTPATH/../ros-intnav/config/
 
 sed "s/DUCKIEBOT/$DUCKIEBOT/g" rviz.rviz > rviz_bot.rviz
+sed "s/DUCKIEBOT/$DUCKIEBOT/g" rvizwo.rviz > rvizwo_bot.rviz
