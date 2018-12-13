@@ -105,7 +105,7 @@ class KalmanFilter(object):
         self.state = xprior + np.matmul(K,y)
         self.var = np.matmul(np.eye(3) - np.matmul(K,H),Pprior)
 
-    def predict(self, u, Q, dt):
+    def predict(self, u, dt):
         ''' Extended Kalman filter prediction step (pure state update).
         @param[in]  u           (vr, vl) velocity of left and right wheel. 
         @param[in]  dt          time interval to predict [s]. 
