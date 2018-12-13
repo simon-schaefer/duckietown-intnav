@@ -64,13 +64,14 @@ Visualization Manager:
       Tree:
         Tag14:
           world14:
-            world:
-              duckie1:
-                {}
-              duckie2:
-                {}
+            {}
         car:
           camera:
+            {}
+        world:
+          duckie1:
+            {}
+          duckie2:
             {}
       Update Interval: 0
       Value: true
@@ -200,10 +201,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.0152026414871216
+      Pitch: 1.2552027702331543
       Target Frame: <Fixed Frame>
       Value: XYOrbit (rviz)
-      Yaw: 3.1977336406707764
+      Yaw: 3.0927343368530273
     Saved: ~
 Window Geometry:
   Displays:
@@ -222,4 +223,4 @@ Window Geometry:
     collapsed: false
   Width: 2340
   X: 134
-  Y: 75
+  Y: 55

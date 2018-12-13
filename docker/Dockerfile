@@ -24,7 +24,7 @@ RUN echo "source /home/software/docker/env.sh" >> ~/.bashrc
 
 RUN [ "cross-build-end" ]
 
-WORKDIR /home/software/catkin_ws
+WORKDIR /home/software
 
 CMD [ "/bin/bash" ]
 
