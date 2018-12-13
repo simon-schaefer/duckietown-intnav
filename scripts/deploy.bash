@@ -6,7 +6,7 @@ if [ "$#" -ne 1 ]; then
 fi
 
 DUCKIEBOT="$1"
-CONTAINERS=( "ros-picam" "joystick" )
+CONTAINERS=( "ros-picam" "joystick" "intnav" )
 IMAGE_NAME="seleschaefer/intnav:0.6"
 
 # Stop and remove existing containers. 

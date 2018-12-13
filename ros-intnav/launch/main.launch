@@ -25,11 +25,6 @@
         <arg name="duckiebot" value="$(arg duckiebot)" />
     </include>
 
-    <!-- Interface -->
-    <include file="$(find duckietown-intnav)/launch/interface.launch"> 
-        <arg name="duckiebot" value="$(arg duckiebot)" />
-    </include>
-
     <!-- April tag localization -->
     <include file="$(find duckietown-intnav)/launch/localization.launch"> 
         <arg name="duckiebot" value="$(arg duckiebot)" />
@@ -42,6 +37,11 @@
     <include file="$(find duckietown-intnav)/launch/controlling.launch"> 
         <arg name="duckiebot" value="$(arg duckiebot)" />
         <arg name="world_frame" value="$(arg world_frame)" />       
+    </include>
+
+    <!-- Interface -->
+    <include file="$(find duckietown-intnav)/launch/interface.launch"> 
+        <arg name="duckiebot" value="$(arg duckiebot)" />
     </include>
 
     <!-- Visualization -->
