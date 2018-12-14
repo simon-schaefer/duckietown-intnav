@@ -5,7 +5,7 @@
 # Pure pursuit controller implementation.
 ###############################################################################
 __all__ = [
-    'pure_pursuit',
+    'Controller',
 ]
 
 import numpy as np
@@ -34,8 +34,9 @@ class Controller(object):
         self.x = 0
         self.y = 0
         self.a = 0 #With x axis (driving direction of the car)
-        self.theta_hist = np.zeros((1,n_hist))
+        self.theta_hist = np.zeros(n_hist,)
         self.right_angle = -np.pi/2 + np.pi/20;
+	self.n_hist = n_hist
     def pure_pursuit(self,pose):
         ''' Pure pursuit implementation determining control commands (v, tau)
         based on the current pose (x,y,thetha) and an target path.
@@ -45,14 +46,15 @@ class Controller(object):
         self.x, self.y, self.theta = pose
         self.theta_hist = np.roll(self.theta_hist,1)
         self.theta_hist[0]= self.theta
-
+	print(self.theta_hist)
         #Check if Right angle is reached
-        exit = True
+        exit = False
         if(self.direction=='R'):
-            for i in range(n_hist):
+	    exit = True
+            for i in range(self.n_hist):
                 if(self.theta_hist[i]>self.right_angle):
                     exit=False
-        if(exit) return 0,0
+        if(exit): return 0,0
 
         # Predict future point location.
         actual = np.zeros((1,2))
@@ -64,7 +66,7 @@ class Controller(object):
         idx_shortest = np.where(dist_all==np.min(dist_all))
         idx_shortest = idx_shortest[0]
 
-        projected_pt = path[idx_shortest[0],:]
+        projected_pt = self.path[idx_shortest[0],:]
         print('projected point', projected_pt)
         distance = 0
 
@@ -87,7 +89,9 @@ class Controller(object):
         xL = l*np.sin(al)
         yL = l*np.cos(al)
         r = 0.15*(xL**2)/(2*yL) + (yL/2)
-        r = np.sign(r)*max(abs(r), min_r)
-        tau = vel/r
-        print('vl,vr: ', (vel-0.5*tau*wheel_distance),(vel+0.5*tau*wheel_distance))
-        return (vel-0.5*tau*wheel_distance),(vel+0.5*tau*wheel_distance)
+        r = np.sign(r)*max(abs(r), self.min_r)
+	if(self.direction=='R'):
+		r=-self.min_r
+        tau = self.vel/r
+        print('vl,vr: ', (self.vel-0.5*tau*self.wheel_distance),(self.vel+0.5*tau*self.wheel_distance))
+        return (self.vel-0.5*tau*self.wheel_distance),(self.vel+0.5*tau*self.wheel_distance)

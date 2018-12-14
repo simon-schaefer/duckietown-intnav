@@ -71,7 +71,7 @@ class Main():
         self.path_pub.publish(path)
         self.direction_sub.unregister()
         self.controller = Controller(direction,self.path_points,self.wheel_distance,
-                         self.adm_error, self.la_dis, self.min_r, self.vel, self.n_hist)
+                         self.adm_error, self.la_dis, self.min_radius, self.target_vel, self.n_hist)
         return True
 
     def pose_callback(self, msg):
