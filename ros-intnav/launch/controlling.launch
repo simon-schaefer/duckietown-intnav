@@ -6,8 +6,8 @@
 
     <arg name="adm_error" default="0.005" doc="admissible error (perpendicular 
                                 distance of future point from the path) [m]" />
-    <arg name="la_dis" default="0.15" doc="look ahead distance [m]" />
-    <arg name="min_radius" default="0.0" doc="minimal navigation radius [m]" />
+    <arg name="la_dis" default="1" doc="look ahead distance [m]" />
+    <arg name="min_radius" default="0.07" doc="minimal navigation radius [m]" />
     <arg name="target_vel" default="0.2" doc="output velocity as PP merely 
                                         controls the steering angle [m/s]" />
 
