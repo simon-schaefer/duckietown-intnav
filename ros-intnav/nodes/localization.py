@@ -11,7 +11,7 @@ import numpy as np
 import rospy
 import time
 import tf
-from tf.transformations import euler_from_quaternion, quaternion_from_euler
+from tf.transformations import euler_from_quaternion, quaternion_from_euler, quaternion_matrix, quaternion_from_matrix
 from apriltags2_ros.msg import AprilTagDetectionArray
 from duckietown_msgs.msg import WheelsCmdStamped
 from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
@@ -98,24 +98,25 @@ class Main():
                             tf.ExtrapolationException)
             # Transform to world frame - Publish transform and listen to
             # transformation to world frame.
-            print(detection)
+            p = detection.pose.pose.pose.position
+            t = np.array([p.x,p.y,p.z])
+            o = detection.pose.pose.pose.orientation
+            R = quaternion_matrix([o.x,o.y,o.z,o.w])
+            Rtrans = np.transpose(R[:3,:3])
+            trans = -np.matmul(Rtrans,t)
+            Rrot = np.transpose(R)
+            rot = quaternion_from_matrix(Rrot)
             try:
-                (trans,rot) = self.tf_listener.lookupTransform(
-               	             "Tag" + str(tag_id), "camera", latest)
-                print(trans,rot)
-		(t,r) = self.tf_listener.lookupTransform(
-                             "camera", "Tag" + str(tag_id), latest)
-                print(t,r)
                 self.tf_broadcas.sendTransform(trans, rot, rospy.Time.now(), 
-                                               "camera", "tag" + str(tag_id))
+                      "camera" + str(tag_id), "tag" + str(tag_id))
                 (trans,rot) = self.tf_listener.lookupTransform(
-                           world_frame, self.vehicle_frame, latest)
+                      self.world_frame, self.vehicle_frame + str(tag_id), latest)
                 # Add estimate to pose estimates. 
                 euler = euler_from_quaternion([rot[0], rot[1], rot[2], rot[3]])
                 pose_estimates.append(np.array([trans[0], trans[1], euler[2]]))
             except tf_exceptions:
                 rospy.logwarn("No transformation from %s to %s" %
-                            (world_frame,self.vehicle_frame))
+                            (self.world_frame,self.vehicle_frame + str(tag_id))
                 return False
         if len(pose_estimates) == 0: 
             return False
