@@ -14,6 +14,7 @@ from nav_msgs.msg import Path
 from std_msgs.msg import String
 
 from duckietown_msgs.msg import WheelsCmdStamped
+from duckietown_msgs.msg import Twist2DStamped
 from duckietown_intnav.controller import Controller
 from duckietown_intnav.planner import path_generate
 
@@ -44,8 +45,10 @@ class Main():
         topic = str("/" + duckiebot + "/intnav/pose")
         rospy.Subscriber(topic, PoseWithCovarianceStamped,
                          self.pose_callback)
-        topic = str("/" + duckiebot + "/wheels_driver_node/wheels_cmd")
-        self.cmd_pub = rospy.Publisher(topic, WheelsCmdStamped, queue_size=1)
+        #topic = str("/" + duckiebot + "/wheels_driver_node/wheels_cmd")
+        topic = str("/" + duckiebot + "/joy_mapper_node/car_cmd")
+        self.cmd_pub = rospy.Publisher(topic, Twist2DStamped, queue_size=1)
+        #self.cmd_pub = rospy.Publisher(topic, WheelsCmdStamped, queue_size=1)
         # Final zero velocity command (on shutdown).
         self.controller = None
         rospy.on_shutdown(self.shutdown)
@@ -84,11 +87,15 @@ class Main():
         euler = euler_from_quaternion([rot.x,rot.y,rot.z,rot.w])
         pose = (position.x, position.y, euler[2])
         vl, vr = self.controller.pure_pursuit(pose)
-        msg = WheelsCmdStamped()
-        msg.vel_left = vl
-        msg.vel_right = vr
+        #msg = WheelsCmdStamped()
+        #msg.vel_left = vl
+        #msg.vel_right = vr
+
         #msg.header.stamp = rospy.Time().now
         #msg.header.frame_id = self.world_frame
+        msg = Twist2DStamped()
+        msg.v = (vl + vr)/2
+        msg.omega = (vr - vl)/(self.wheel_distance/2)
         self.cmd_pub.publish(msg)
 
     def shutdown(self):
