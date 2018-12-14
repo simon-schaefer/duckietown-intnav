@@ -116,7 +116,7 @@ class Main():
                 pose_estimates.append(np.array([trans[0], trans[1], euler[2]]))
             except tf_exceptions:
                 rospy.logwarn("No transformation from %s to %s" %
-                            (self.world_frame,self.vehicle_frame + str(tag_id))
+                            (self.world_frame,self.vehicle_frame + str(tag_id)))
                 return False
         if len(pose_estimates) == 0: 
             return False
