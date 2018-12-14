@@ -92,6 +92,7 @@ class Controller(object):
         r = np.sign(r)*max(abs(r), self.min_r)
 	if(self.direction=='R'):
 		r=-self.min_r
+        r = self.min_r
         tau = self.vel/r
         print('vl,vr: ', (self.vel-0.5*tau*self.wheel_distance),(self.vel+0.5*tau*self.wheel_distance))
         return (self.vel-0.5*tau*self.wheel_distance),(self.vel+0.5*tau*self.wheel_distance)
