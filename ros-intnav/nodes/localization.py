@@ -29,6 +29,7 @@ class Main():
         self.olu_rate = rospy.get_param('localization/olu_rate')
         # Initialize tf listener and pose/trajectory publisher.
         self.tf_listener = tf.TransformListener()
+        self.tf_broadcas = tf.TransformBroadcaster()
         topic = str("/" + duckiebot + "/intnav/pose")
         self.pose_pub = rospy.Publisher(topic, PoseWithCovarianceStamped, queue_size=1)
         topic = str("/" + duckiebot + "/intnav/trajectory")
@@ -89,7 +90,7 @@ class Main():
         pose_estimates = []
         for detection in message.detections:
             tag_id = detection.id[0]
-            world_frame = self.world_frame + str(tag_id)
+            world_frame = self.world_frame
             # TF Tree transformations.
             latest = rospy.Time(0)
             tf_exceptions = (tf.LookupException,
@@ -97,9 +98,18 @@ class Main():
                             tf.ExtrapolationException)
             # Transform to world frame - Publish transform and listen to
             # transformation to world frame.
+            print(detection)
             try:
                 (trans,rot) = self.tf_listener.lookupTransform(
-                    world_frame, self.vehicle_frame, latest)
+               	             "Tag" + str(tag_id), "camera", latest)
+                print(trans,rot)
+		(t,r) = self.tf_listener.lookupTransform(
+                             "camera", "Tag" + str(tag_id), latest)
+                print(t,r)
+                self.tf_broadcas.sendTransform(trans, rot, rospy.Time.now(), 
+                                               "camera", "tag" + str(tag_id))
+                (trans,rot) = self.tf_listener.lookupTransform(
+                           world_frame, self.vehicle_frame, latest)
                 # Add estimate to pose estimates. 
                 euler = euler_from_quaternion([rot[0], rot[1], rot[2], rot[3]])
                 pose_estimates.append(np.array([trans[0], trans[1], euler[2]]))

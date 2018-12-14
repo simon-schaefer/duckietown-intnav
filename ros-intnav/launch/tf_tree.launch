@@ -4,13 +4,13 @@
     <!-- Trafo cam>vehicle -->
     <!-- with alpha = tilting angle of camera = 12° -->
     <arg name="cam_frame" default="camera" doc="tf frame id for camera frame" />
-    <arg name="cam_x" default="0.0382047" doc="Position of camera in vehicle's frame [m]."/>
-    <arg name="cam_y" default="0.0" doc="Position of camera in vehicle's frame [m]."/>
-    <arg name="cam_z" default="0.08479" doc="Position of camera in vehicle's frame [m]."/>
-    <arg name="cam_qx" default="-0.5495232" doc="Orientation of camera in vehicle's frame."/>
-    <arg name="cam_qy" default="0.5495232" doc="Orientation of camera in vehicle's frame."/>
-    <arg name="cam_qz" default="-0.4449991" doc="Orientation of camera in vehicle's frame."/>
-    <arg name="cam_qw" default="0.4449991" doc="Orientation of camera in vehicle's frame."/>
+    <arg name="cam_x" default="0.0" doc="Position of vehicle in camera's frame [m]."/>
+    <arg name="cam_y" default="0.09088" doc="Position of vehicle in camera's frame [m]."/>
+    <arg name="cam_z" default="-0.0197" doc="Position of vehicle in camera's frame [m]."/>
+    <arg name="cam_qx" default="-0.5495232" doc="Orientation of vehicle in camera's frame."/>
+    <arg name="cam_qy" default="0.5495232" doc="Orientation of vehicle in camera's frame."/>
+    <arg name="cam_qz" default="-0.4449991" doc="Orientation of vehicle in camera's frame."/>
+    <arg name="cam_qw" default="-0.4449991" doc="Orientation of vehicle in camera's frame."/>
 
     <arg name="vehicle_frame" default="car" doc="tf frame id for vehicle frame"/>
 
@@ -18,8 +18,8 @@
 
     <node pkg="tf" type="static_transform_publisher" name="tf_cam_vehicle"
         args="$(arg cam_x) $(arg cam_y) $(arg cam_z)
-            $(arg cam_qx) $(arg cam_qy) $(arg cam_qz) $(arg cam_qw)
-            $(arg vehicle_frame) $(arg cam_frame) 100" />
+            $(arg cam_qx) $(arg cam_qy) $(arg cam_qz) $(arg cam_qw) 
+            $(arg cam_frame) $(arg vehicle_frame) 100" />
 
     <node pkg="duckietown-intnav" type="april_tf_static.py" name="tf_april_static" output="screen" >
         <param name="world_frame" value="$(arg world_frame)" />
