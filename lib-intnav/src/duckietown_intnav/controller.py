@@ -82,7 +82,7 @@ def pure_pursuit(pose, path, wheel_distance,
     # Complementary of current orientation and desired orientation
     xL = l*np.sin(al)
     yL = l*np.cos(al)
-    r = 0.25*(xL**2)/(2*yL) + (yL/2)
+    r = 0.15*(xL**2)/(2*yL) + (yL/2)
     r = np.sign(r)*max(abs(r), min_r)
     tau = vel/r
     print('vl,vr: ', (vel-0.5*tau*wheel_distance),(vel+0.5*tau*wheel_distance))
