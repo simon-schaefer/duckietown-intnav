@@ -10,6 +10,7 @@
     <arg name="min_radius" default="0.07" doc="minimal navigation radius [m]" />
     <arg name="target_vel" default="0.2" doc="output velocity as PP merely 
                                         controls the steering angle [m/s]" />
+    <arg name="n_hist" default="4" doc="Number of points for right angle check" />
 
     <node pkg="duckietown-intnav" type="controller.py" name="controller" output="screen" >
         <param name="duckiebot" value="$(arg duckiebot)" />
@@ -19,6 +20,7 @@
         <param name="target_vel" value="$(arg target_vel)" />
         <param name="min_radius" value="$(arg min_radius)" />
         <param name="world_frame" value="$(arg world_frame)" />
+        <param name="n_hist" value="$(arg n_hist)" />
     </node>
 
 </launch>

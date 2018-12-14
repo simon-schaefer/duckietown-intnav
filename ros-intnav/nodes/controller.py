@@ -14,7 +14,7 @@ from nav_msgs.msg import Path
 from std_msgs.msg import String
 
 from duckietown_msgs.msg import WheelsCmdStamped
-from duckietown_intnav.controller import pure_pursuit
+from duckietown_intnav.controller import Controller
 from duckietown_intnav.planner import path_generate
 
 class Main():
@@ -29,6 +29,7 @@ class Main():
         self.min_radius = rospy.get_param('controller/min_radius')
         self.target_vel = rospy.get_param('controller/target_vel')
         self.wheel_distance = rospy.get_param(duckiebot + '/params/wheel_distance')
+        self.n_hist = rospy.get_param('controller/n_hist')
         # Initialize direction to go callback, creating and publishing
         # the right optimal path.
         self.path_points = None
@@ -45,7 +46,8 @@ class Main():
                          self.pose_callback)
         topic = str("/" + duckiebot + "/wheels_driver_node/wheels_cmd")
         self.cmd_pub = rospy.Publisher(topic, WheelsCmdStamped, queue_size=1)
-        # Final zero velocity command (on shutdown). 
+        # Final zero velocity command (on shutdown).
+        self.controller = None
         rospy.on_shutdown(self.shutdown)
         rospy.spin()
 
@@ -68,6 +70,8 @@ class Main():
             path.poses.append(pose_stamped)
         self.path_pub.publish(path)
         self.direction_sub.unregister()
+        self.controller = Controller(direction,self.path_points,self.wheel_distance,
+                         self.adm_error, self.la_dis, self.min_r, self.vel, self.n_hist)
         return True
 
     def pose_callback(self, msg):
@@ -79,9 +83,7 @@ class Main():
         rot = msg.pose.pose.orientation
         euler = euler_from_quaternion([rot.x,rot.y,rot.z,rot.w])
         pose = (position.x, position.y, euler[2])
-        vl, vr = pure_pursuit(pose, self.path_points, self.wheel_distance,
-                    adm_error=self.adm_error, la_dis=self.la_dis,
-                    min_r=self.min_radius,vel=self.target_vel)
+        vl, vr = self.controller.pure_pursuit(pose)
         msg = WheelsCmdStamped()
         msg.vel_left = vl
         msg.vel_right = vr
@@ -89,11 +91,11 @@ class Main():
         #msg.header.frame_id = self.world_frame
         self.cmd_pub.publish(msg)
 
-    def shutdown(self): 
+    def shutdown(self):
         msg = WheelsCmdStamped()
         msg.vel_left = 0.0
         msg.vel_right = 0.0
-        self.cmd_pub.publish(msg)       
+        self.cmd_pub.publish(msg)
 
 if __name__ == '__main__':
     rospy.init_node('controller', anonymous=True)
