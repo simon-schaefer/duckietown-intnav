@@ -40,8 +40,8 @@ def path_generate(direction, n_steps=20):
         xs, ys = np.insert(xs, 0, 0.865), np.insert(ys, 0, -0.1225)
     # Case left.
     elif direction == -1:
-        xs, ys = bezier_curve([(0.07,-0.1225),(0.285,0.125),(0.37,0.32)], n_steps)
-        xs, ys = np.insert(xs, 0, 0.37), np.insert(ys, 0, 1.0)
+        xs, ys = bezier_curve([(-0.15,-0.125),(0.04,-0.07),(0.285,0.125),(0.37,0.32)], n_steps)
+        xs, ys = np.insert(xs,0 , np.ones((20,))*0.37), np.insert(ys, 0, np.linspace(1,0.34,20))
     # Case right
     elif direction == +1:
         xs, ys = bezier_curve([(0,-0.1225),(0.0675,-0.1225),(0.135,-0.145),(0.16,-0.21),(0.16,-0.2825)], n_steps)
@@ -49,8 +49,9 @@ def path_generate(direction, n_steps=20):
     else:
         raise ValueError("Invalid path direction !")
     assert len(xs) == len(ys)
-    xs, ys = np.insert(xs, len(xs), -0.15), np.insert(ys, len(ys), -0.1225)
+    xs, ys = np.insert(xs, len(xs), np.linspace(-0.16,-1,20)), np.insert(ys, len(ys), -0.125*np.ones((20,)))
     path = np.zeros((len(xs),2))
     path[:,0] = np.asarray(np.flipud(xs))
     path[:,1] = np.asarray(np.flipud(ys))
+    print("path: ", path)
     return path

@@ -2,7 +2,7 @@
     <arg name="duckiebot" default="duckiebot" />
 
     <arg name="world_frame" default="world" doc="tf frame id for world frame"/>
-    <arg name="n_path_points" default="20" doc="number of path points" />
+    <arg name="n_path_points" default="30" doc="number of path points" />
 
     <arg name="adm_error" default="0.005" doc="admissible error (perpendicular 
                                 distance of future point from the path) [m]" />

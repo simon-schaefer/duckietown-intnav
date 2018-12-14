@@ -76,6 +76,7 @@ class Main():
                             dt=rospy.get_time() - self.last_update_time)
         self.last_update_time = rospy.get_time() 
         try: 
+            rospy.loginfo("ol estimate: " + str(self.kalman.state))
             self.publish_pose_and_trajectory()
         except IndexError: 
             rospy.logwarn("Kalman open loop tries to preaccess variance ")
@@ -130,6 +131,7 @@ class Main():
                            dt=rospy.get_time() - self.last_update_time)
         self.last_update_time = rospy.get_time()
         # Assign and publish transformed pose as pose and path.
+        rospy.loginfo("april estimate: " + str(self.kalman.state))
         self.publish_pose_and_trajectory()
         return True
 
@@ -156,7 +158,7 @@ class Main():
         self.traj.header = pose_stamped.header
         self.traj.poses.append(path_pose)
         self.traj_pub.publish(self.traj)
-
+	
 if __name__ == '__main__':
     rospy.init_node('localization', anonymous=True)
     Main()

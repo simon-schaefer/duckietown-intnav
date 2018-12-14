@@ -32,10 +32,12 @@ class VehicleModel(object):
         x, y, theta = state[0], state[1], state[2]
         vr, vl = inputs[0], inputs[1]
         va = (vr + vl)/2.0
-        omega = (vr - vl)/(self.R/2.0)
+        omega = (vr - vl)/(self.R)
         xn = x + np.cos(theta)*va*dt
         yn = y + np.sin(theta)*va*dt
         thetan = theta + omega*dt
+        print("Vehicle Model")
+        print(vl,vr,omega,dt,theta,thetan)
         return np.array([xn, yn, thetan])
 
     def jacobian(self, state, inputs): 

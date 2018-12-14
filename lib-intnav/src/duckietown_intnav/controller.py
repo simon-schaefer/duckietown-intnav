@@ -61,7 +61,7 @@ def pure_pursuit(pose, path, wheel_distance,
     idx_shortest = idx_shortest[0]
     #print('idx shortest', idx_shortest)
     projected_pt = path[idx_shortest[0],:]
-    #print('projec point', projected_pt)
+    print('projec point', projected_pt)
     distance = 0
 
     while(distance < la_dis and idx_shortest<len(path)-1):
@@ -70,6 +70,7 @@ def pure_pursuit(pose, path, wheel_distance,
 
     idx_next = idx_shortest
     goal = path[idx_next,:]
+    print('goalpoint: ', goal)
     # From goal point --> vehicle action (velocity & steering vector).
     sv = (goal[0,0]-actual[0,0],
           goal[0,1]-actual[0,1]) #Steering_vector
@@ -81,7 +82,8 @@ def pure_pursuit(pose, path, wheel_distance,
     # Complementary of current orientation and desired orientation
     xL = l*np.sin(al)
     yL = l*np.cos(al)
-    r = (xL**2)/(2*yL) + (yL/2)
-    r = max(r, min_r)
-    tau = 2.2*vel/r
+    r = 0.25*(xL**2)/(2*yL) + (yL/2)
+    r = np.sign(r)*max(abs(r), min_r)
+    tau = vel/r
+    print('vl,vr: ', (vel-0.5*tau*wheel_distance),(vel+0.5*tau*wheel_distance))
     return (vel-0.5*tau*wheel_distance),(vel+0.5*tau*wheel_distance)
