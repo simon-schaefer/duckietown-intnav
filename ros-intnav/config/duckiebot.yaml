@@ -1,6 +1,16 @@
 # Duckiebot parameter. 
 wheel_distance: 0.106         # Wheel distance in [m]. 
 
+# Position of vehicle in camera's frame [m/quat].
+# with alpha = tilting angle of camera = 12°. 
+cam_x: 0.0
+cam_y: 0.09088
+cam_z: -0.0197
+cam_qx: -0.5495232
+cam_qy: 0.5495232
+cam_qz: -0.4449991
+cam_qw: -0.4449991
+
 # Differential vehicle model - Process noise. 
 process_noise_x: 0.1        # Variance of x estimate [m].  
 process_noise_y: 0.1        # Variance of y estimate [m].  
