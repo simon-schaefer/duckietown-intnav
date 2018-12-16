@@ -2,12 +2,12 @@
     <arg name="duckiebot" default="duckiebot" />
 
     <arg name="world_frame" default="world" doc="tf frame id for world frame"/>
-    <arg name="n_path_points" default="30" doc="number of path points" />
+    <arg name="n_path_points" default="40" doc="number of path points" />
 
     <arg name="adm_error" default="0.005" doc="admissible error (perpendicular 
                                 distance of future point from the path) [m]" />
-    <arg name="la_dis" default="0.15" doc="look ahead distance [m]" />
-    <arg name="min_radius" default="0.2" doc="minimal navigation radius [m]" />
+    <arg name="la_dis" default="0.09" doc="look ahead distance [m]" />
+    <arg name="min_radius" default="0.08" doc="minimal navigation radius [m]" />
     <arg name="target_vel" default="0.2" doc="output velocity as PP merely 
                                         controls the steering angle [m/s]" />
     <arg name="n_hist" default="4" doc="Number of points for right angle check" />

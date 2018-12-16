@@ -35,7 +35,7 @@ class Controller(object):
         self.y = 0
         self.a = 0 #With x axis (driving direction of the car)
         self.theta_hist = np.zeros(n_hist,)
-        self.right_angle = -np.pi/2 + np.pi/6;
+        self.right_angle = -np.pi/2 ;
 	self.n_hist = n_hist
     def pure_pursuit(self,pose):
         ''' Pure pursuit implementation determining control commands (v, tau)

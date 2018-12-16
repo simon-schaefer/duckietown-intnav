@@ -95,7 +95,8 @@ class Main():
         #msg.header.frame_id = self.world_frame
         msg = Twist2DStamped()
         msg.v = (vl + vr)/2
-        msg.omega = (vr - vl)/(self.wheel_distance/2)
+        msg.omega = (vr - vl)/(self.wheel_distance)
+	print('RW: ',self.wheel_distance,' omega: ',msg.omega)
         self.cmd_pub.publish(msg)
 
     def shutdown(self):
