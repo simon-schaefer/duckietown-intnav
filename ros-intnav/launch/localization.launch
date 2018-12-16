@@ -7,7 +7,7 @@
 
     <arg name="num_init_estimates" default="10" doc="number of initial pose estimates 
                                                      to initialize Kalman filter" />
-    <arg name="olu_rate" default="2" doc="open-loop Kalman state update rate [Hz]" />
+    <arg name="olu_rate" default="4" doc="open-loop Kalman state update rate [Hz]" />
 
     <node pkg="duckietown-intnav" name="april_activation" type="april_activator.py" />
     

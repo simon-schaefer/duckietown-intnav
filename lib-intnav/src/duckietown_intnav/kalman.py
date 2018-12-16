@@ -34,7 +34,7 @@ class VehicleModel(object):
         #va = (vr + vl)/2.0
         va = inputs[0]
         #omega = (vr - vl)/(self.R)
-        omega = inputs[1]
+        omega = inputs[1]/2
 	vr = va + omega*self.R/2
 	vl = va - omega*self.R/2
         xn = x + np.cos(theta)*va*dt
