@@ -46,14 +46,14 @@ class Controller(object):
         self.x, self.y, self.theta = pose
         self.theta_hist = np.roll(self.theta_hist,1)
         self.theta_hist[0]= self.theta
-	print('thetas: ',self.theta_hist)
+	    print('thetas: ',self.theta_hist)
         #Check if Right angle is reached
         exit = False
         if(self.direction=='R'):
 	    exit = True
-            for i in range(self.n_hist):
-                if(self.theta_hist[i]>self.right_angle):
-                    exit=False
+        for i in range(self.n_hist):
+            if(self.theta_hist[i]>self.right_angle):
+                exit=False
         if(exit): return 0,0
 
         # Predict future point location.
@@ -90,8 +90,8 @@ class Controller(object):
         yL = l*np.cos(al)
         r = (xL**2)/(2*yL) + (yL/2)
         r = np.sign(r)*max(abs(r), self.min_r)
-	if(self.direction=='R'):
-		r=-self.min_r
+	    if(self.direction=='R' and self.x>-0.05):
+		    r=-self.min_r
         tau = self.vel/r
         print('vl,vr: ', (self.vel-0.5*tau*self.wheel_distance),(self.vel+0.5*tau*self.wheel_distance))
         return (self.vel-0.5*tau*self.wheel_distance),(self.vel+0.5*tau*self.wheel_distance)

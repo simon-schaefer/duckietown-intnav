@@ -30,7 +30,9 @@ class Main():
         self.la_dis_left = rospy.get_param('controller/la_dis_left')
         self.la_dis_right = rospy.get_param('controller/la_dis_right')
         self.min_radius = rospy.get_param('controller/min_radius')
-        self.target_vel = rospy.get_param('controller/target_vel')
+        self.target_vel_straight = rospy.get_param('controller/target_vel_straight')
+        self.target_vel_left = rospy.get_param('controller/target_vel_left')
+        self.target_vel_right = rospy.get_param('controller/target_vel_right')
         self.wheel_distance = rospy.get_param(duckiebot + '/params/wheel_distance')
         self.n_hist = rospy.get_param('controller/n_hist')
         # Initialize direction to go callback, creating and publishing
@@ -75,11 +77,17 @@ class Main():
             path.poses.append(pose_stamped)
         self.path_pub.publish(path)
         self.direction_sub.unregister()
-        if(direction=='S'): la_dis=self.la_dis_straight
-        if(direction=='L'): la_dis=self.la_dis_left
-        if(direction=='R'): la_dis=self.la_dis_right
+        if(direction=='S'):
+            la_dis=self.la_dis_straight
+            target_vel = self.target_vel_straight
+        if(direction=='L'):
+            la_dis=self.la_dis_left
+            target_vel = self.target_vel_left
+        if(direction=='R'):
+            la_dis=self.la_dis_right
+            target_vel = self.target_vel_right
         self.controller = Controller(direction,self.path_points,self.wheel_distance,
-                         self.adm_error, la_dis, self.min_radius, self.target_vel, self.n_hist)
+                         self.adm_error, la_dis, self.min_radius, target_vel, self.n_hist)
         return True
 
     def pose_callback(self, msg):

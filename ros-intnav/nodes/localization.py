@@ -17,6 +17,7 @@ from duckietown_msgs.msg import WheelsCmdStamped
 from duckietown_msgs.msg import Twist2DStamped
 from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
 from nav_msgs.msg import Path
+from std_msgs.msg import String
 
 from duckietown_intnav.kalman import KalmanFilter
 
@@ -38,6 +39,7 @@ class Main():
         # Initialize control input subscriber.
         topic = str("/" + duckiebot + "/joy_mapper_node/car_cmd")
         rospy.Subscriber(topic, Twist2DStamped, self.controlCallback)
+        rospy.Subscriber(topic, String,self.direction_callback)
         self.control_inputs = None
         # Initialize Kalman filter with none (initialization from
         # first pose estimates).
@@ -68,13 +70,16 @@ class Main():
         intermediate Kalman state update. '''
         self.control_inputs = np.array([message.v, message.omega])
 
+    def direction_callback(self, msg):
+        self.direction = msg.data
+
     def open_loop_update(self, event):
         ''' Intermediate high-frequent Kalman state update based on
         prediction internal vehicle model (predict) and control inputs. '''
         if self.kalman is None:
             return False
         self.kalman.predict(self.control_inputs,
-                            dt=rospy.get_time() - self.last_update_time)
+                            dt=rospy.get_time() - self.last_update_time,self.direction)
         self.last_update_time = rospy.get_time()
         try:
             rospy.loginfo("ol estimate: " + str(self.kalman.state))

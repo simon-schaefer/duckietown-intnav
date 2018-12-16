@@ -23,7 +23,7 @@ class VehicleModel(object):
     def __init__(self, R):
         self.R = R
 
-    def predict(self, state, inputs, dt):
+    def predict(self, state, inputs, dt,direction):
         ''' Predict next state based on inputs and current state.
         @param[in]  state       (x, y, thetha) current state description.
         @param[in]  inputs      (vr, vl) velocity of left and right wheel.
@@ -34,15 +34,16 @@ class VehicleModel(object):
         #va = (vr + vl)/2.0
         va = inputs[0]
         #omega = (vr - vl)/(self.R)
-        omega = inputs[1]/2
-	vr = va + omega*self.R/2
-	vl = va - omega*self.R/2
+        if(direction=='R'): omega = inputs[1]/2
+        else: omega = inputs[1]
+    	vr = va + omega*self.R/2
+    	vl = va - omega*self.R/2
         xn = x + np.cos(theta)*va*dt
         yn = y + np.sin(theta)*va*dt
         thetan = theta + omega*dt
         print("Vehicle Model")
-	print('VL: ',vl,'VR: ',vr)
-	print('R: ',self.R)
+    	print('VL: ',vl,'VR: ',vr)
+    	print('R: ',self.R)
         print(omega,dt,theta,thetan)
 
         return np.array([xn, yn, thetan])
@@ -114,7 +115,7 @@ class KalmanFilter(object):
         self.state = xprior + np.matmul(K,y)
         self.var = np.matmul(np.eye(3) - np.matmul(K,H),Pprior)
 
-    def predict(self, u, dt):
+    def predict(self, u, dt,direction):
         ''' Extended Kalman filter prediction step (pure state update).
         @param[in]  u           (vr, vl) velocity of left and right wheel.
         @param[in]  dt          time interval to predict [s].
@@ -124,4 +125,4 @@ class KalmanFilter(object):
         if u is None:
             u = np.array([0.0, 0.0])
         # Prediction step.
-        self.state = self.model.predict(xlast, u, dt)
+        self.state = self.model.predict(xlast, u, dt,direction)

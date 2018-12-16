@@ -10,7 +10,11 @@
     <arg name="la_dis_left" default="0.09" doc="look ahead distance [m]" />
     <arg name="la_dis_right" default="0.2" doc="look ahead distance [m]" />
     <arg name="min_radius" default="0.07" doc="minimal navigation radius [m]" />
-    <arg name="target_vel" default="0.275" doc="output velocity as PP merely 
+    <arg name="target_vel_straight" default="0.2" doc="output velocity as PP merely 
+                                        controls the steering angle [m/s]" />
+    <arg name="target_vel_left" default="0.2" doc="output velocity as PP merely 
+                                        controls the steering angle [m/s]" />
+    <arg name="target_vel_right" default="0.275" doc="output velocity as PP merely 
                                         controls the steering angle [m/s]" />
     <arg name="n_hist" default="3" doc="Number of points for right angle check" />
 
@@ -21,7 +25,9 @@
         <param name="la_dis_straight" value="$(arg la_dis_straight)" />
 	<param name="la_dis_left" value="$(arg la_dis_left)" />
 	<param name="la_dis_right" value="$(arg la_dis_right)" />
-        <param name="target_vel" value="$(arg target_vel)" />
+        <param name="target_vel_straight" value="$(arg target_vel_straight)" />
+	<param name="target_vel_left" value="$(arg target_vel_left)" />
+	<param name="target_vel_right" value="$(arg target_vel_right)" />
         <param name="min_radius" value="$(arg min_radius)" />
         <param name="world_frame" value="$(arg world_frame)" />
         <param name="n_hist" value="$(arg n_hist)" />
