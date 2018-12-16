@@ -39,6 +39,8 @@ class Main():
         # Initialize control input subscriber.
         topic = str("/" + duckiebot + "/joy_mapper_node/car_cmd")
         rospy.Subscriber(topic, Twist2DStamped, self.controlCallback)
+	self.direction = None
+	topic = str("/" + duckiebot + "/intnav/direction")
         rospy.Subscriber(topic, String,self.direction_callback)
         self.control_inputs = None
         # Initialize Kalman filter with none (initialization from
@@ -79,7 +81,7 @@ class Main():
         if self.kalman is None:
             return False
         self.kalman.predict(self.control_inputs,
-                            dt=rospy.get_time() - self.last_update_time,self.direction)
+                            rospy.get_time() - self.last_update_time,self.direction)
         self.last_update_time = rospy.get_time()
         try:
             rospy.loginfo("ol estimate: " + str(self.kalman.state))
@@ -134,7 +136,7 @@ class Main():
             z = np.vstack((z,pose_estimates[i]))
         self.kalman.update(z, self.control_inputs,
                            self.process_noise, self.april_noise,
-                           dt=rospy.get_time() - self.last_update_time)
+                           rospy.get_time() - self.last_update_time, self.direction)
         self.last_update_time = rospy.get_time()
         # Assign and publish transformed pose as pose and path.
         rospy.loginfo("april estimate: " + str(self.kalman.state))

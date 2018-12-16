@@ -83,7 +83,7 @@ class KalmanFilter(object):
         self.state = init_state
         self.var = init_var
 
-    def update(self, z, u, Q, R, dt):
+    def update(self, z, u, Q, R, dt, direction):
         ''' Extended Kalman filter prediction and update step.
         @param[in]  z           [(xm, ym, thetham), ...] measurement vector, np.array.
         @param[in]  u           (vr, vl) velocity of left and right wheel.
@@ -99,7 +99,7 @@ class KalmanFilter(object):
             Q = np.eye(3)*100.0
         # Prediction step.
         F = self.model.jacobian(xlast, u)
-        xprior = self.model.predict(xlast, u, dt)
+        xprior = self.model.predict(xlast, u, dt, direction)
         Pprior = F * Plast * np.transpose(F) + Q
         # Prepare measurements vector.
         assert np.shape(z)[0] % 3 == 0
