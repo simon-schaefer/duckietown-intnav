@@ -57,7 +57,7 @@ class Main():
         #self.cmd_pub = rospy.Publisher(topic, WheelsCmdStamped, queue_size=1)
         # Final zero velocity command (on shutdown).
         self.controller = None
-	topic = str("/" + duckiebot + "lane_controller_node/switch")
+	topic = str("/" + duckiebot + "/lane_controller_node/switch")
 	self.switch_pub = rospy.Publisher(topic, BoolStamped, queue_size=1)
 	topic = str("/" + duckiebot + "/fsm_node/mode")
 	self.fsm_pub = rospy.Publisher(topic, FSMState, queue_size=1)
@@ -108,7 +108,7 @@ class Main():
         pose = (position.x, position.y, euler[2])
 	if(pose[2]>np.pi/2 - np.pi/20):
             self.controlling = False
-            msg = WheelsCmdStamped()
+            msg = Twist2DStamped()
             self.cmd_pub.publish(msg)
             fsm_msg = FSMState()
             fsm_msg.state = 'LANE_FOLLOWING'
