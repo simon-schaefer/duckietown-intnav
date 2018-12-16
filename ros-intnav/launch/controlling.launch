@@ -6,9 +6,11 @@
 
     <arg name="adm_error" default="0.005" doc="admissible error (perpendicular 
                                 distance of future point from the path) [m]" />
-    <arg name="la_dis" default="0.2" doc="look ahead distance [m]" />
+    <arg name="la_dis_straight" default="0.2" doc="look ahead distance [m]" />
+    <arg name="la_dis_left" default="0.09" doc="look ahead distance [m]" />
+    <arg name="la_dis_right" default="0.2" doc="look ahead distance [m]" />
     <arg name="min_radius" default="0.08" doc="minimal navigation radius [m]" />
-    <arg name="target_vel" default="0.15" doc="output velocity as PP merely 
+    <arg name="target_vel" default="0.2" doc="output velocity as PP merely 
                                         controls the steering angle [m/s]" />
     <arg name="n_hist" default="4" doc="Number of points for right angle check" />
 
@@ -16,7 +18,9 @@
         <param name="duckiebot" value="$(arg duckiebot)" />
         <param name="n_path_points" value="$(arg n_path_points)" />
         <param name="adm_error" value="$(arg adm_error)" />
-        <param name="la_dis" value="$(arg la_dis)" />
+        <param name="la_dis_straight" value="$(arg la_dis_straight)" />
+	<param name="la_dis_left" value="$(arg la_dis_left)" />
+	<param name="la_dis_right" value="$(arg la_dis_right)" />
         <param name="target_vel" value="$(arg target_vel)" />
         <param name="min_radius" value="$(arg min_radius)" />
         <param name="world_frame" value="$(arg world_frame)" />
