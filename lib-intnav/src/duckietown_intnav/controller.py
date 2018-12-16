@@ -90,8 +90,11 @@ class Controller(object):
         yL = l*np.cos(al)
         r = (xL**2)/(2*yL) + (yL/2)
         r = np.sign(r)*max(abs(r), self.min_r)
-	if(self.direction=='R' and self.x>-0.3):
+	if(self.direction=='R' and self.y<(-4.65*self.x-0.6)):
+	    self.vel = 0.065
+	if(self.direction=='R' and self.y>(-4.65*self.x-0.6)):
 	    r=-self.min_r
+	    self.vel = 0.275
         tau = self.vel/r
         print('vl,vr: ', (self.vel-0.5*tau*self.wheel_distance),(self.vel+0.5*tau*self.wheel_distance))
         return (self.vel-0.5*tau*self.wheel_distance),(self.vel+0.5*tau*self.wheel_distance)
