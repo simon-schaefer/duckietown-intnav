@@ -8,13 +8,13 @@
 import rospy
 import tf
 
-from .node import Node
+from node import Node
 
 class Main(Node): 
 
     def __init__(self): 
         duckiebot = rospy.get_param("tf_april_static/duckiebot")
-        super.__init__(duckiebot, "tf_tree")
+        Node.__init__(self, duckiebot, "tf_tree")
 
     def start(self): 
         ''' Start function - Start tf publishing timer. '''

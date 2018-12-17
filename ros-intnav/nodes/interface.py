@@ -20,7 +20,7 @@ from std_msgs.msg import String
 from duckietown_msgs.msg import BoolStamped
 from duckietown_msgs.msg import FSMState
 
-from .node import Node
+from node import Node
 
 ITYPE = "4"
 DIRECTIONS = {"S": "straight","L": "left", "R": "right"}
@@ -29,7 +29,7 @@ class Main(Node):
 
     def __init__(self): 
         duckiebot = rospy.get_param('interface/duckiebot')
-        super.__init__(duckiebot, "interface")
+        Node.__init__(self, duckiebot, "interface")
     
     def start(self): 
         duckiebot = rospy.get_param('interface/duckiebot')

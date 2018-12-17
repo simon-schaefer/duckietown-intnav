@@ -5,6 +5,6 @@ all: $(targets)
 
 
 handle-%:
-	jupyter nbconvert --to html --execute "$*"
-	jupyter nbconvert --ClearOutputPreprocessor.enabled=True --inplace "$*"
+    jupyter nbconvert --to html --execute "$*"
+    jupyter nbconvert --ClearOutputPreprocessor.enabled=True --inplace "$*"
 
