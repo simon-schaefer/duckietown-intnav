@@ -25,10 +25,12 @@ class Node(object):
         if msg.state == "INTERSECTION_CONTROL" and not self.is_running: 
             rospy.loginfo("INTNAV: Starting node %s ..." % self.node_name)
             self.start()
+            self.is_running = True
             rospy.loginfo("INTNAV: Finished start of node %s ..." % self.node_name)
         elif not msg.state == "INTERSECTION_CONTROL" and self.is_running: 
             rospy.loginfo("INTNAV: Stopping node %s ..." % self.node_name)
             self.shutdown()
+            self.is_running = False
             rospy.loginfo("INTNAV: Finished stop of node %s ..." % self.node_name)
 
     def start(self): 

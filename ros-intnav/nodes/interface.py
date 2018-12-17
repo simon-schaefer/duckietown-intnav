@@ -58,7 +58,7 @@ class Main(Node):
         topic = str("/" + duckiebot + "/intnav/pose")
         self.pose_sub = rospy.Subscriber(topic, PoseWithCovarianceStamped,
                                          self.pose_callback)
-            topic = str("/" + duckiebot + "/lane_controller_node/switch")
+        topic = str("/" + duckiebot + "/lane_controller_node/switch")
         self.switch_pub = rospy.Publisher(topic, BoolStamped, queue_size=1)
         topic = str("/" + duckiebot + "/fsm_node/mode")
         self.fsm_pub = rospy.Publisher(topic, FSMState, queue_size=1)
