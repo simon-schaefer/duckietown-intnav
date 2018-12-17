@@ -15,8 +15,6 @@ from std_msgs.msg import String
 
 from duckietown_msgs.msg import WheelsCmdStamped
 from duckietown_msgs.msg import Twist2DStamped
-from duckietown_msgs.msg import BoolStamped
-from duckietown_msgs.msg import FSMState
 from duckietown_intnav.controller import Controller
 from duckietown_intnav.planner import path_generate
 
@@ -63,19 +61,12 @@ class Main(Node):
         #self.cmd_pub = rospy.Publisher(topic, WheelsCmdStamped, queue_size=1)
         # Final zero velocity command (on shutdown).
         self.controller = None
-        topic = str("/" + duckiebot + "/lane_controller_node/switch")
-        self.switch_pub = rospy.Publisher(topic, BoolStamped, queue_size=1)
-        topic = str("/" + duckiebot + "/fsm_node/mode")
-        self.fsm_pub = rospy.Publisher(topic, FSMState, queue_size=1)
-        self.controlling = True
         rospy.on_shutdown(self.shutdown)
 
     def shutdown(self): 
         self.direction_sub.unregister()
         self.pose_sub.unregister()
         self.cmd_pub.unregister()
-        self.switch_pub.unregister()
-        self.fsm_pub.unregister()
 
     def direction_callback(self, msg):
         direction = msg.data
@@ -118,30 +109,13 @@ class Main(Node):
         rot = msg.pose.pose.orientation
         euler = euler_from_quaternion([rot.x,rot.y,rot.z,rot.w])
         pose = (position.x, position.y, euler[2])
-       if(pose[2]>np.pi/2 - np.pi/20):
-            self.controlling = False
-            msg = Twist2DStamped()
-            self.cmd_pub.publish(msg)
-            fsm_msg = FSMState()
-            fsm_msg.state = 'LANE_FOLLOWING'
-            self.fsm_pub.publish(fsm_msg)
-            switch_msg = BoolStamped()
-            switch_msg.data = True
-            self.switch_pub.publish(switch_msg)
-
+        # Determine and publish velocity controls. 
         vl, vr = self.controller.pure_pursuit(pose)
-        #msg = WheelsCmdStamped()
-        #msg.vel_left = vl
-        #msg.vel_right = vr
-
-        #msg.header.stamp = rospy.Time().now
-        #msg.header.frame_id = self.world_frame
         msg = Twist2DStamped()
         msg.v = (vl + vr)/2
         msg.omega = (vr - vl)/(self.wheel_distance)
-	    print('RW: ',self.wheel_distance,' omega: ',msg.omega)
-	    if(self.controlling):
-            self.cmd_pub.publish(msg)
+        print('RW: ',self.wheel_distance,' omega: ',msg.omega)
+	    self.cmd_pub.publish(msg)
 
     def shutdown(self):
         msg = WheelsCmdStamped()

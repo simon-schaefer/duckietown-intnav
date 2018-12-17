@@ -13,7 +13,7 @@ class Node(object):
     def __init__(self, duckiebot, node_name): 
         ''' Initialize FSM subscriber.
         @param[in]  duckiebot       name of duckiebot. '''
-        topic = str("/" + duckiebot + "/fsm_node/state")
+        topic = str("/" + duckiebot + "/fsm_node/mode")
         self.state_sub = rospy.Subscriber(topic, FSMState, self.state_callback)
         # Set node's state flag. 
         self.is_running = False
