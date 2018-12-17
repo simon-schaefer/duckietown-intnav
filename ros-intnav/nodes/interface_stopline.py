@@ -21,12 +21,11 @@ class Main():
         self.fsm_pub = rospy.Publisher(topic, FSMState, queue_size=1)
         # Catch keyboard input. 
         while not rospy.is_shutdown():
-            key = raw_input("Press space to enter intersection control ...")
+            rospy.loginfo("Press [enter] to enter intsec control ...")
+            key = raw_input()
             self.process(key)
 
     def process(self, key):
-        if not key == ' ':
-            return False
         fsm_msg = FSMState()
         fsm_msg.state = 'INTERSECTION_CONTROL'
         self.fsm_pub.publish(fsm_msg)

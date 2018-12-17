@@ -102,8 +102,10 @@ class Main(Node):
 
     def pose_callback(self, msg):
         # If no target path has been created so far return.
+        print("in pose callback")
         if self.path_points is None:
             return False
+        print("determining pp control inputs")
         # Otherwise call pure pursuit controller.
         position = msg.pose.pose.position
         rot = msg.pose.pose.orientation
