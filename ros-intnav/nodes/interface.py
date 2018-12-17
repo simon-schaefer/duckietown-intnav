@@ -76,7 +76,8 @@ class Main(Node):
         pose = (position.x, position.y, euler[2])
         # Check switching to lane following - Right turn. 
         if((self.direction == "R" and pose[2]>np.pi/2 - np.pi/20) \
-        or (self.direction == "L" and pose[2]<np.pi/2 + np.pi/20)):
+        or (self.direction == "L" and pose[2]<np.pi/2 + np.pi/20) \
+        or (self.direction == "S" and pose[0]>40.0)):
             fsm_msg = FSMState()
             fsm_msg.state = 'LANE_FOLLOWING'
             self.fsm_pub.publish(fsm_msg)
