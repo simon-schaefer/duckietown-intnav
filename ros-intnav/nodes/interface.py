@@ -98,14 +98,24 @@ class Main(Node):
     @staticmethod
     def direction_keyboard(): 
         directions = {"a": "L", "s": "S", "d": "R"}
-        rospy.sleep(5.0)
-        while True: 
-            msg = "Choose direction [a = left, s = straight, d = right]: "
-            input_dir = raw_input(msg)
-            if input_dir in directions.keys(): 
-                return directions[input_dir]
+        direction = None        
+
+        def key_callback(msg):
+            key = msg.data
+            if key in directions.keys(): 
+                direction = key
             else: 
-                rospy.logwarn("Direction %s not valid !" % str(input_dir))
+                rospy.logwarn("Direction %s not valid !" % str(key))
+        
+        duckiebot = rospy.get_param('interface/duckiebot')
+        topic = str("/" + duckiebot + "/intnav/keyboard_input")
+        sub = rospy.Subscriber(topic, String, key_callback)
+        rospy.logwarn("Choose direction [a = left, s = straight, d = right]: ")
+        while direction is None: 
+            pass
+        sub.unregister()
+        return directions[direction]
+                
 
 if __name__ == '__main__':
     rospy.init_node('interface', disable_signals=True)
