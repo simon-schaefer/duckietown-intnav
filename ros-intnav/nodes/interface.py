@@ -14,47 +14,64 @@ from random import randint
 import rospy
 from std_msgs.msg import String
 
+from .node import Node
+
 ITYPE = "4"
 DIRECTIONS = {"S": "straight","L": "left", "R": "right"}
 
-def direction_random():   
-    rand_dir = randint(0, 2)
-    directions = {0: "L", 1: "S", 2: "R"}
-    return directions[rand_dir]
+class Main(Node): 
 
-def direction_keyboard(): 
-    directions = {"a": "L", "s": "S", "d": "R"}
-    rospy.sleep(5.0)
-    while True: 
-        msg = "Choose direction [a = left, s = straight, d = right]: "
-        input_dir = raw_input(msg)
-        if input_dir in directions.keys(): 
-            return directions[input_dir]
+    def __init__(self): 
+        duckiebot = rospy.get_param('interface/duckiebot')
+        super.__init__(duckiebot, "interface")
+    
+    def start(self): 
+        duckiebot = rospy.get_param('interface/duckiebot')
+        input_type = rospy.get_param('interface/input_type')
+        # Initialize intersection type publisher and hard set the type. 
+        topic = str("/" + duckiebot + "/intnav/type")
+        self.itype_pub = rospy.Publisher(topic, String, queue_size=1)
+        self.itype_msg = String()
+        self.itype_msg.data = ITYPE
+        # Initialize direction publisher. 
+        topic = str("/" + duckiebot + "/intnav/direction")
+        self.direction_pub = rospy.Publisher(topic, String, queue_size=1)
+        self.dir_msg = String()
+        if input_type == "random": 
+            self.dir_msg.data = self.direction_random()
+        elif input_type == "keyboard": 
+            self.dir_msg.data = self.direction_keyboard()
         else: 
-            rospy.logwarn("Direction %s not valid !" % str(input_dir))
+            rospy.logfatal("Invalid interface type !")
+        rospy.loginfo("Direction to go = %s" % DIRECTIONS[self.dir_msg.data])
+        # Start timer. 
+        self.timer = rospy.Timer(rospy.Duration(0.5), self.timer_callback)
+
+    def shutdown(self): 
+        self.timer.shutdown()
+
+    def timer_callback(self, event): 
+        self.itype_pub.publish(self.itype_msg)
+        self.direction_pub.publish(self.dir_msg)
+
+    @staticmethod
+    def direction_random():   
+        rand_dir = randint(0, 2)
+        directions = {0: "L", 1: "S", 2: "R"}
+        return directions[rand_dir]
+
+    @staticmethod
+    def direction_keyboard(): 
+        directions = {"a": "L", "s": "S", "d": "R"}
+        rospy.sleep(5.0)
+        while True: 
+            msg = "Choose direction [a = left, s = straight, d = right]: "
+            input_dir = raw_input(msg)
+            if input_dir in directions.keys(): 
+                return directions[input_dir]
+            else: 
+                rospy.logwarn("Direction %s not valid !" % str(input_dir))
 
 if __name__ == '__main__':
     rospy.init_node('interface', disable_signals=True)
-    duckiebot = rospy.get_param('interface/duckiebot')
-    input_type = rospy.get_param('interface/input_type')
-    # Initialize intersection type publisher and hard set the type. 
-    topic = str("/" + duckiebot + "/intnav/type")
-    itype_pub = rospy.Publisher(topic, String, queue_size=1)
-    itype_msg = String()
-    itype_msg.data = ITYPE
-    # Initialize direction publisher. 
-    topic = str("/" + duckiebot + "/intnav/direction")
-    direction_pub = rospy.Publisher(topic, String, queue_size=1)
-    direction_msg = String()
-    if input_type == "random": 
-        direction_msg.data = direction_random()
-    elif input_type == "keyboard": 
-        direction_msg.data = direction_keyboard()
-    else: 
-        rospy.logfatal("Invalid interface type !")
-    rospy.loginfo("Direction to go = %s" % DIRECTIONS[direction_msg.data])
-    rate = rospy.Rate(2.0)
-    while not rospy.is_shutdown():
-        itype_pub.publish(itype_msg)
-        direction_pub.publish(direction_msg)
-        rate.sleep()
+    Main()

@@ -8,18 +8,33 @@
 import rospy
 import tf
 
-def publish_trafo(event):
-    br = tf.TransformBroadcaster()
-    world_frame = rospy.get_param("tf_april_static/world_frame")
-    for tag in rospy.get_param("apriltags/standalone_tag_poses"): 
-        br.sendTransform((tag['x'], tag['y'], tag['z']),
-            (tag['qx'], tag['qy'], tag['qz'], tag['qw']), 
-            rospy.Time.now(), 
-            world_frame + str(tag['id']), "Tag" + str(tag['id']))
-        br.sendTransform((0,0,0), (0,0,0,1), rospy.Time.now(), 
-            world_frame, world_frame + str(tag['id']))
+from .node import Node
+
+class Main(Node): 
+
+    def __init__(self): 
+        duckiebot = rospy.get_param("tf_april_static/duckiebot")
+        super.__init__(duckiebot, "tf_tree")
+
+    def start(self): 
+        ''' Start function - Start tf publishing timer. '''
+        self.timer = rospy.Timer(rospy.Duration(0.1), self.publish_trafo)
+
+    def shutdown(self): 
+        ''' Stop function - Unregister tf publishing timer. '''
+        self.timer.shutdown()
+
+    def publish_trafo(self, event):
+        br = tf.TransformBroadcaster()
+        world_frame = rospy.get_param("tf_april_static/world_frame")
+        for tag in rospy.get_param("apriltags/standalone_tag_poses"): 
+            br.sendTransform((tag['x'], tag['y'], tag['z']),
+                (tag['qx'], tag['qy'], tag['qz'], tag['qw']), 
+                rospy.Time.now(), 
+                world_frame + str(tag['id']), "Tag" + str(tag['id']))
+            br.sendTransform((0,0,0), (0,0,0,1), rospy.Time.now(), 
+                world_frame, world_frame + str(tag['id']))
 
 if __name__ == '__main__':
     rospy.init_node('tf_april_static')
-    timer = rospy.Timer(rospy.Duration(0.1), publish_trafo)
-    rospy.spin()
+    Main()

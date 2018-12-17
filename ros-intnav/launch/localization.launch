@@ -9,7 +9,9 @@
                                                      to initialize Kalman filter" />
     <arg name="olu_rate" default="4" doc="open-loop Kalman state update rate [Hz]" />
 
-    <node pkg="duckietown-intnav" name="april_activation" type="april_activator.py" />
+    <node pkg="duckietown-intnav" name="april_activation" type="april_activator.py" >
+        <param name="duckiebot" value="$(arg duckiebot)" />
+    </node>
     
     <rosparam command="load" file="$(find duckietown-intnav)/config/apriltags.yaml" ns="apriltags" />
     <rosparam command="load" file="$(find duckietown-intnav)/config/duckiebot.yaml" ns="$(arg duckiebot)/params" />

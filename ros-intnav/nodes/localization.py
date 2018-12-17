@@ -21,9 +21,15 @@ from std_msgs.msg import String
 
 from duckietown_intnav.kalman import KalmanFilter
 
-class Main():
+from .node import Node
+
+class Main(Node):
 
     def __init__(self):
+        duckiebot = rospy.get_param('localization/duckiebot')
+        super.__init__(duckiebot, "localization")
+
+    def start(self): 
         # Read launch file parameter.
         duckiebot = rospy.get_param('localization/duckiebot')
         self.vehicle_frame = rospy.get_param('localization/vehicle_frame')
@@ -38,10 +44,12 @@ class Main():
         self.traj = Path()
         # Initialize control input subscriber.
         topic = str("/" + duckiebot + "/joy_mapper_node/car_cmd")
-        rospy.Subscriber(topic, Twist2DStamped, self.controlCallback)
-	self.direction = None
-	topic = str("/" + duckiebot + "/intnav/direction")
-        rospy.Subscriber(topic, String,self.direction_callback)
+        self.vel_sub = rospy.Subscriber(topic, Twist2DStamped, 
+                                        self.controlCallback)
+	    self.direction = None
+	    topic = str("/" + duckiebot + "/intnav/direction")
+        self.direction_sub = rospy.Subscriber(topic, String, 
+                                              self.direction_callback)
         self.control_inputs = None
         # Initialize Kalman filter with none (initialization from
         # first pose estimates).
@@ -50,9 +58,11 @@ class Main():
         self.num_init_estimates = rospy.get_param('localization/num_init_estimates')
         self.last_update_time = None
         # Update Kalman filter timer - High-frequent update).
-        rospy.Timer(rospy.Duration(1.0/float(self.olu_rate)), self.open_loop_update)
+        self.olu_timer = rospy.Timer(rospy.Duration(1.0/float(self.olu_rate)), 
+                                     self.open_loop_update)
         # Initialize april pose subscriber - Low-frequent update.
-        rospy.Subscriber("/tag_detections", AprilTagDetectionArray, self.tag_callback)
+        self.tag_sub = rospy.Subscriber("/tag_detections", AprilTagDetectionArray, 
+                                        self.tag_callback)
         # Initialize vehicle model parameters.
         prefix = duckiebot + "/params/"
         self.process_noise = np.eye(3)
@@ -65,7 +75,14 @@ class Main():
         self.april_noise[2,2] = rospy.get_param(prefix + "april_noise_t")
         self.bot_params = {'wheel_distance': rospy.get_param(prefix + "wheel_distance")}
         rospy.loginfo("Kalman waiting for %d init updates ..." % self.num_init_estimates)
-        rospy.spin()
+
+    def shutdown(self): 
+        self.olu_timer.shutdown()
+        self.tag_sub.unregister()
+        self.direction_callback.unregister()
+        self.vel_sub.unregister()
+        self.pose_pub.unregister()
+        self.traj_pub.unregister()
 
     def controlCallback(self, message):
         ''' Subscribe and update control inputs for (feed-forward)

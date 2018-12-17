@@ -20,9 +20,15 @@ from duckietown_msgs.msg import FSMState
 from duckietown_intnav.controller import Controller
 from duckietown_intnav.planner import path_generate
 
-class Main():
+from .node import Node
+
+class Main(Node):
 
     def __init__(self):
+        duckiebot = rospy.get_param('controller/duckiebot')
+        super.__init__(duckiebot, "controller")
+    
+    def start(self): 
         # Read launch file parameter.
         duckiebot = rospy.get_param('controller/duckiebot')
         self.world_frame = rospy.get_param('controller/world_frame')
@@ -49,21 +55,27 @@ class Main():
         # output following the previously determined optimal path.
         self.control_cmds = None
         topic = str("/" + duckiebot + "/intnav/pose")
-        rospy.Subscriber(topic, PoseWithCovarianceStamped,
-                         self.pose_callback)
+        self.pose_sub = rospy.Subscriber(topic, PoseWithCovarianceStamped,
+                                         self.pose_callback)
         #topic = str("/" + duckiebot + "/wheels_driver_node/wheels_cmd")
         topic = str("/" + duckiebot + "/joy_mapper_node/car_cmd")
         self.cmd_pub = rospy.Publisher(topic, Twist2DStamped, queue_size=1)
         #self.cmd_pub = rospy.Publisher(topic, WheelsCmdStamped, queue_size=1)
         # Final zero velocity command (on shutdown).
         self.controller = None
-	topic = str("/" + duckiebot + "/lane_controller_node/switch")
-	self.switch_pub = rospy.Publisher(topic, BoolStamped, queue_size=1)
-	topic = str("/" + duckiebot + "/fsm_node/mode")
-	self.fsm_pub = rospy.Publisher(topic, FSMState, queue_size=1)
-	self.controlling = True
+        topic = str("/" + duckiebot + "/lane_controller_node/switch")
+        self.switch_pub = rospy.Publisher(topic, BoolStamped, queue_size=1)
+        topic = str("/" + duckiebot + "/fsm_node/mode")
+        self.fsm_pub = rospy.Publisher(topic, FSMState, queue_size=1)
+        self.controlling = True
         rospy.on_shutdown(self.shutdown)
-        rospy.spin()
+
+    def shutdown(self): 
+        self.direction_sub.unregister()
+        self.pose_sub.unregister()
+        self.cmd_pub.unregister()
+        self.switch_pub.unregister()
+        self.fsm_pub.unregister()
 
     def direction_callback(self, msg):
         direction = msg.data
@@ -106,7 +118,7 @@ class Main():
         rot = msg.pose.pose.orientation
         euler = euler_from_quaternion([rot.x,rot.y,rot.z,rot.w])
         pose = (position.x, position.y, euler[2])
-	if(pose[2]>np.pi/2 - np.pi/20):
+       if(pose[2]>np.pi/2 - np.pi/20):
             self.controlling = False
             msg = Twist2DStamped()
             self.cmd_pub.publish(msg)
@@ -127,8 +139,8 @@ class Main():
         msg = Twist2DStamped()
         msg.v = (vl + vr)/2
         msg.omega = (vr - vl)/(self.wheel_distance)
-	print('RW: ',self.wheel_distance,' omega: ',msg.omega)
-	if(self.controlling):
+	    print('RW: ',self.wheel_distance,' omega: ',msg.omega)
+	    if(self.controlling):
             self.cmd_pub.publish(msg)
 
     def shutdown(self):

@@ -13,12 +13,17 @@ import rospy
 from sensor_msgs.msg import Image
 from sensor_msgs.msg import CompressedImage
 from sensor_msgs.msg import CameraInfo
-from duckietown_msgs.msg import BoolStamped
 from duckietown_intnav.camera_config import CameraConfig
 
-class Main():
+from .node import Node
+
+class Main(Node):
 
     def __init__(self): 
+        duckiebot = rospy.get_param('image_processing/duckiebot')
+        super.__init__(duckiebot, "preprocessing")
+
+    def start(self): 
         # Read launch file parameter. 
         duckiebot = rospy.get_param('image_processing/duckiebot')
         # Read camera intrinsics parameters. 
@@ -33,16 +38,11 @@ class Main():
                                         queue_size=1, buff_size=1000000)
         topic_rect = str('/'+duckiebot+'/camera_node/rect')
         self.rect_pub = rospy.Publisher(topic_rect, Image, queue_size=1)
-	topic = str('/' + duckiebot + "/lane_controller_node/switch")
-	self.switch_cb = rospy.Subscriber(topic,BoolStamped,self.switch_callback, queue_size=1)
-	self.processing = True
-        rospy.spin()
-    def switch_callback(self,message):
-	if(message.data):
-	    self.processing = False
-	    print('lala: ', self.processing)
-	else:
-	    self.processing = True
+
+    def shutdown(self): 
+        self.calibration_sub.unregister()
+        self.img_sub.unregister()
+        self.rect_pub.unregister()
 
     def calib_callback(self, message): 
         ''' Read camera parameters and update calibration, shut down 
@@ -52,7 +52,7 @@ class Main():
         self.camera_header = message.header
 
     def image_callback(self, message): 
-        if self.camera_config is None or self.camera_header is None or self.processing==False:
+        if self.camera_config is None or self.camera_header is None: 
             return 
         image = self.bridge.compressed_imgmsg_to_cv2(message, desired_encoding="mono8")
         rect_cv = self.camera_config.rectify_image(image)

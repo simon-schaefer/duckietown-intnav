@@ -22,6 +22,7 @@
             $(arg vehicle_frame) $(arg cam_frame) 100" />
 
     <node pkg="duckietown-intnav" type="april_tf_static.py" name="tf_april_static" output="screen" >
+        <param name="duckiebot" value="$(arg duckiebot)" />
         <param name="world_frame" value="$(arg world_frame)" />
     </node>
 
