@@ -156,12 +156,11 @@ class Main(Node):
         direction = None
 
         def key_callback(msg):
-            key = msg.data
-            if int(msg.axis[1]) == 1:
+            if int(msg.axes[1]) == 1:
                 direction = "S"
-            elif int(msg.axis[3]) == -1: 
+            elif int(msg.axes[3]) == -1: 
                 direction = "R"
-            elif int(msg.axis[3]) == +1: 
+            elif int(msg.axes[3]) == +1: 
                 direction = "L"
         
         duckiebot = rospy.get_param('interface/duckiebot')

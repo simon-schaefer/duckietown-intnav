@@ -25,6 +25,7 @@ class Main():
         topic = str("/" + duckiebot + "/joy")
         rospy.Subscriber(topic, Joy, self.process)
         rospy.logwarn("Press [i] to switch to intsec control ...")
+        rospy.spin()
 
     def process(self, msg):
         if not msg.buttons[3] == 1: 
