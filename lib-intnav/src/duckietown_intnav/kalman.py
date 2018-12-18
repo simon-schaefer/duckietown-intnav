@@ -105,7 +105,7 @@ class KalmanFilter(object):
         print('z: ', z)
         print('shape z: ', np.shape(z))
         print('shape z [0]: ', np.shape(z)[0])
-        assert np.shape(z)[1] % 3 == 0
+        assert np.shape(z)[0] % 3 == 0
         num_measurements = np.shape(z)[0]/3
         H = np.zeros((3*num_measurements,3))
         Rnp = np.kron(np.eye(num_measurements), R)
