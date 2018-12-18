@@ -150,8 +150,8 @@ class Main(Node):
                 rospy.loginfo("Kalman initialized pose ...")
             return True
         z = pose_estimates[0]
-        for i in range(2, len(pose_estimates)):
-            z = np.vstack((z,pose_estimates[i]))
+        for i in range(1, len(pose_estimates)):
+            z = np.hstack((z,pose_estimates[i]))
         self.kalman.update(z, self.control_inputs,
                            self.process_noise, self.april_noise,
                            rospy.get_time() - self.last_update_time, self.direction)
