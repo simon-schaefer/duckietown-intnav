@@ -9,8 +9,11 @@ Project Unicorn is a project for AMOD Fall 2018 (ETH Zürich) course that focuse
 duckietown-intnav contains the code to implement the intersection navigation demo on a duckiebot. The general idea of the projects consists of a 4-step approach to efficiently navigate the 3 and 4-way intersections: 
 
 1- Starting at a red line at any intersection, the duckiebot estimates its initial pose.
+
 2- Different paths for going left, right and straight are pre-computed and chosen depending on the desired intersection exit.
+
 3- Constantly updating its pose estimate, it follows the path in a closed-loop manner with a PurePursuit controller.
+
 4- Detects when the duckiebot has reached the intersection end (exit lane) and switches back to the duckietown lane follower.
 
 The interested reader can find more details in the [project documentation.](http://docs.duckietown.org/DT18/opmanual_duckiebot/out/demo_projectunicorn.html)
