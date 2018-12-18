@@ -2,19 +2,19 @@
 ###############################################################################
 # Duckietown - Project intnav ETH
 # Author: Simon Schaefer
-# Manual stop line interface - Press space to switch from lane following 
-# to intersection control. Workaround while stop line detection not working. 
+# Manual stop line interface - Press space to switch from lane following
+# to intersection control. Workaround while stop line detection not working.
 ###############################################################################
 import rospy
 
 from duckietown_msgs.msg import BoolStamped
 from duckietown_msgs.msg import FSMState
 
-class Main(): 
+class Main():
 
-    def __init__(self): 
+    def __init__(self):
         duckiebot = rospy.get_param('stop_line_control/duckiebot')
-        # Initialize switch and state publishers. 
+        # Initialize switch and state publishers.
         topic = str("/" + duckiebot + "/lane_controller_node/switch")
         self.switch_pub = rospy.Publisher(topic, BoolStamped, queue_size=1)
         topic = str("/" + duckiebot + "/fsm_node/mode")
