@@ -28,10 +28,11 @@ class Main(Node):
         br = tf.TransformBroadcaster()
         world_frame = rospy.get_param("tf_april_static/world_frame")
         for tag in rospy.get_param("apriltags/standalone_tags"):
+            frame_id = tag['name']
             br.sendTransform((tag['x'], tag['y'], tag['z']),
                 (tag['qx'], tag['qy'], tag['qz'], tag['qw']),
                 rospy.Time.now(),
-                world_frame + str(tag['id']), "Tag" + str(tag['id']))
+                world_frame + str(tag['id']), frame_id)
             br.sendTransform((0,0,0), (0,0,0,1), rospy.Time.now(),
                 world_frame, world_frame + str(tag['id']))
 
