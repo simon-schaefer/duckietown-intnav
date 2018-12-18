@@ -35,6 +35,8 @@ class Main(Node):
         self.vehicle_frame = rospy.get_param('localization/vehicle_frame')
         self.world_frame = rospy.get_param('localization/world_frame')
         self.olu_rate = rospy.get_param('localization/olu_rate')
+        # Build world id to frame dictionary. 
+        self.world_id_frame_dict = self.build_id_frame_dict(self.world_frame)
         # Initialize tf listener and pose/trajectory publisher.
         self.tf_listener = tf.TransformListener()
         topic = str("/" + duckiebot + "/intnav/pose")
@@ -78,7 +80,7 @@ class Main(Node):
     def shutdown(self): 
         self.olu_timer.shutdown()
         self.tag_sub.unregister()
-        self.direction_callback.unregister()
+        self.direction_sub.unregister()
         self.vel_sub.unregister()
         self.pose_pub.unregister()
         self.traj_pub.unregister()
@@ -114,7 +116,7 @@ class Main(Node):
         pose_estimates = []
         for detection in message.detections:
             tag_id = detection.id[0]
-            world_frame = self.world_frame + str(tag_id)
+            world_frame = self.world_id_frame_dict[int(tag_id)]
             # TF Tree transformations.
             latest = rospy.Time(0)
             tf_exceptions = (tf.LookupException,
@@ -182,6 +184,14 @@ class Main(Node):
         self.traj.header = pose_stamped.header
         self.traj.poses.append(path_pose)
         self.traj_pub.publish(self.traj)
+
+    @staticmethod
+    def build_id_frame_dict(world_frame): 
+        id_frame_dict = {}
+        for tag in rospy.get_param("apriltags/standalone_tags"):
+            frame = world_frame + tag['name'].replace("Tag", "")
+            id_frame_dict[int(tag['id'])] = frame
+        return id_frame_dict
 
 if __name__ == '__main__':
     rospy.init_node('localization', anonymous=True)
