@@ -11,7 +11,7 @@ from std_msgs.msg import String
 class Main(): 
 
     def __init__(self): 
-        duckiebot = rospy.get_param('localization/duckiebot')
+        duckiebot = rospy.get_param('keyboard/duckiebot')
         topic = str("/" + duckiebot + "/intnav/keyboard_input")
         self.key_pub = rospy.Publisher(topic, String, queue_size=1)
         with Listener(on_press=self.on_press) as listener:
