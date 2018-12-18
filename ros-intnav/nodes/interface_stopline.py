@@ -6,6 +6,7 @@
 # to intersection control. Workaround while stop line detection not working. 
 ###############################################################################
 import rospy
+from sensor_msgs.msg import Joy
 from std_msgs.msg import String
 
 from duckietown_msgs.msg import BoolStamped
@@ -21,12 +22,12 @@ class Main():
         topic = str("/" + duckiebot + "/fsm_node/mode")
         self.fsm_pub = rospy.Publisher(topic, FSMState, queue_size=1)
         # Keyboard input subscriber.  
-        topic = str("/" + duckiebot + "/intnav/keyboard_input")
-        rospy.Subscriber(topic, String, self.process)
-        rospy.logwarn("Press [x] to switch to intsec control ...")
+        topic = str("/" + duckiebot + "/joy")
+        rospy.Subscriber(topic, Joy, self.process)
+        rospy.logwarn("Press [i] to switch to intsec control ...")
 
-    def process(self, key):
-        if not key == "x": 
+    def process(self, msg):
+        if not msg.buttons[3] == 1: 
             return False
         fsm_msg = FSMState()
         fsm_msg.state = 'INTERSECTION_CONTROL'

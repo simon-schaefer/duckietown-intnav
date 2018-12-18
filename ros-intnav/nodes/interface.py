@@ -15,6 +15,7 @@ from random import randint
 import rospy
 from tf.transformations import euler_from_quaternion
 from geometry_msgs.msg import PoseWithCovarianceStamped
+from sensor_msgs.msg import Joy
 from std_msgs.msg import String
 
 from duckietown_msgs.msg import BoolStamped
@@ -102,19 +103,21 @@ class Main(Node):
 
         def key_callback(msg):
             key = msg.data
-            if key in directions.keys(): 
-                direction = key
-            else: 
-                rospy.logwarn("Direction %s not valid !" % str(key))
+            if int(msg.axis[1]) == 1:
+                direction = "S"
+            elif int(msg.axis[3]) == -1: 
+                direction = "R"
+            elif int(msg.axis[3]) == +1: 
+                direction = "L"
         
         duckiebot = rospy.get_param('interface/duckiebot')
-        topic = str("/" + duckiebot + "/intnav/keyboard_input")
-        sub = rospy.Subscriber(topic, String, key_callback)
-        rospy.logwarn("Choose direction [a = left, s = straight, d = right]: ")
+        topic = str("/" + duckiebot + "/joy")
+        sub = rospy.Subscriber(topic, Joy, key_callback)
+        rospy.logwarn("Choose direction [left, up, right]: ")
         while direction is None: 
             pass
         sub.unregister()
-        return directions[direction]
+        return direction
                 
 
 if __name__ == '__main__':
