@@ -98,6 +98,7 @@ class Main(Node):
             self.direction_pub.publish(self.dir_msg)
 
     def tag_callback(self, message):
+        print('HOSSA in tag_callback!')
         if (self.direction_known==False):
             rospy.loginfo("Searching for Apriltags...")
             # publish direction, depending on intersection type
@@ -113,7 +114,9 @@ class Main(Node):
                 directions_pos = april_tuples[idx_max][3]
                 choice = round(np.random.rand()*len(directions_pos))
                 self.dir_msg.data = directions_pos[choice]
-                self.direction_known = True    
+                self.direction_known = True
+                print('Direction: ', self.dir_msg.data)
+
 
     @staticmethod
     def create_apriltag_tuple():
@@ -159,16 +162,16 @@ class Main(Node):
         def key_callback(msg):
             if int(msg.axes[1]) == 1:
                 direction = "S"
-            elif int(msg.axes[3]) == -1: 
+            elif int(msg.axes[3]) == -1:
                 direction = "R"
-            elif int(msg.axes[3]) == +1: 
+            elif int(msg.axes[3]) == +1:
                 direction = "L"
-        
+
         duckiebot = rospy.get_param('interface/duckiebot')
         topic = str("/" + duckiebot + "/joy")
         sub = rospy.Subscriber(topic, Joy, key_callback)
         rospy.logwarn("Choose direction [left, up, right]: ")
-        while direction is None: 
+        while direction is None:
             pass
         sub.unregister()
         return direction
