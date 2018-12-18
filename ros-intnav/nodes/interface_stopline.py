@@ -23,10 +23,10 @@ class Main():
         # Keyboard input subscriber.  
         topic = str("/" + duckiebot + "/intnav/keyboard_input")
         rospy.Subscriber(topic, String, self.process)
-        rospy.logwarn("Press [e] to switch to intsec control ...")
+        rospy.logwarn("Press [x] to switch to intsec control ...")
 
     def process(self, key):
-        if not key == "e": 
+        if not key == "x": 
             return False
         fsm_msg = FSMState()
         fsm_msg.state = 'INTERSECTION_CONTROL'
