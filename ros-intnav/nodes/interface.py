@@ -35,6 +35,7 @@ class Main(Node):
         Node.__init__(self, duckiebot, "interface")
 
     def start(self):
+        print('WE ARE IN START HOSSA')
         duckiebot = rospy.get_param('interface/duckiebot')
         input_type = rospy.get_param('interface/input_type')
         # Initialize intersection type publisher and hard set the type.

@@ -102,9 +102,9 @@ class KalmanFilter(object):
         xprior = self.model.predict(xlast, u, dt, direction)
         Pprior = F * Plast * np.transpose(F) + Q
         # Prepare measurements vector.
-        print('z: ', z)
-        print('shape z: ', np.shape(z))
-        print('shape z [0]: ', np.shape(z)[0])
+        #print('z: ', z)
+        #print('shape z: ', np.shape(z))
+        #print('shape z [0]: ', np.shape(z)[0])
         assert np.shape(z)[0] % 3 == 0
         num_measurements = np.shape(z)[0]/3
         H = np.zeros((3*num_measurements,3))
