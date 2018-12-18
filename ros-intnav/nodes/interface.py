@@ -32,7 +32,6 @@ class Main(Node):
     def __init__(self):
         duckiebot = rospy.get_param('interface/duckiebot')
         Node.__init__(self, duckiebot, "interface")
-        tuples = self.create_apriltag_tuple()
 
     def start(self):
         duckiebot = rospy.get_param('interface/duckiebot')
@@ -154,6 +153,7 @@ class Main(Node):
     @staticmethod
     def direction_keyboard():
         directions = {"a": "L", "s": "S", "d": "R"}
+<<<<<<< HEAD
         rospy.sleep(5.0)
         while True:
             msg = "Choose direction [a = left, s = straight, d = right]: "
@@ -162,6 +162,26 @@ class Main(Node):
                 return directions[input_dir]
             else:
                 rospy.logwarn("Direction %s not valid !" % str(input_dir))
+=======
+        direction = None
+
+        def key_callback(msg):
+            key = msg.data
+            if key in directions.keys():
+                direction = key
+            else:
+                rospy.logwarn("Direction %s not valid !" % str(key))
+
+        duckiebot = rospy.get_param('interface/duckiebot')
+        topic = str("/" + duckiebot + "/intnav/keyboard_input")
+        sub = rospy.Subscriber(topic, String, key_callback)
+        rospy.logwarn("Choose direction [a = left, s = straight, d = right]: ")
+        while direction is None:
+            pass
+        sub.unregister()
+        return directions[direction]
+
+>>>>>>> bc0f435fc70d6a934a52e5149e53dc077b019a56
 
 if __name__ == '__main__':
     rospy.init_node('interface', disable_signals=True)

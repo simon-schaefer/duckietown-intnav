@@ -36,14 +36,14 @@ class VehicleModel(object):
         #omega = (vr - vl)/(self.R)
         if(direction=='R'): omega = inputs[1]/2
         else: omega = inputs[1]
-    	vr = va + omega*self.R/2
-    	vl = va - omega*self.R/2
+        vr = va + omega*self.R/2
+        vl = va - omega*self.R/2
         xn = x + np.cos(theta)*va*dt
         yn = y + np.sin(theta)*va*dt
         thetan = theta + omega*dt
         print("Vehicle Model")
-    	print('VL: ',vl,'VR: ',vr)
-    	print('R: ',self.R)
+        print('VL: ',vl,'VR: ',vr)
+        print('R: ',self.R)
         print(omega,dt,theta,thetan)
 
         return np.array([xn, yn, thetan])

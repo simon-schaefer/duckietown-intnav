@@ -7,14 +7,14 @@
 import rospy
 from duckietown_msgs.msg import BoolStamped
 
-from .node import Node
+from node import Node
 
 class Main(Node): 
 
     def __init__(self): 
         # Read launch file parameters. 
         duckiebot = rospy.get_param('april_activator/duckiebot')
-        super.__init__(duckiebot, "april_activator")
+        Node.__init__(self, duckiebot, "april_activator")
 
     def start(self): 
         ''' Starting function - Start april tag activation timer. '''

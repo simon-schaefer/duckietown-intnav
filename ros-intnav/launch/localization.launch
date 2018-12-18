@@ -9,7 +9,7 @@
                                                      to initialize Kalman filter" />
     <arg name="olu_rate" default="4" doc="open-loop Kalman state update rate [Hz]" />
 
-    <node pkg="duckietown-intnav" name="april_activation" type="april_activator.py" >
+    <node pkg="duckietown-intnav" name="april_activator" type="april_activator.py" >
         <param name="duckiebot" value="$(arg duckiebot)" />
     </node>
     

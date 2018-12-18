@@ -15,13 +15,13 @@ from sensor_msgs.msg import CompressedImage
 from sensor_msgs.msg import CameraInfo
 from duckietown_intnav.camera_config import CameraConfig
 
-from .node import Node
+from node import Node
 
 class Main(Node):
 
     def __init__(self): 
         duckiebot = rospy.get_param('image_processing/duckiebot')
-        super.__init__(duckiebot, "preprocessing")
+        Node.__init__(self, duckiebot, "preprocessing")
 
     def start(self): 
         # Read launch file parameter. 

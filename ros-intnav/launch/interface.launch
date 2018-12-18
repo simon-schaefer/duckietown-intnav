@@ -9,5 +9,13 @@
         <param name="input_type" value="$(arg input_type)"/>
     </node>
 
+    <node name="stop_line_control" pkg="duckietown-intnav" type="interface_stopline.py"  output="screen">
+        <param name="duckiebot" value="$(arg duckiebot)"/>
+    </node>
+
+    <node name="keyboard" pkg="duckietown-intnav" type="keyboard.py"  output="screen">
+        <param name="duckiebot" value="$(arg duckiebot)"/>
+    </node>
+
 </launch>
 

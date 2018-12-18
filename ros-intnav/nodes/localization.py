@@ -21,13 +21,13 @@ from std_msgs.msg import String
 
 from duckietown_intnav.kalman import KalmanFilter
 
-from .node import Node
+from node import Node
 
 class Main(Node):
 
     def __init__(self):
         duckiebot = rospy.get_param('localization/duckiebot')
-        super.__init__(duckiebot, "localization")
+        Node.__init__(self, duckiebot, "localization")
 
     def start(self): 
         # Read launch file parameter.
@@ -44,10 +44,9 @@ class Main(Node):
         self.traj = Path()
         # Initialize control input subscriber.
         topic = str("/" + duckiebot + "/joy_mapper_node/car_cmd")
-        self.vel_sub = rospy.Subscriber(topic, Twist2DStamped, 
-                                        self.controlCallback)
-	    self.direction = None
-	    topic = str("/" + duckiebot + "/intnav/direction")
+        self.vel_sub = rospy.Subscriber(topic, Twist2DStamped, self.controlCallback)
+        self.direction = None
+        topic = str("/" + duckiebot + "/intnav/direction")
         self.direction_sub = rospy.Subscriber(topic, String, 
                                               self.direction_callback)
         self.control_inputs = None

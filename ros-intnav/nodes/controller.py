@@ -18,13 +18,13 @@ from duckietown_msgs.msg import Twist2DStamped
 from duckietown_intnav.controller import Controller
 from duckietown_intnav.planner import path_generate
 
-from .node import Node
+from node import Node
 
 class Main(Node):
 
     def __init__(self):
         duckiebot = rospy.get_param('controller/duckiebot')
-        super.__init__(duckiebot, "controller")
+        Node.__init__(self, duckiebot, "controller")
     
     def start(self): 
         # Read launch file parameter.
@@ -61,7 +61,7 @@ class Main(Node):
         #self.cmd_pub = rospy.Publisher(topic, WheelsCmdStamped, queue_size=1)
         # Final zero velocity command (on shutdown).
         self.controller = None
-        rospy.on_shutdown(self.shutdown)
+        rospy.on_shutdown(self.stop)
 
     def shutdown(self): 
         self.direction_sub.unregister()
@@ -102,8 +102,10 @@ class Main(Node):
 
     def pose_callback(self, msg):
         # If no target path has been created so far return.
+        print("in pose callback")
         if self.path_points is None:
             return False
+        print("determining pp control inputs")
         # Otherwise call pure pursuit controller.
         position = msg.pose.pose.position
         rot = msg.pose.pose.orientation
@@ -115,9 +117,9 @@ class Main(Node):
         msg.v = (vl + vr)/2
         msg.omega = (vr - vl)/(self.wheel_distance)
         print('RW: ',self.wheel_distance,' omega: ',msg.omega)
-	    self.cmd_pub.publish(msg)
+        self.cmd_pub.publish(msg)
 
-    def shutdown(self):
+    def stop(self):
         msg = WheelsCmdStamped()
         msg.vel_left = 0.0
         msg.vel_right = 0.0
