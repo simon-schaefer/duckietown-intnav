@@ -24,11 +24,11 @@ class Main():
         # Keyboard input subscriber.  
         topic = str("/" + duckiebot + "/joy")
         rospy.Subscriber(topic, Joy, self.process)
-        rospy.logwarn("Press [i] to switch to intsec control ...")
+        rospy.logwarn("Press [s] to switch to intsec control ...")
         rospy.spin()
 
     def process(self, msg):
-        if not msg.buttons[3] == 1: 
+        if not msg.buttons[6] == 1: 
             return False
         fsm_msg = FSMState()
         fsm_msg.state = 'INTERSECTION_CONTROL'
@@ -37,6 +37,7 @@ class Main():
         switch_msg.data = False
         self.switch_pub.publish(switch_msg)
         rospy.loginfo("INTNAV: Stop line control triggered ...")
+        rospy.logwarn("INTNAV: Press [a] to start intsec control ...")
         self.listen_to_keyboard = False
         return True
 

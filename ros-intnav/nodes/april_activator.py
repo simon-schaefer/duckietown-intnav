@@ -24,7 +24,7 @@ class Main(Node):
 
     def shutdown(self): 
         ''' Stop function - Stop april tag activation timer. '''
-        self.timer._shutdown()
+        self.timer.shutdown()
         self.switch_pub.unregister()
 
     def timer_callback(self, event): 

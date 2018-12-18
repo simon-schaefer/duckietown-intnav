@@ -56,7 +56,11 @@ class Main(Node):
             rospy.logfatal("Invalid interface type !")
         self.direction = self.dir_msg.data
         rospy.loginfo("Direction to go = %s" % DIRECTIONS[self.direction])
-	topic = str("/" + duckiebot + "/intnav/pose")
+        # Start timer.
+        self.timer = rospy.Timer(rospy.Duration(0.5), self.timer_callback)
+        # Initialize pose callback to switch back to lane following
+        # as well as state & lane following switch.       
+        topic = str("/" + duckiebot + "/intnav/pose")
         self.pose_sub = rospy.Subscriber(topic, PoseWithCovarianceStamped,
                                          self.pose_callback)
         topic = str("/" + duckiebot + "/lane_controller_node/switch")
@@ -65,10 +69,6 @@ class Main(Node):
         self.fsm_pub = rospy.Publisher(topic, FSMState, queue_size=1)
         self.tag_sub = rospy.Subscriber("/tag_detections", AprilTagDetectionArray,
                                         self.tag_callback)
-        # Start timer.
-        self.timer = rospy.Timer(rospy.Duration(0.5), self.timer_callback)
-        # Initialize pose callback to switch back to lane following
-        # as well as state & lane following switch.       
  
     def shutdown(self):
         self.timer.shutdown()
@@ -85,12 +85,13 @@ class Main(Node):
         if((self.direction == "R" and pose[2]>np.pi/2 - np.pi/20) \
         or (self.direction == "L" and pose[2]<np.pi/2 + np.pi/20) \
         or (self.direction == "S" and pose[0]>40.0)):
-            fsm_msg = FSMState()
-            fsm_msg.state = 'LANE_FOLLOWING'
-            self.fsm_pub.publish(fsm_msg)
-            switch_msg = BoolStamped()
-            switch_msg.data = True
-            self.switch_pub.publish(switch_msg)
+            #fsm_msg = FSMState()
+            #fsm_msg.state = "LANE_FOLLOWING"
+            #self.fsm_pub.publish(fsm_msg)
+            #switch_msg = BoolStamped()
+            #switch_msg.data = True
+            #self.switch_pub.publish(switch_msg)
+            pass
 
     def timer_callback(self, event):
         if (self.direction_known == True):
@@ -109,6 +110,7 @@ class Main(Node):
                     if (tag_id==april_tuples[i][0] or tag_id==april_tuples[i][1]):
                         nfound[i] += 1
             idx_max = np.argmax(nfound)
+            rospy.logwarn(str(april_tuples[idx_max]))
             if (nfound[idx_max] is not 0):
                 directions_pos = april_tuples[idx_max][2]
                 choice = int(round(np.random.rand()*len(directions_pos)))
@@ -166,11 +168,9 @@ class Main(Node):
             elif int(msg.axes[3]) == +1:
                 self.direction = "L"
           
-        print("askjdhasdjhasdj")
         duckiebot = rospy.get_param('interface/duckiebot')
         topic = str("/" + duckiebot + "/joy")
         sub = rospy.Subscriber(topic, Joy, key_callback)
-        print("aasjdasdoqweqwiewiewie")
         rospy.logwarn("Choose direction [left, up, right]: ")
         while self.direction is None:
             pass
