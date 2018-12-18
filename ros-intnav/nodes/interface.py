@@ -99,8 +99,9 @@ class Main(Node):
 
     def tag_callback(self, message):
         if (self.direction_known==False):
+            rospy.loginfo("Searching for Apriltags...")
             # publish direction, depending on intersection type
-            april_tuples = create_apriltag_tuple()
+            april_tuples = self.create_apriltag_tuple()
             nfound = np.zeros((len(april_tuples), ))
             for detection in message.detections:
                 tag_id = detection.id[0]
@@ -108,11 +109,11 @@ class Main(Node):
                     if (tag_id==april_tuples[i][0] or tag_id==april_tuples[i][1]):
                         nfound[i] += 1
             idx_max = np.argmax(nfound)
-            if (nfound[idx_max] == 0):
-                raise RuntimeError("Apriltag not associated with current setup")
-            directions_pos = april_tuples[idx_max][3]
-            choice = round(np.random.rand()*len(directions_pos))
-            self.dir_msg.data = diretions_pos[choice]
+            if (nfound[idx_max] is not 0):
+                directions_pos = april_tuples[idx_max][3]
+                choice = round(np.random.rand()*len(directions_pos))
+                self.dir_msg.data = directions_pos[choice]
+                self.direction_known = True    
 
     @staticmethod
     def create_apriltag_tuple():
