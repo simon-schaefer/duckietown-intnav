@@ -74,8 +74,8 @@ class Main(Node):
     def shutdown(self):
         self.timer.shutdown()
         self.pose_sub.unregister()
-        self.switch_pub.unregister()
-        self.fsm_pub.unregister()
+        self.lc_switch_pub.unregister()
+        self.int_switch_pub.unregister()
 
     def pose_callback(self, msg):
         position = msg.pose.pose.position

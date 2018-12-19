@@ -25,6 +25,21 @@ class Main(Node):
     def __init__(self):
         duckiebot = rospy.get_param('controller/duckiebot')
         Node.__init__(self, duckiebot, "controller")     
+        # Initialize pose callback to create and publish control
+        # output following the previously determined optimal path.
+        topic = str("/" + duckiebot + "/intnav/pose")
+        self.pose_sub = rospy.Subscriber(topic, PoseWithCovarianceStamped,
+                                         self.pose_callback)
+        topic = str("/" + duckiebot + "/joy_mapper_node/car_cmd")
+        self.cmd_pub = rospy.Publisher(topic, Twist2DStamped, queue_size=1)
+        # Initialize direction to go callback, creating and publishing
+        # the right optimal path.
+        topic = str("/" + duckiebot + "/intnav/direction")
+        self.direction_sub = rospy.Subscriber(topic, String,
+                                              self.direction_callback)
+        topic = str("/" + duckiebot + "/intnav/path")
+        self.path_pub = rospy.Publisher(topic, Path, queue_size=1)
+
 
     def start(self): 
         # Read launch file parameter.
@@ -41,32 +56,14 @@ class Main(Node):
         self.target_vel_right = rospy.get_param('controller/target_vel_right')
         self.wheel_distance = rospy.get_param(duckiebot + '/params/wheel_distance')
         self.n_hist = rospy.get_param('controller/n_hist')
-        # Initialize direction to go callback, creating and publishing
-        # the right optimal path.
         self.path_points = None
-        topic = str("/" + duckiebot + "/intnav/direction")
-        self.direction_sub = rospy.Subscriber(topic, String,
-                                              self.direction_callback)
-        topic = str("/" + duckiebot + "/intnav/path")
-        self.path_pub = rospy.Publisher(topic, Path, queue_size=1)
-        # Initialize pose callback to create and publish control
-        # output following the previously determined optimal path.
         self.control_cmds = None
-        topic = str("/" + duckiebot + "/intnav/pose")
-        self.pose_sub = rospy.Subscriber(topic, PoseWithCovarianceStamped,
-                                         self.pose_callback)
-        #topic = str("/" + duckiebot + "/wheels_driver_node/wheels_cmd")
-        topic = str("/" + duckiebot + "/joy_mapper_node/car_cmd")
-        self.cmd_pub = rospy.Publisher(topic, Twist2DStamped, queue_size=1)
-        #self.cmd_pub = rospy.Publisher(topic, WheelsCmdStamped, queue_size=1)
         # Final zero velocity command (on shutdown).
         self.controller = None
         rospy.on_shutdown(self.stop)
 
     def shutdown(self): 
-        self.direction_sub.unregister()
-        self.pose_sub.unregister()
-        self.cmd_pub.unregister()
+        pass
 
     def direction_callback(self, msg):
         direction = msg.data
@@ -74,19 +71,10 @@ class Main(Node):
         if not direction in possibities.keys():
             rospy.logfatal("Invalid intersection type !")
             return False
+        # Determine path points. 
         self.path_points = path_generate(possibities[direction],
                                          self.n_path_points)
-        path = Path()
-        path.header.frame_id = self.world_frame
-        path.poses = []
-        for point in self.path_points:
-            pose_stamped = PoseStamped()
-            pose_stamped.header.frame_id = self.world_frame
-            pose_stamped.pose.position.x = point[0]
-            pose_stamped.pose.position.y = point[1]
-            path.poses.append(pose_stamped)
-        self.path_pub.publish(path)
-        self.direction_sub.unregister()
+        # Set direction dependent parameters. 
         if(direction=='S'):
             la_dis=self.la_dis_straight
             target_vel = self.target_vel_straight
@@ -98,11 +86,23 @@ class Main(Node):
             target_vel = self.target_vel_right
         self.controller = Controller(direction,self.path_points,self.wheel_distance,
                          self.adm_error, la_dis, self.min_radius, target_vel, self.n_hist)
+        # Publish path. 
+        path = Path()
+        path.header.frame_id = self.world_frame
+        path.poses = []
+        for point in self.path_points:
+            pose_stamped = PoseStamped()
+            pose_stamped.header.frame_id = self.world_frame
+            pose_stamped.pose.position.x = point[0]
+            pose_stamped.pose.position.y = point[1]
+            path.poses.append(pose_stamped)
+        self.path_pub.publish(path)
+        self.direction_sub.unregister()
         return True
 
     def pose_callback(self, msg):
         # If no target path has been created so far return.
-        if self.path_points is None:
+        if self.path_points is None or self.controller is None:
             return False
         print("determining pp control inputs")
         # Otherwise call pure pursuit controller.
