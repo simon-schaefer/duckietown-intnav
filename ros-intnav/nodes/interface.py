@@ -111,11 +111,11 @@ class Main(Node):
         nfound = np.zeros((len(april_tuples), ))
         detected = []
         for detection in message.detections:
-            x = detection.pose.pose.position.x
-            y = detection.pose.pose.position.y
-            z = detection.pose.pose.position.z
+            x = detection.pose.pose.pose.position.x
+            y = detection.pose.pose.pose.position.y
+            z = detection.pose.pose.pose.position.z
             dist = np.linalg.norm([x,y,z])
-            if dist < 0.8
+            if dist < 0.8:
                 detected.append(detection)
         if len(detected) == 0:
             rospy.logwarn(" No Apriltags closer than 0.8m detected")
@@ -136,7 +136,8 @@ class Main(Node):
             self.direction = str(directions_pos[choice])
             self.direction_known = True
             # evaluate according IDs and publish these
-            ids = [[april_tuples[idx_max][0],april_tuples[idx_max][1]]
+            ids = [april_tuples[idx_max][0],april_tuples[idx_max][1]]
+            ids = [int(x) for x in ids]
             idmessage = Int16MultiArray(data=ids)
             self.tagid_pub.publish(idmessage)
             rospy.loginfo("Direction chosen: "+self.direction+" from "+str(choice))
