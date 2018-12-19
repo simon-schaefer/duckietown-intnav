@@ -27,7 +27,7 @@ class Main(Node):
         self.calibration_sub = rospy.Subscriber(topic, CameraInfo, self.calib_callback)
         # Image callback - Read in, rectify and push image. 
         self.bridge = CvBridge()
-        topic = str('/'+duckiebot+'/camera_node/image/compressed')
+        topic = str('/'+duckiebot+'/camera_node/image/compressed/intnav')
         self.img_sub = rospy.Subscriber(topic, CompressedImage, self.image_callback, 
                                         queue_size=1, buff_size=1000000)
         topic_rect = str('/'+duckiebot+'/camera_node/rect')

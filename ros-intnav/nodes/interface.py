@@ -94,9 +94,13 @@ class Main(Node):
             rospy.logwarn("/n Switched back to lane following")
 
     def timer_callback(self, event):
+        # If direction unknown ping intersection switch for camera. 
         if not self.direction_known:
-            return
-	itype_msg = String()
+            msg = Bool()
+            msg.data = True
+            self.int_switch_pub.publish(msg)
+        # Else publish direction and intersection type. 
+        itype_msg = String()
         itype_msg.data = self.itype
         self.itype_pub.publish(itype_msg)
         dir_msg = String()
