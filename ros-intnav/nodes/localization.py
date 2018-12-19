@@ -37,14 +37,14 @@ class Main(Node):
         self.traj = Path()
         # Initialize control input subscriber.
         topic = str("/" + duckiebot + "/joy_mapper_node/car_cmd")
-        self.vel_sub = rospy.Subscriber(topic, Twist2DStamped, self.controlCallback)
-        
+        self.vel_sub = rospy.Subscriber(topic, Twist2DStamped, self.control_callback)
         topic = str("/" + duckiebot + "/intnav/direction")
         self.direction_sub = rospy.Subscriber(topic, String, 
                                               self.direction_callback)
         # Initialize april pose subscriber - Low-frequent update.
         self.tag_sub = rospy.Subscriber("/tag_detections", AprilTagDetectionArray, 
                                         self.tag_callback)
+        rospy.spin()
 
     def start(self): 
         # Read launch file parameter.
@@ -81,7 +81,7 @@ class Main(Node):
     def shutdown(self): 
         self.olu_timer.shutdown()
 
-    def controlCallback(self, message):
+    def control_callback(self, message):
         ''' Subscribe and update control inputs for (feed-forward)
         intermediate Kalman state update. '''
         self.control_inputs = np.array([message.v, message.omega])

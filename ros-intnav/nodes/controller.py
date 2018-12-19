@@ -41,6 +41,7 @@ class Main(Node):
         self.path_pub = rospy.Publisher(topic, Path, queue_size=1)
         # Final zero velocity command (on shutdown).
         rospy.on_shutdown(self.stop)
+        rospy.spin()
 
     def start(self): 
         # Read launch file parameter.

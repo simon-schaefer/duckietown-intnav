@@ -32,6 +32,7 @@ class Main(Node):
                                         queue_size=1, buff_size=1000000)
         topic_rect = str('/'+duckiebot+'/camera_node/rect')
         self.rect_pub = rospy.Publisher(topic_rect, Image, queue_size=1)
+        rospy.spin()
 
     def start(self): 
         self.camera_config = None

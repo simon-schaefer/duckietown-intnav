@@ -23,8 +23,6 @@ class Node(object):
         self.start()
         self.is_running = True          
 
-        rospy.spin()
-
     def switch_callback(self, msg): 
         if msg.data and not self.is_running: 
             rospy.loginfo("INTNAV: Starting node %s ..." % self.node_name)

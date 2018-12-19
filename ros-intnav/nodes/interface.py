@@ -53,7 +53,8 @@ class Main(Node):
         #self.fsm_pub = rospy.Publisher(topic, FSMState, queue_size=1)
         self.tag_sub = rospy.Subscriber("/tag_detections", AprilTagDetectionArray,
                                         self.tag_callback)
- 
+        rospy.spin()
+
     def start(self):
         input_type = rospy.get_param('interface/input_type')
         # Initialize intersection type publisher and hard set the type.

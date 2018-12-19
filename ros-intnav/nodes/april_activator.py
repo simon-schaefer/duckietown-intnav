@@ -16,6 +16,7 @@ class Main(Node):
         self.switch_pub = rospy.Publisher('apriltag_detector_node/switch', 
                                           BoolStamped,queue_size=1)
         Node.__init__(self, duckiebot, "april_activator")
+        rospy.spin()
 
     def start(self): 
         self.timer = rospy.Timer(rospy.Duration(1/30.0), self.timer_callback)

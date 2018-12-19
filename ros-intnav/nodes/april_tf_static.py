@@ -15,6 +15,7 @@ class Main(Node):
     def __init__(self):
         duckiebot = rospy.get_param("tf_april_static/duckiebot")
         Node.__init__(self, duckiebot, "tf_tree")
+        rospy.spin()
 
     def start(self):
         self.timer = rospy.Timer(rospy.Duration(1.0), self.publish_trafo)
