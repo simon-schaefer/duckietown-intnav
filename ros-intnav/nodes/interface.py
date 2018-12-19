@@ -92,7 +92,7 @@ class Main(Node):
     def timer_callback(self, event):
         if not self.direction_known:
             return 
-	    itype_msg = String()
+	itype_msg = String()
         itype_msg.data = self.itype
         self.itype_pub.publish(itype_msg)
         dir_msg = String()
@@ -100,7 +100,7 @@ class Main(Node):
         self.direction_pub.publish(dir_msg)
 
     def tag_callback(self, message):
-        if self.direction_known:
+        if self.direction_known or len(message.detections)==0:
             return
         rospy.loginfo("Determining intersection pose based on AprilTags ...")
         # publish direction, depending on intersection type
@@ -113,11 +113,10 @@ class Main(Node):
                     nfound[i] += 1
         idx_max = np.argmax(nfound)
         rospy.logwarn(str(april_tuples[idx_max]))
-        if (nfound[idx_max] is not 0):
+        if (not nfound[idx_max] is 0):
             directions_pos = april_tuples[idx_max][2]
-            for i in range(20):
-                    choice = int(round(np.random.rand()*(len(directions_pos)-1)))
-            self.direction = str(directions_pos[choice])
+            choice = int(round(np.random.rand()*(len(directions_pos)-1)))
+            self.direction = str('L')  #str(directions_pos[choice])
             self.direction_known = True
             rospy.loginfo("Direction chosen: "+self.direction+" from "+str(choice))
 
