@@ -20,7 +20,7 @@ done
 
 # Create all needed containers. 
 echo "Restart lane following container"
-docker -H $DUCKIEBOT.local create -it --net host --memory="800m" --memory-swap="1.8g" --privileged -v /data:/data --name lane_following seleschaefer/intnav_lane_following:master2018
+docker -H $DUCKIEBOT.local create -it --net host --memory="800m" --memory-swap="1.8g" --privileged -v /data:/data --name lane_following seleschaefer/intnav_lane_following:master18
 docker -H $DUCKIEBOT.local start lane_following
 
 # Execute lane following container. 
