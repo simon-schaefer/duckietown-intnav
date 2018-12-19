@@ -14,7 +14,7 @@ import numpy as np
 import rospy
 from tf.transformations import euler_from_quaternion
 from geometry_msgs.msg import PoseWithCovarianceStamped
-from std_msgs.msg import Bool, String
+from std_msgs.msg import Bool, String, Int16MultiArray
 from apriltags2_ros.msg import AprilTagDetectionArray
 
 from duckietown_msgs.msg import BoolStamped
@@ -51,6 +51,9 @@ class Main(Node):
         #self.fsm_pub = rospy.Publisher(topic, FSMState, queue_size=1)
         self.tag_sub = rospy.Subscriber("/tag_detections", AprilTagDetectionArray,
                                         self.tag_callback)
+        # publish apriltag IDs to be detected
+        topic = str("/" + duckiebot + "/intnav/tagids")
+        self.tagid_pub = rospy.Publisher(topic, Int16MultiArray, queue_size=1)
         rospy.spin()
 
     def start(self):
@@ -66,7 +69,7 @@ class Main(Node):
         self.timer.shutdown()
 
     def pose_callback(self, msg):
-        if self.direction is None: 
+        if self.direction is None:
             return
         position = msg.pose.pose.position
         rot = msg.pose.pose.orientation
@@ -87,11 +90,11 @@ class Main(Node):
             switch_msg = BoolStamped()
             switch_msg.data = True
             self.lc_switch_pub.publish(switch_msg)
-            print("-----------------------------------------/n Switched back to lane following")
+            rospy.logwarn("/n Switched back to lane following")
 
     def timer_callback(self, event):
         if not self.direction_known:
-            return 
+            return
 	itype_msg = String()
         itype_msg.data = self.itype
         self.itype_pub.publish(itype_msg)
@@ -106,6 +109,18 @@ class Main(Node):
         # publish direction, depending on intersection type
         april_tuples = self.create_apriltag_tuple()
         nfound = np.zeros((len(april_tuples), ))
+        detected = []
+        for detection in message.detections:
+            x = detection.pose.pose.position.x
+            y = detection.pose.pose.position.y
+            z = detection.pose.pose.position.z
+            dist = np.linalg.norm([x,y,z])
+            if dist < 0.8
+                detected.append(detection)
+        if len(detected) == 0:
+            rospy.logwarn(" No Apriltags closer than 0.8m detected")
+            return
+        # prefilter message.detections for apriltags closer than 0.8
         for detection in message.detections:
             tag_id = detection.id[0]
             for i in range(0,len(april_tuples)):
@@ -116,10 +131,14 @@ class Main(Node):
         if (not nfound[idx_max] is 0):
             directions_pos = april_tuples[idx_max][2]
             for k in range(20):
-                 choice = int(round(np.random.rand()*(len(directions_pos)-1)))
+                 choice = np.random.randint(0,len(directions_pos))
                  print('choice', choice)
             self.direction = str(directions_pos[choice])
             self.direction_known = True
+            # evaluate according IDs and publish these
+            ids = [[april_tuples[idx_max][0],april_tuples[idx_max][1]]
+            idmessage = Int16MultiArray(data=ids)
+            self.tagid_pub.publish(idmessage)
             rospy.loginfo("Direction chosen: "+self.direction+" from "+str(choice))
 
     @staticmethod
