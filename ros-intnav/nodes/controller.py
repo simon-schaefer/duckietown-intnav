@@ -24,8 +24,7 @@ class Main(Node):
 
     def __init__(self):
         duckiebot = rospy.get_param('controller/duckiebot')
-        Node.__init__(self, duckiebot, "controller")
-        rospy.on_shutdown(self.stop)        
+        Node.__init__(self, duckiebot, "controller")     
 
     def start(self): 
         # Read launch file parameter.
@@ -62,6 +61,7 @@ class Main(Node):
         #self.cmd_pub = rospy.Publisher(topic, WheelsCmdStamped, queue_size=1)
         # Final zero velocity command (on shutdown).
         self.controller = None
+        rospy.on_shutdown(self.stop)
 
     def shutdown(self): 
         self.direction_sub.unregister()

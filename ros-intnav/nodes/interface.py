@@ -8,7 +8,6 @@
 # To set the direction there are several choices, either random or
 # set by keyboard. Other interfaces can be implemented here.
 # Intersection type has to be set mainly due to visualization issues.
-# TODO: Choose only feasible directions (depending on type).
 ###############################################################################
 import numpy as np
 from random import randint
@@ -85,13 +84,13 @@ class Main(Node):
         if((self.direction == "R" and pose[2]>np.pi/2 - np.pi/20) \
         or (self.direction == "L" and pose[2]<np.pi/2 + np.pi/20) \
         or (self.direction == "S" and pose[0]>40.0)):
-            #fsm_msg = FSMState()
-            #fsm_msg.state = "LANE_FOLLOWING"
-            #self.fsm_pub.publish(fsm_msg)
-            #switch_msg = BoolStamped()
-            #switch_msg.data = True
-            #self.switch_pub.publish(switch_msg)
-            pass
+            fsm_msg = FSMState()
+            fsm_msg.state = "LANE_FOLLOWING"
+            self.fsm_pub.publish(fsm_msg)
+            switch_msg = BoolStamped()
+            switch_msg.data = True
+            self.switch_pub.publish(switch_msg)
+            rospy.loginfo("Switched back to lane following")
 
     def timer_callback(self, event):
         if (self.direction_known == True):

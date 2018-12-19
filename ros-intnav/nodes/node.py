@@ -19,6 +19,10 @@ class Node(object):
         self.is_running = False
         # Set node name. 
         self.node_name = node_name
+
+        self.start()
+        self.is_running = True          
+
         rospy.spin()
 
     def state_callback(self, msg): 
@@ -27,7 +31,7 @@ class Node(object):
             self.start()
             self.is_running = True
             rospy.loginfo("INTNAV: Finished start of node %s ..." % self.node_name)
-        elif not msg.state == "INTERSECTION_CONTROL" and self.is_running: 
+        elif msg.state == "LANE_FOLLOWING" and self.is_running: 
             rospy.loginfo("INTNAV: Stopping node %s ..." % self.node_name)
             self.shutdown()
             self.is_running = False
