@@ -9,18 +9,18 @@
 # set by keyboard. Other interfaces can be implemented here.
 # Intersection type has to be set mainly due to visualization issues.
 ###############################################################################
+import copy
 import numpy as np
 from random import randint
 import rospy
 from tf.transformations import euler_from_quaternion
 from geometry_msgs.msg import PoseWithCovarianceStamped
 from sensor_msgs.msg import Joy
-from std_msgs.msg import String
-import copy
+from std_msgs.msg import Bool, String
 from apriltags2_ros.msg import AprilTagDetectionArray
 
 from duckietown_msgs.msg import BoolStamped
-from duckietown_msgs.msg import FSMState
+#from duckietown_msgs.msg import FSMState
 
 from node import Node
 
@@ -63,9 +63,11 @@ class Main(Node):
         self.pose_sub = rospy.Subscriber(topic, PoseWithCovarianceStamped,
                                          self.pose_callback)
         topic = str("/" + duckiebot + "/lane_controller_node/switch")
-        self.switch_pub = rospy.Publisher(topic, BoolStamped, queue_size=1)
-        topic = str("/" + duckiebot + "/fsm_node/mode")
-        self.fsm_pub = rospy.Publisher(topic, FSMState, queue_size=1)
+        self.lc_switch_pub = rospy.Publisher(topic, BoolStamped, queue_size=1)
+        topic = str("/" + duckiebot + "/intnav/switch")
+        self.int_switch_pub = rospy.Publisher(topic, Bool, queue_size=1)        
+        #topic = str("/" + duckiebot + "/fsm_node/mode")
+        #self.fsm_pub = rospy.Publisher(topic, FSMState, queue_size=1)
         self.tag_sub = rospy.Subscriber("/tag_detections", AprilTagDetectionArray,
                                         self.tag_callback)
  
@@ -84,12 +86,15 @@ class Main(Node):
         if((self.direction == "R" and pose[2]>np.pi/2 - np.pi/20) \
         or (self.direction == "L" and pose[2]<np.pi/2 + np.pi/20) \
         or (self.direction == "S" and pose[0]>40.0)):
-            fsm_msg = FSMState()
-            fsm_msg.state = "LANE_FOLLOWING"
-            self.fsm_pub.publish(fsm_msg)
+            #fsm_msg = FSMState()
+            #fsm_msg.state = "LANE_FOLLOWING"
+            #self.fsm_pub.publish(fsm_msg)
+            switch_msg = Bool()
+            switch_msg.data = False
+            self.int_switch_pub.publish(switch_msg)
             switch_msg = BoolStamped()
             switch_msg.data = True
-            self.switch_pub.publish(switch_msg)
+            self.lc_switch_pub.publish(switch_msg)
             rospy.loginfo("Switched back to lane following")
 
     def timer_callback(self, event):

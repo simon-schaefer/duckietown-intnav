@@ -2,15 +2,14 @@
 ###############################################################################
 # Duckietown - Project intnav ETH
 # Author: Simon Schaefer
-# Manual stop line interface - Press space to switch from lane following
-# to intersection control. Workaround while stop line detection not working.
+# Manual stop line interface - Press space to switch from lane following to
+# intsec control(switch). Workaround while stop line detection not working.
 ###############################################################################
 import rospy
 from sensor_msgs.msg import Joy
-from std_msgs.msg import String
+from std_msgs.msg import Bool, String
 
 from duckietown_msgs.msg import BoolStamped
-from duckietown_msgs.msg import FSMState
 
 class Main():
 
@@ -18,9 +17,9 @@ class Main():
         duckiebot = rospy.get_param('stop_line_control/duckiebot')
         # Initialize switch and state publishers.
         topic = str("/" + duckiebot + "/lane_controller_node/switch")
-        self.switch_pub = rospy.Publisher(topic, BoolStamped, queue_size=1)
-        topic = str("/" + duckiebot + "/fsm_node/mode")
-        self.fsm_pub = rospy.Publisher(topic, FSMState, queue_size=1)
+        self.lc_switch_pub = rospy.Publisher(topic, BoolStamped, queue_size=1)
+        topic = str("/" + duckiebot + "/intnav/switch")
+        self.int_switch_pub = rospy.Publisher(topic, Bool, queue_size=1)
         # Keyboard input subscriber.  
         topic = str("/" + duckiebot + "/joy")
         rospy.Subscriber(topic, Joy, self.process)
@@ -30,15 +29,13 @@ class Main():
     def process(self, msg):
         if not msg.buttons[6] == 1: 
             return False
-        fsm_msg = FSMState()
-        fsm_msg.state = 'INTERSECTION_CONTROL'
-        self.fsm_pub.publish(fsm_msg)
+        switch_msg = Bool()
+        switch_msg.data = True
+        self.int_switch_pub.publish(switch_msg)
         switch_msg = BoolStamped()
         switch_msg.data = False
-        self.switch_pub.publish(switch_msg)
+        self.lc_switch_pub.publish(switch_msg)
         rospy.loginfo("INTNAV: Stop line control triggered ...")
-        rospy.logwarn("INTNAV: Press [a] to start intsec control ...")
-        self.listen_to_keyboard = False
         return True
 
 if __name__ == '__main__':
