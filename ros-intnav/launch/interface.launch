@@ -1,12 +1,9 @@
 <launch>
 
     <arg name="duckiebot" default="duckiebot" />
-    <arg name="input_type" default="smart_random" doc="way of choosing direction 
-                                                  [keyboard, random]" />
 
     <node name="interface" pkg="duckietown-intnav" type="interface.py"  output="screen">
-        <param name="duckiebot" value="$(arg duckiebot)"/>
-        <param name="input_type" value="$(arg input_type)"/>
+        <param name="duckiebot" value="$(arg duckiebot)"/>  
     </node>
 
     <node name="stop_line_control" pkg="duckietown-intnav" type="interface_stopline.py"  output="screen">
