@@ -12,11 +12,10 @@ from node import Node
 class Main(Node): 
 
     def __init__(self): 
-        # Read launch file parameters. 
         duckiebot = rospy.get_param('april_activator/duckiebot')
-        Node.__init__(self, duckiebot, "april_activator")
         self.switch_pub = rospy.Publisher('apriltag_detector_node/switch', 
                                           BoolStamped,queue_size=1)
+        Node.__init__(self, duckiebot, "april_activator")
 
     def start(self): 
         self.timer = rospy.Timer(rospy.Duration(1/30.0), self.timer_callback)

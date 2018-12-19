@@ -39,6 +39,8 @@ class Main(Node):
                                               self.direction_callback)
         topic = str("/" + duckiebot + "/intnav/path")
         self.path_pub = rospy.Publisher(topic, Path, queue_size=1)
+        # Final zero velocity command (on shutdown).
+        rospy.on_shutdown(self.stop)
 
     def start(self): 
         # Read launch file parameter.
@@ -57,10 +59,9 @@ class Main(Node):
         self.n_hist = rospy.get_param('controller/n_hist')
         self.path_points = None
         self.control_cmds = None
-        # Final zero velocity command (on shutdown).
+        # Initialize controller to none - Set when path planned. 
         self.controller = None
-        rospy.on_shutdown(self.stop)
-
+        
     def shutdown(self): 
         pass
 
