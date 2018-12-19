@@ -11,11 +11,9 @@
 ###############################################################################
 import copy
 import numpy as np
-from random import randint
 import rospy
 from tf.transformations import euler_from_quaternion
 from geometry_msgs.msg import PoseWithCovarianceStamped
-from sensor_msgs.msg import Joy
 from std_msgs.msg import Bool, String
 from apriltags2_ros.msg import AprilTagDetectionArray
 
@@ -56,21 +54,11 @@ class Main(Node):
         rospy.spin()
 
     def start(self):
-        input_type = rospy.get_param('interface/input_type')
-        # Initialize intersection type publisher and hard set the type.
-	self.itype_msg = String()
-        self.itype_msg.data = ITYPE
-        # Initialize direction publisher.
-        self.dir_msg = String()
-        if input_type == "smart_random":
-            self.direction_known = False
-        elif input_type == "keyboard":
-            self.direction_known = True
-            self.dir_msg.data = self.direction_keyboard()
-        else:
-            rospy.logfatal("Invalid interface type !")
-        self.direction = self.dir_msg.data
-        # rospy.loginfo("Direction to go = %s" % DIRECTIONS[self.direction])
+        # Set intersection type and hard set the type.
+        self.itype = ITYPE
+        # Set direction type (determined in callback based on april tags).
+        self.direction = None
+        self.direction_known = False
         # Start timer.
         self.timer = rospy.Timer(rospy.Duration(0.5), self.timer_callback)
 
@@ -78,14 +66,13 @@ class Main(Node):
         self.timer.shutdown()
 
     def pose_callback(self, msg):
+        if self.direction is None: 
+            return
         position = msg.pose.pose.position
         rot = msg.pose.pose.orientation
         euler = euler_from_quaternion([rot.x,rot.y,rot.z,rot.w])
         pose = (position.x, position.y, euler[2])
         print('pose callback: ', pose, 'direction', self.direction)
-        print(self.direction=="R")
-        print(self.direction=="L")
-        print(self.direction=="S")
 
         # Check switching to lane following - Right turn.
         if((self.direction == "R" and pose[2]<(-np.pi/2 + np.pi/20)) \
@@ -103,39 +90,36 @@ class Main(Node):
             print("-----------------------------------------/n Switched back to lane following")
 
     def timer_callback(self, event):
-        if (self.direction_known == True):
-            print("in timer direction known")	
-            self.itype_pub.publish(self.itype_msg)
-            self.direction_pub.publish(self.dir_msg)
-        else:
-	    print("in timer direction unknown")
-            self.dir_msg.data = self.direction_random()
-            self.direction = self.dir_msg.data
-            print('dir_msg_data', self.dir_msg.data)
-            print('.direction', self.direction)
+        if not self.direction_known:
+            return 
+	    itype_msg = String()
+        itype_msg.data = self.itype
+        self.itype_pub.publish(itype_msg)
+        dir_msg = String()
+        dir_msg.data = self.direction
+        self.direction_pub.publish(dir_msg)
 
     def tag_callback(self, message):
-        if (self.direction_known==False):
-            rospy.loginfo("Searching for Apriltags...")
-            # publish direction, depending on intersection type
-            april_tuples = self.create_apriltag_tuple()
-            nfound = np.zeros((len(april_tuples), ))
-            for detection in message.detections:
-                tag_id = detection.id[0]
-                for i in range(0,len(april_tuples)):
-                    if (tag_id==april_tuples[i][0] or tag_id==april_tuples[i][1]):
-                        nfound[i] += 1
-            idx_max = np.argmax(nfound)
-            rospy.logwarn(str(april_tuples[idx_max]))
-            if (nfound[idx_max] is not 0):
-                directions_pos = april_tuples[idx_max][2]
-                for i in range(20):
-                        choice = int(round(np.random.rand()*(len(directions_pos)-1)))
-		        print('choice: ', choice)
-                self.dir_msg.data = str(directions_pos[choice])
-                self.direction_known = True
-                rospy.loginfo("Direction randomly chosen: "+ str(self.dir_msg.data))
-
+        if self.direction_known:
+            return
+        rospy.loginfo("Determining intersection pose based on AprilTags ...")
+        # publish direction, depending on intersection type
+        april_tuples = self.create_apriltag_tuple()
+        nfound = np.zeros((len(april_tuples), ))
+        for detection in message.detections:
+            tag_id = detection.id[0]
+            for i in range(0,len(april_tuples)):
+                if (tag_id==april_tuples[i][0] or tag_id==april_tuples[i][1]):
+                    nfound[i] += 1
+        idx_max = np.argmax(nfound)
+        rospy.logwarn(str(april_tuples[idx_max]))
+        if (nfound[idx_max] is not 0):
+            directions_pos = april_tuples[idx_max][2]
+            for i in range(20):
+                    choice = int(round(np.random.rand()*(len(directions_pos)-1)))
+            self.direction = str(directions_pos[choice])
+            self.direction_known = True
+            rospy.loginfo("Direction chosen: "+self.direction+" from "+str(choice))
 
     @staticmethod
     def create_apriltag_tuple():
@@ -167,33 +151,6 @@ class Main(Node):
                         apriltags_list[i]["name"] = "0"
         assert(len(april_tuples)==len(apriltags_list)/2)
         return april_tuples
-
-    @staticmethod
-    def direction_random():
-        rand_dir = randint(0, 2)
-        directions = {0: "L", 1: "S", 2: "R"}
-        return directions[rand_dir]
-
-    def direction_keyboard(self):
-        self.direction = None
-
-        def key_callback(msg):
-            print(msg)
-            if int(msg.axes[1]) == 1:
-                self.direction = "S"
-            elif int(msg.axes[3]) == -1:
-                self.direction = "R"
-            elif int(msg.axes[3]) == +1:
-                self.direction = "L"
-
-        duckiebot = rospy.get_param('interface/duckiebot')
-        topic = str("/" + duckiebot + "/joy")
-        sub = rospy.Subscriber(topic, Joy, key_callback)
-        rospy.logwarn("Choose direction [left, up, right]: ")
-        while self.direction is None:
-            pass
-        sub.unregister()
-        return self.direction
 
 if __name__ == '__main__':
     rospy.init_node('interface', anonymous=True)
