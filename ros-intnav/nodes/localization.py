@@ -111,6 +111,8 @@ class Main(Node):
         return True
 
     def tagid_callback(self, message):
+        if not self.tagid_array is None: 
+            return
         self.tagid_array = [int(x) for x in message.data]
         rospy.loginfo("Set considered tag ids to " + str(self.tagid_array))
 
@@ -120,6 +122,7 @@ class Main(Node):
         estimates and call Kalman filter update for every measurement. '''
         # Return if tag ids not set so far.
         if self.tagid_array is None:
+            rospy.logwarn("No tag id array published yet ...")
             return
         # Get pose estimates from message.
         pose_estimates = []

@@ -61,6 +61,7 @@ class Main(Node):
         self.itype = ITYPE
         # Set direction type (determined in callback based on april tags).
         self.direction = None
+        self.tagids = None
         self.direction_known = False
         # Start timer.
         self.timer = rospy.Timer(rospy.Duration(0.5), self.timer_callback)
@@ -101,6 +102,8 @@ class Main(Node):
         dir_msg = String()
         dir_msg.data = self.direction
         self.direction_pub.publish(dir_msg)
+        idmessage = Int16MultiArray(data=self.tagids)
+        self.tagid_pub.publish(idmessage)
 
     def tag_callback(self, message):
         if self.direction_known or len(message.detections)==0:
@@ -115,7 +118,7 @@ class Main(Node):
             y = detection.pose.pose.pose.position.y
             z = detection.pose.pose.pose.position.z
             dist = np.linalg.norm([x,y,z])
-            if dist < 0.8:
+            if dist < 0.95:
                 detected.append(detection)
         if len(detected) == 0:
             rospy.logwarn(" No Apriltags closer than 0.8m detected")
@@ -130,17 +133,14 @@ class Main(Node):
         rospy.logwarn(str(april_tuples[idx_max]))
         if (not nfound[idx_max] is 0):
             directions_pos = april_tuples[idx_max][2]
-            for k in range(20):
-                 choice = np.random.randint(0,len(directions_pos))
-                 print('choice', choice)
+            choice = np.random.randint(0,len(directions_pos))
             self.direction = str(directions_pos[choice])
-            self.direction_known = True
             # evaluate according IDs and publish these
             ids = [april_tuples[idx_max][0],april_tuples[idx_max][1]]
             ids = [int(x) for x in ids]
-            idmessage = Int16MultiArray(data=ids)
-            self.tagid_pub.publish(idmessage)
-            rospy.loginfo("Direction chosen: "+self.direction+" from "+str(choice))
+            self.tagids = ids
+            self.direction_known = True
+            rospy.loginfo("Direction chosen: "+self.direction)
 
     @staticmethod
     def create_apriltag_tuple():
