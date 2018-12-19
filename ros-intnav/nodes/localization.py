@@ -126,8 +126,16 @@ class Main(Node):
         for detection in message.detections:
             tag_id = detection.id[0]
             world_frame = self.world_id_frame_dict[int(tag_id)]
-            # Check whether id in considered ids.
+            # Check whether id in considered ids and whether 
+            # they are in range.
             if not tag_id in self.tagid_array:
+                continue
+            x = detection.pose.pose.pose.position.x
+            y = detection.pose.pose.pose.position.y
+            z = detection.pose.pose.pose.position.z
+            dist = np.linalg.norm([x,y,z])
+            if dist > 0.95: 
+                rospy.logwarn("Tag %d out of range (dist=%f)" % (tag_id,dist))
                 continue
             # TF Tree transformations.
             latest = rospy.Time(0)
