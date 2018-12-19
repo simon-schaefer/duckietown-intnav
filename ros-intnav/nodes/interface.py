@@ -14,7 +14,7 @@ import numpy as np
 import rospy
 from tf.transformations import euler_from_quaternion
 from geometry_msgs.msg import PoseWithCovarianceStamped
-from std_msgs.msg import Bool, String
+from std_msgs.msg import Bool, String, Int16MultiArray
 from apriltags2_ros.msg import AprilTagDetectionArray
 
 from duckietown_msgs.msg import BoolStamped
@@ -51,6 +51,9 @@ class Main(Node):
         #self.fsm_pub = rospy.Publisher(topic, FSMState, queue_size=1)
         self.tag_sub = rospy.Subscriber("/tag_detections", AprilTagDetectionArray,
                                         self.tag_callback)
+        # publish apriltag IDs to be detected
+        topic = str("/" + duckiebot + "/intnav/tagids")
+        self.tagid_pub = rospy.Publisher(topic, Int16MultiArray, queue_size=1)
         rospy.spin()
 
     def start(self):
@@ -58,6 +61,7 @@ class Main(Node):
         self.itype = ITYPE
         # Set direction type (determined in callback based on april tags).
         self.direction = None
+        self.tagids = None
         self.direction_known = False
         # Start timer.
         self.timer = rospy.Timer(rospy.Duration(0.5), self.timer_callback)
@@ -66,7 +70,7 @@ class Main(Node):
         self.timer.shutdown()
 
     def pose_callback(self, msg):
-        if self.direction is None: 
+        if self.direction is None:
             return
         position = msg.pose.pose.position
         rot = msg.pose.pose.orientation
@@ -77,7 +81,7 @@ class Main(Node):
         # Check switching to lane following - Right turn.
         if((self.direction == "R" and pose[2]<(-np.pi/2 + np.pi/20)) \
         or (self.direction == "L" and (pose[2] > (np.pi/2 - np.pi/20) or pose[1]>0.2)) \
-        or (self.direction == "S" and pose[0]>0.25)):
+        or (self.direction == "S" and pose[0]>0.2)):
             #fsm_msg = FSMState()
             #fsm_msg.state = "LANE_FOLLOWING"
             #self.fsm_pub.publish(fsm_msg)
@@ -87,25 +91,39 @@ class Main(Node):
             switch_msg = BoolStamped()
             switch_msg.data = True
             self.lc_switch_pub.publish(switch_msg)
-            print("-----------------------------------------/n Switched back to lane following")
+            rospy.logwarn("/n Switched back to lane following")
 
     def timer_callback(self, event):
         if not self.direction_known:
-            return 
-	    itype_msg = String()
+            return
+	itype_msg = String()
         itype_msg.data = self.itype
         self.itype_pub.publish(itype_msg)
         dir_msg = String()
         dir_msg.data = self.direction
         self.direction_pub.publish(dir_msg)
+        idmessage = Int16MultiArray(data=self.tagids)
+        self.tagid_pub.publish(idmessage)
 
     def tag_callback(self, message):
-        if self.direction_known:
+        if self.direction_known or len(message.detections)==0:
             return
         rospy.loginfo("Determining intersection pose based on AprilTags ...")
         # publish direction, depending on intersection type
         april_tuples = self.create_apriltag_tuple()
         nfound = np.zeros((len(april_tuples), ))
+        detected = []
+        for detection in message.detections:
+            x = detection.pose.pose.pose.position.x
+            y = detection.pose.pose.pose.position.y
+            z = detection.pose.pose.pose.position.z
+            dist = np.linalg.norm([x,y,z])
+            if dist < 0.95:
+                detected.append(detection)
+        if len(detected) == 0:
+            rospy.logwarn(" No Apriltags closer than 0.8m detected")
+            return
+        # prefilter message.detections for apriltags closer than 0.8
         for detection in message.detections:
             tag_id = detection.id[0]
             for i in range(0,len(april_tuples)):
@@ -113,13 +131,16 @@ class Main(Node):
                     nfound[i] += 1
         idx_max = np.argmax(nfound)
         rospy.logwarn(str(april_tuples[idx_max]))
-        if (nfound[idx_max] is not 0):
+        if (not nfound[idx_max] is 0):
             directions_pos = april_tuples[idx_max][2]
-            for i in range(20):
-                    choice = int(round(np.random.rand()*(len(directions_pos)-1)))
+            choice = np.random.randint(0,len(directions_pos))
             self.direction = str(directions_pos[choice])
+            # evaluate according IDs and publish these
+            ids = [april_tuples[idx_max][0],april_tuples[idx_max][1]]
+            ids = [int(x) for x in ids]
+            self.tagids = ids
             self.direction_known = True
-            rospy.loginfo("Direction chosen: "+self.direction+" from "+str(choice))
+            rospy.loginfo("Direction chosen: "+self.direction)
 
     @staticmethod
     def create_apriltag_tuple():

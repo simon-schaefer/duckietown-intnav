@@ -17,7 +17,7 @@ from duckietown_msgs.msg import WheelsCmdStamped
 from duckietown_msgs.msg import Twist2DStamped
 from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
 from nav_msgs.msg import Path
-from std_msgs.msg import String
+from std_msgs.msg import String, Int16MultiArray
 
 from duckietown_intnav.kalman import KalmanFilter
 
@@ -39,23 +39,29 @@ class Main(Node):
         topic = str("/" + duckiebot + "/joy_mapper_node/car_cmd")
         self.vel_sub = rospy.Subscriber(topic, Twist2DStamped, self.control_callback)
         topic = str("/" + duckiebot + "/intnav/direction")
-        self.direction_sub = rospy.Subscriber(topic, String, 
+        self.direction_sub = rospy.Subscriber(topic, String,
                                               self.direction_callback)
         # Initialize april pose subscriber - Low-frequent update.
-        self.tag_sub = rospy.Subscriber("/tag_detections", AprilTagDetectionArray, 
+        self.tag_sub = rospy.Subscriber("/tag_detections", AprilTagDetectionArray,
                                         self.tag_callback)
+        # Initialize april tag id subscriber (that are taken into account
+        # for localization).
+        topic = str("/" + duckiebot + "/intnav/tagids")
+        self.tagid_sub = rospy.Subscriber(topic, Int16MultiArray,
+                                          self.tagid_callback)
         rospy.spin()
 
-    def start(self): 
+    def start(self):
         # Read launch file parameter.
         duckiebot = rospy.get_param('localization/duckiebot')
         self.vehicle_frame = rospy.get_param('localization/vehicle_frame')
         self.world_frame = rospy.get_param('localization/world_frame')
         self.olu_rate = rospy.get_param('localization/olu_rate')
-        # Build world id to frame dictionary. 
+        # Build world id to frame dictionary.
         self.direction = None
         self.control_inputs = None
         self.world_id_frame_dict = self.build_id_frame_dict(self.world_frame)
+        self.tagid_array = None
         # Initialize Kalman filter with none (initialization from
         # first pose estimates).
         self.kalman = None
@@ -63,7 +69,7 @@ class Main(Node):
         self.num_init_estimates = rospy.get_param('localization/num_init_estimates')
         self.last_update_time = None
         # Update Kalman filter timer - High-frequent update).
-        self.olu_timer = rospy.Timer(rospy.Duration(1.0/float(self.olu_rate)), 
+        self.olu_timer = rospy.Timer(rospy.Duration(1.0/float(self.olu_rate)),
                                      self.open_loop_update)
         # Initialize vehicle model parameters.
         prefix = duckiebot + "/params/"
@@ -78,7 +84,7 @@ class Main(Node):
         self.bot_params = {'wheel_distance': rospy.get_param(prefix + "wheel_distance")}
         rospy.loginfo("Kalman waiting for %d init updates ..." % self.num_init_estimates)
 
-    def shutdown(self): 
+    def shutdown(self):
         self.olu_timer.shutdown()
 
     def control_callback(self, message):
@@ -104,15 +110,36 @@ class Main(Node):
             rospy.logwarn("Kalman open loop tries to preaccess variance ")
         return True
 
+    def tagid_callback(self, message):
+        if not self.tagid_array is None: 
+            return
+        self.tagid_array = [int(x) for x in message.data]
+        rospy.loginfo("Set considered tag ids to " + str(self.tagid_array))
+
     def tag_callback(self, message):
         ''' Subscribe april tag detection message, but merely to get the detected
         IDs and to update the pose as soon a new pose is published, extract pose
         estimates and call Kalman filter update for every measurement. '''
+        # Return if tag ids not set so far.
+        if self.tagid_array is None:
+            rospy.logwarn("No tag id array published yet ...")
+            return
         # Get pose estimates from message.
         pose_estimates = []
         for detection in message.detections:
             tag_id = detection.id[0]
             world_frame = self.world_id_frame_dict[int(tag_id)]
+            # Check whether id in considered ids and whether 
+            # they are in range.
+            if not tag_id in self.tagid_array:
+                continue
+            x = detection.pose.pose.pose.position.x
+            y = detection.pose.pose.pose.position.y
+            z = detection.pose.pose.pose.position.z
+            dist = np.linalg.norm([x,y,z])
+            if dist > 0.95: 
+                rospy.logwarn("Tag %d out of range (dist=%f)" % (tag_id,dist))
+                continue
             # TF Tree transformations.
             latest = rospy.Time(0)
             tf_exceptions = (tf.LookupException,
@@ -182,7 +209,7 @@ class Main(Node):
         self.traj_pub.publish(self.traj)
 
     @staticmethod
-    def build_id_frame_dict(world_frame): 
+    def build_id_frame_dict(world_frame):
         id_frame_dict = {}
         for tag in rospy.get_param("apriltags/standalone_tags"):
             frame = world_frame + tag['name'].replace("Tag", "")

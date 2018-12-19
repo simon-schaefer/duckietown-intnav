@@ -20,14 +20,13 @@ class Main():
         self.lc_switch_pub = rospy.Publisher(topic, BoolStamped, queue_size=1)
         topic = str("/" + duckiebot + "/intnav/switch")
         self.int_switch_pub = rospy.Publisher(topic, Bool, queue_size=1)
-        # Keyboard input subscriber.  
+        # Keyboard input subscriber.
         topic = str("/" + duckiebot + "/joy")
         rospy.Subscriber(topic, Joy, self.process)
-        rospy.logwarn("Press [s] to switch to intsec control ...")
         rospy.spin()
 
     def process(self, msg):
-        if not msg.buttons[6] == 1: 
+        if not msg.buttons[6] == 1:
             return False
         switch_msg = Bool()
         switch_msg.data = True

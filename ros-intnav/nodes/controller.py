@@ -68,6 +68,7 @@ class Main(Node):
         self.controlling = True
 
     def shutdown(self):
+        self.stop()
         pass
 
     def direction_callback(self, msg):
@@ -110,6 +111,7 @@ class Main(Node):
 	    self.controlling=True
 	else:
 	    self.controlling=False
+	    self.stop()
 
 
     def pose_callback(self, msg):
@@ -136,6 +138,9 @@ class Main(Node):
 
     def stop(self):
         msg = Twist2DStamped()
+	msg.v = 0
+	msg.omega = 0
+	print('STOPSTOPSTOP')
         self.cmd_pub.publish(msg)
 
 if __name__ == '__main__':
