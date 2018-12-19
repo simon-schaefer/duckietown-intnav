@@ -121,7 +121,7 @@ class Main(Node):
             if dist < 0.95:
                 detected.append(detection)
         if len(detected) == 0:
-            rospy.logwarn(" No Apriltags closer than 0.8m detected")
+            rospy.logwarn(" No Apriltags closer than 0.95m detected")
             return
         # prefilter message.detections for apriltags closer than 0.8
         for detection in message.detections:

@@ -90,9 +90,9 @@ class Controller(object):
         yL = l*np.cos(al)
         r = (xL**2)/(2*yL) + (yL/2)
         r = np.sign(r)*max(abs(r), self.min_r)
-        if(self.direction=='R' and self.y<(-4.65*self.x-0.6)):
+        if(self.direction=='R' and self.y<(-4.65*self.x-0.8)):
             self.vel = 0.065
-        if(self.direction=='R' and self.y>(-4.65*self.x-0.6)):
+        if(self.direction=='R' and self.y>(-4.65*self.x-0.8)):
             r=-self.min_r
             self.vel = 0.275
         tau = self.vel/r
