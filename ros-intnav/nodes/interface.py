@@ -32,29 +32,12 @@ class Main(Node):
     def __init__(self):
         duckiebot = rospy.get_param('interface/duckiebot')
         Node.__init__(self, duckiebot, "interface")
-
-    def start(self):
-        duckiebot = rospy.get_param('interface/duckiebot')
-        input_type = rospy.get_param('interface/input_type')
         # Initialize intersection type publisher and hard set the type.
         topic = str("/" + duckiebot + "/intnav/type")
         self.itype_pub = rospy.Publisher(topic, String, queue_size=1)
-        self.itype_msg = String()
-        self.itype_msg.data = ITYPE
         # Initialize direction publisher.
         topic = str("/" + duckiebot + "/intnav/direction")
         self.direction_pub = rospy.Publisher(topic, String, queue_size=1)
-        self.dir_msg = String()
-        if input_type == "smart_random":
-            self.direction_known = False
-            self.dir_msg.data = self.direction_random()
-        elif input_type == "keyboard":
-            self.direction_known = True
-            self.dir_msg.data = self.direction_keyboard()
-        else:
-            rospy.logfatal("Invalid interface type !")
-        self.direction = self.dir_msg.data
-        rospy.loginfo("Direction to go = %s" % DIRECTIONS[self.direction])
         # Start timer.
         self.timer = rospy.Timer(rospy.Duration(0.5), self.timer_callback)
         # Initialize pose callback to switch back to lane following
@@ -71,11 +54,28 @@ class Main(Node):
         self.tag_sub = rospy.Subscriber("/tag_detections", AprilTagDetectionArray,
                                         self.tag_callback)
  
+    def start(self):
+        input_type = rospy.get_param('interface/input_type')
+        # Initialize intersection type publisher and hard set the type.
+        self.itype_msg = String()
+        self.itype_msg.data = ITYPE
+        # Initialize direction publisher.
+        self.dir_msg = String()
+        if input_type == "smart_random":
+            self.direction_known = False
+            self.dir_msg.data = self.direction_random()
+        elif input_type == "keyboard":
+            self.direction_known = True
+            self.dir_msg.data = self.direction_keyboard()
+        else:
+            rospy.logfatal("Invalid interface type !")
+        self.direction = self.dir_msg.data
+        rospy.loginfo("Direction to go = %s" % DIRECTIONS[self.direction])
+        # Start timer.
+        self.timer = rospy.Timer(rospy.Duration(0.5), self.timer_callback)
+ 
     def shutdown(self):
         self.timer.shutdown()
-        self.pose_sub.unregister()
-        self.lc_switch_pub.unregister()
-        self.int_switch_pub.unregister()
 
     def pose_callback(self, msg):
         position = msg.pose.pose.position

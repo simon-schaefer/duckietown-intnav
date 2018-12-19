@@ -17,11 +17,9 @@ class Main(Node):
         Node.__init__(self, duckiebot, "tf_tree")
 
     def start(self):
-        ''' Start function - Start tf publishing timer. '''
         self.timer = rospy.Timer(rospy.Duration(1.0), self.publish_trafo)
 
     def shutdown(self):
-        ''' Stop function - Unregister tf publishing timer. '''
         self.timer.shutdown()
 
     def publish_trafo(self, event):

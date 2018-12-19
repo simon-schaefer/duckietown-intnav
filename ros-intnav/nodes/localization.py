@@ -28,15 +28,6 @@ class Main(Node):
     def __init__(self):
         duckiebot = rospy.get_param('localization/duckiebot')
         Node.__init__(self, duckiebot, "localization")
-
-    def start(self): 
-        # Read launch file parameter.
-        duckiebot = rospy.get_param('localization/duckiebot')
-        self.vehicle_frame = rospy.get_param('localization/vehicle_frame')
-        self.world_frame = rospy.get_param('localization/world_frame')
-        self.olu_rate = rospy.get_param('localization/olu_rate')
-        # Build world id to frame dictionary. 
-        self.world_id_frame_dict = self.build_id_frame_dict(self.world_frame)
         # Initialize tf listener and pose/trajectory publisher.
         self.tf_listener = tf.TransformListener()
         topic = str("/" + duckiebot + "/intnav/pose")
@@ -47,11 +38,24 @@ class Main(Node):
         # Initialize control input subscriber.
         topic = str("/" + duckiebot + "/joy_mapper_node/car_cmd")
         self.vel_sub = rospy.Subscriber(topic, Twist2DStamped, self.controlCallback)
-        self.direction = None
+        
         topic = str("/" + duckiebot + "/intnav/direction")
         self.direction_sub = rospy.Subscriber(topic, String, 
                                               self.direction_callback)
+        # Initialize april pose subscriber - Low-frequent update.
+        self.tag_sub = rospy.Subscriber("/tag_detections", AprilTagDetectionArray, 
+                                        self.tag_callback)
+
+    def start(self): 
+        # Read launch file parameter.
+        duckiebot = rospy.get_param('localization/duckiebot')
+        self.vehicle_frame = rospy.get_param('localization/vehicle_frame')
+        self.world_frame = rospy.get_param('localization/world_frame')
+        self.olu_rate = rospy.get_param('localization/olu_rate')
+        # Build world id to frame dictionary. 
+        self.direction = None
         self.control_inputs = None
+        self.world_id_frame_dict = self.build_id_frame_dict(self.world_frame)
         # Initialize Kalman filter with none (initialization from
         # first pose estimates).
         self.kalman = None
@@ -61,9 +65,6 @@ class Main(Node):
         # Update Kalman filter timer - High-frequent update).
         self.olu_timer = rospy.Timer(rospy.Duration(1.0/float(self.olu_rate)), 
                                      self.open_loop_update)
-        # Initialize april pose subscriber - Low-frequent update.
-        self.tag_sub = rospy.Subscriber("/tag_detections", AprilTagDetectionArray, 
-                                        self.tag_callback)
         # Initialize vehicle model parameters.
         prefix = duckiebot + "/params/"
         self.process_noise = np.eye(3)
@@ -79,11 +80,6 @@ class Main(Node):
 
     def shutdown(self): 
         self.olu_timer.shutdown()
-        self.tag_sub.unregister()
-        self.direction_sub.unregister()
-        self.vel_sub.unregister()
-        self.pose_pub.unregister()
-        self.traj_pub.unregister()
 
     def controlCallback(self, message):
         ''' Subscribe and update control inputs for (feed-forward)

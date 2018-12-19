@@ -40,7 +40,6 @@ class Main(Node):
         topic = str("/" + duckiebot + "/intnav/path")
         self.path_pub = rospy.Publisher(topic, Path, queue_size=1)
 
-
     def start(self): 
         # Read launch file parameter.
         duckiebot = rospy.get_param('controller/duckiebot')

@@ -22,13 +22,7 @@ class Main(Node):
     def __init__(self): 
         duckiebot = rospy.get_param('image_processing/duckiebot')
         Node.__init__(self, duckiebot, "preprocessing")
-
-    def start(self): 
-        # Read launch file parameter. 
-        duckiebot = rospy.get_param('image_processing/duckiebot')
         # Read camera intrinsics parameters. 
-        self.camera_config = None
-        self.camera_header = None
         topic = str('/'+duckiebot+'/camera_node/camera_info')
         self.calibration_sub = rospy.Subscriber(topic, CameraInfo, self.calib_callback)
         # Image callback - Read in, rectify and push image. 
@@ -39,10 +33,12 @@ class Main(Node):
         topic_rect = str('/'+duckiebot+'/camera_node/rect')
         self.rect_pub = rospy.Publisher(topic_rect, Image, queue_size=1)
 
+    def start(self): 
+        self.camera_config = None
+        self.camera_header = None
+
     def shutdown(self): 
-        self.calibration_sub.unregister()
-        self.img_sub.unregister()
-        self.rect_pub.unregister()
+        pass
 
     def calib_callback(self, message): 
         ''' Read camera parameters and update calibration, shut down 

@@ -15,17 +15,14 @@ class Main(Node):
         # Read launch file parameters. 
         duckiebot = rospy.get_param('april_activator/duckiebot')
         Node.__init__(self, duckiebot, "april_activator")
-
-    def start(self): 
-        ''' Starting function - Start april tag activation timer. '''
         self.switch_pub = rospy.Publisher('apriltag_detector_node/switch', 
                                           BoolStamped,queue_size=1)
+
+    def start(self): 
         self.timer = rospy.Timer(rospy.Duration(1/30.0), self.timer_callback)
 
     def shutdown(self): 
-        ''' Stop function - Stop april tag activation timer. '''
         self.timer.shutdown()
-        self.switch_pub.unregister()
 
     def timer_callback(self, event): 
         bool_msg = BoolStamped()
