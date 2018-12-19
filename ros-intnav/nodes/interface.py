@@ -41,14 +41,14 @@ class Main(Node):
         # Start timer.
         self.timer = rospy.Timer(rospy.Duration(0.5), self.timer_callback)
         # Initialize pose callback to switch back to lane following
-        # as well as state & lane following switch.       
+        # as well as state & lane following switch.
         topic = str("/" + duckiebot + "/intnav/pose")
         self.pose_sub = rospy.Subscriber(topic, PoseWithCovarianceStamped,
                                          self.pose_callback)
         topic = str("/" + duckiebot + "/lane_controller_node/switch")
         self.lc_switch_pub = rospy.Publisher(topic, BoolStamped, queue_size=1)
         topic = str("/" + duckiebot + "/intnav/switch")
-        self.int_switch_pub = rospy.Publisher(topic, Bool, queue_size=1)        
+        self.int_switch_pub = rospy.Publisher(topic, Bool, queue_size=1)
         #topic = str("/" + duckiebot + "/fsm_node/mode")
         #self.fsm_pub = rospy.Publisher(topic, FSMState, queue_size=1)
         self.tag_sub = rospy.Subscriber("/tag_detections", AprilTagDetectionArray,
@@ -74,7 +74,7 @@ class Main(Node):
         # rospy.loginfo("Direction to go = %s" % DIRECTIONS[self.direction])
         # Start timer.
         self.timer = rospy.Timer(rospy.Duration(0.5), self.timer_callback)
- 
+
     def shutdown(self):
         self.timer.shutdown()
 
@@ -121,7 +121,7 @@ class Main(Node):
                 directions_pos = april_tuples[idx_max][2]
                 for i in range(20):
                         choice = int(round(np.random.rand()*(len(directions_pos)-1)))
-		        print('choice: ', choice)
+		                print('choice: ', choice)
                 self.dir_msg.data = directions_pos[choice]
                 self.direction_known = True
                 rospy.loginfo("Direction randomly chosen: "+ str(self.dir_msg.data))
@@ -175,7 +175,7 @@ class Main(Node):
                 self.direction = "R"
             elif int(msg.axes[3]) == +1:
                 self.direction = "L"
-          
+
         duckiebot = rospy.get_param('interface/duckiebot')
         topic = str("/" + duckiebot + "/joy")
         sub = rospy.Subscriber(topic, Joy, key_callback)

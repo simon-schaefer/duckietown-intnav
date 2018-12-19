@@ -25,7 +25,7 @@ class Main(Node):
 
     def __init__(self):
         duckiebot = rospy.get_param('controller/duckiebot')
-        Node.__init__(self, duckiebot, "controller")     
+        Node.__init__(self, duckiebot, "controller")
         # Initialize pose callback to create and publish control
         # output following the previously determined optimal path.
         topic = str("/" + duckiebot + "/intnav/pose")
@@ -40,13 +40,13 @@ class Main(Node):
                                               self.direction_callback)
         topic = str("/" + duckiebot + "/intnav/path")
         self.path_pub = rospy.Publisher(topic, Path, queue_size=1)
-	topic = str("/" + duckiebot + "/lane_controller_node/switch")
+	topic = str("/" + duckiebot + "/intnav/switch")
 	self.switch_sub = rospy.Subscriber(topic, BoolStamped,self.switch_callback)
         # Final zero velocity command (on shutdown).
         rospy.on_shutdown(self.stop)
         rospy.spin()
 
-    def start(self): 
+    def start(self):
         # Read launch file parameter.
         duckiebot = rospy.get_param('controller/duckiebot')
         self.world_frame = rospy.get_param('controller/world_frame')
@@ -63,11 +63,11 @@ class Main(Node):
         self.n_hist = rospy.get_param('controller/n_hist')
         self.path_points = None
         self.control_cmds = None
-        # Initialize controller to none - Set when path planned. 
+        # Initialize controller to none - Set when path planned.
         self.controller = None
         self.controlling = True
-        
-    def shutdown(self): 
+
+    def shutdown(self):
         pass
 
     def direction_callback(self, msg):
@@ -76,10 +76,10 @@ class Main(Node):
         if not direction in possibities.keys():
             rospy.logfatal("Invalid intersection type !")
             return False
-        # Determine path points. 
+        # Determine path points.
         self.path_points = path_generate(possibities[direction],
                                          self.n_path_points)
-        # Set direction dependent parameters. 
+        # Set direction dependent parameters.
         if(direction=='S'):
             la_dis=self.la_dis_straight
             target_vel = self.target_vel_straight
@@ -91,7 +91,7 @@ class Main(Node):
             target_vel = self.target_vel_right
         self.controller = Controller(direction,self.path_points,self.wheel_distance,
                          self.adm_error, la_dis, self.min_radius, target_vel, self.n_hist)
-        # Publish path. 
+        # Publish path.
         path = Path()
         path.header.frame_id = self.world_frame
         path.poses = []
@@ -107,10 +107,10 @@ class Main(Node):
 
     def switch_callback(self, msg):
 	if(msg.data):
-	    self.controlling=False
-	else:
 	    self.controlling=True
-		
+	else:
+	    self.controlling=False
+
 
     def pose_callback(self, msg):
         # If no target path has been created so far return.
@@ -126,7 +126,7 @@ class Main(Node):
         rot = msg.pose.pose.orientation
         euler = euler_from_quaternion([rot.x,rot.y,rot.z,rot.w])
         pose = (position.x, position.y, euler[2])
-        # Determine and publish velocity controls. 
+        # Determine and publish velocity controls.
         vl, vr = self.controller.pure_pursuit(pose)
         msg = Twist2DStamped()
         msg.v = (vl + vr)/2
