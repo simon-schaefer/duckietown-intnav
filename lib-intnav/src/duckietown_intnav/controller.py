@@ -67,7 +67,7 @@ class Controller(object):
         idx_shortest = idx_shortest[0]
 
         projected_pt = self.path[idx_shortest[0],:]
-        print('projected point', projected_pt)
+        #print('projected point', projected_pt)
         distance = 0
 
         while(distance < self.la_dis and idx_shortest<len(self.path)-1):
@@ -76,7 +76,7 @@ class Controller(object):
 
         idx_next = idx_shortest
         goal = self.path[idx_next,:]
-        print('goalpoint: ', goal)
+        #print('goalpoint: ', goal)
         # From goal point --> vehicle action (velocity & steering vector).
         sv = (goal[0,0]-actual[0,0],
               goal[0,1]-actual[0,1]) #Steering_vector
@@ -96,5 +96,5 @@ class Controller(object):
             r=-self.min_r
             self.vel = 0.275
         tau = self.vel/r
-        print('vl,vr: ', (self.vel-0.5*tau*self.wheel_distance),(self.vel+0.5*tau*self.wheel_distance))
+        #print('vl,vr: ', (self.vel-0.5*tau*self.wheel_distance),(self.vel+0.5*tau*self.wheel_distance))
         return (self.vel-0.5*tau*self.wheel_distance),(self.vel+0.5*tau*self.wheel_distance)

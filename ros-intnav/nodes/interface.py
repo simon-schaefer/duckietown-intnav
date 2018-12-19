@@ -71,7 +71,7 @@ class Main(Node):
         else:
             rospy.logfatal("Invalid interface type !")
         self.direction = self.dir_msg.data
-        rospy.loginfo("Direction to go = %s" % DIRECTIONS[self.direction])
+        # rospy.loginfo("Direction to go = %s" % DIRECTIONS[self.direction])
         # Start timer.
         self.timer = rospy.Timer(rospy.Duration(0.5), self.timer_callback)
  

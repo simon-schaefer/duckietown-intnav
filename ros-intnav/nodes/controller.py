@@ -105,7 +105,7 @@ class Main(Node):
         # If no target path has been created so far return.
         if self.path_points is None or self.controller is None:
             return False
-        print("determining pp control inputs")
+        #print("determining pp control inputs")
         # Otherwise call pure pursuit controller.
         position = msg.pose.pose.position
         rot = msg.pose.pose.orientation
@@ -116,7 +116,7 @@ class Main(Node):
         msg = Twist2DStamped()
         msg.v = (vl + vr)/2
         msg.omega = (vr - vl)/(self.wheel_distance)
-        print('RW: ',self.wheel_distance,' omega: ',msg.omega)
+        #print('RW: ',self.wheel_distance,' omega: ',msg.omega)
         self.cmd_pub.publish(msg)
 
     def stop(self):
