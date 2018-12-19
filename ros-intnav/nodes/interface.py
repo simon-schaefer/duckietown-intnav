@@ -77,7 +77,7 @@ class Main(Node):
         # Check switching to lane following - Right turn.
         if((self.direction == "R" and pose[2]<(-np.pi/2 + np.pi/20)) \
         or (self.direction == "L" and (pose[2] > (np.pi/2 - np.pi/20) or pose[1]>0.2)) \
-        or (self.direction == "S" and pose[0]>0.25)):
+        or (self.direction == "S" and pose[0]>0.2)):
             #fsm_msg = FSMState()
             #fsm_msg.state = "LANE_FOLLOWING"
             #self.fsm_pub.publish(fsm_msg)
@@ -115,8 +115,10 @@ class Main(Node):
         rospy.logwarn(str(april_tuples[idx_max]))
         if (not nfound[idx_max] is 0):
             directions_pos = april_tuples[idx_max][2]
-            choice = int(round(np.random.rand()*(len(directions_pos)-1)))
-            self.direction = str('L')  #str(directions_pos[choice])
+            for k in range(20):
+                 choice = int(round(np.random.rand()*(len(directions_pos)-1)))
+                 print('choice', choice)
+            self.direction = str(directions_pos[choice])
             self.direction_known = True
             rospy.loginfo("Direction chosen: "+self.direction+" from "+str(choice))
 

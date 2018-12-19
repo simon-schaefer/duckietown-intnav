@@ -39,8 +39,8 @@ def path_generate(direction, n_steps=20):
         xs, ys = np.linspace(1,-0.15,60),-0.1225*np.ones((60,))
     # Case left.
     elif direction == -1 :
-        xs, ys = bezier_curve([(-0.15,-0.1225),(0.04,-0.07),(0.285,0.1225),(0.37,0.32)], n_steps)
-        xs, ys = np.insert(xs,0 , np.ones((20,))*0.37), np.insert(ys, 0, np.linspace(1,0.34,20))
+        xs, ys = bezier_curve([(-0.15,-0.1225),(0.04,-0.07),(0.285,0.095),(0.39,0.32)], n_steps)
+        xs, ys = np.insert(xs,0 , np.ones((20,))*0.39), np.insert(ys, 0, np.linspace(1,0.34,20))
     # Case right
     elif direction == +1:
         xs, ys = bezier_curve([(-0.14,-0.1225),(-0.06,-0.1225),(0.07,-0.30)], n_steps)
