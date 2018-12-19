@@ -58,7 +58,7 @@ class Main(Node):
     def start(self):
         input_type = rospy.get_param('interface/input_type')
         # Initialize intersection type publisher and hard set the type.
-        self.itype_msg = String()
+	self.itype_msg = String()
         self.itype_msg.data = ITYPE
         # Initialize direction publisher.
         self.dir_msg = String()
@@ -83,10 +83,11 @@ class Main(Node):
         rot = msg.pose.pose.orientation
         euler = euler_from_quaternion([rot.x,rot.y,rot.z,rot.w])
         pose = (position.x, position.y, euler[2])
+        print('pose callback: ', pose, 'direction', self.direction)
         # Check switching to lane following - Right turn.
-        if((self.direction == "R" and pose[2]>np.pi/2 - np.pi/20) \
-        or (self.direction == "L" and pose[2]<np.pi/2 + np.pi/20) \
-        or (self.direction == "S" and pose[0]>40.0)):
+        if((self.direction == 'R' and pose[2]<(-np.pi/2 + np.pi/20)) \
+        or (self.direction == 'L' and (pose[2] > (np.pi/2 - np.pi/20) or pose[1]>0.2)) \
+        or (self.direction == 'S' and pose[0]>0.25)):
             #fsm_msg = FSMState()
             #fsm_msg.state = "LANE_FOLLOWING"
             #self.fsm_pub.publish(fsm_msg)
@@ -96,7 +97,7 @@ class Main(Node):
             switch_msg = BoolStamped()
             switch_msg.data = True
             self.lc_switch_pub.publish(switch_msg)
-            rospy.loginfo("Switched back to lane following")
+            print("-----------------------------------------/n Switched back to lane following")
 
     def timer_callback(self, event):
         if (self.direction_known == True):
@@ -118,8 +119,10 @@ class Main(Node):
             rospy.logwarn(str(april_tuples[idx_max]))
             if (nfound[idx_max] is not 0):
                 directions_pos = april_tuples[idx_max][2]
-                choice = int(round(np.random.rand()*len(directions_pos)))
-                self.dir_msg.data = directions_pos[choice-1]
+                for i in range(20):
+                        choice = int(round(np.random.rand()*(len(directions_pos)-1)))
+		        print('choice: ', choice)
+                self.dir_msg.data = directions_pos[choice]
                 self.direction_known = True
                 rospy.loginfo("Direction randomly chosen: "+ str(self.dir_msg.data))
 

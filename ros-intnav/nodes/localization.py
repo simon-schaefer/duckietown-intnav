@@ -98,7 +98,7 @@ class Main(Node):
                             rospy.get_time() - self.last_update_time,self.direction)
         self.last_update_time = rospy.get_time()
         try:
-            #rospy.loginfo("ol estimate: " + str(self.kalman.state))
+            rospy.loginfo("ol estimate: " + str(self.kalman.state))
             self.publish_pose_and_trajectory()
         except IndexError:
             rospy.logwarn("Kalman open loop tries to preaccess variance ")

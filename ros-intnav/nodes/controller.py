@@ -15,6 +15,7 @@ from std_msgs.msg import String
 
 from duckietown_msgs.msg import WheelsCmdStamped
 from duckietown_msgs.msg import Twist2DStamped
+from duckietown_msgs.msg import BoolStamped
 from duckietown_intnav.controller import Controller
 from duckietown_intnav.planner import path_generate
 
@@ -39,6 +40,8 @@ class Main(Node):
                                               self.direction_callback)
         topic = str("/" + duckiebot + "/intnav/path")
         self.path_pub = rospy.Publisher(topic, Path, queue_size=1)
+	topic = str("/" + duckiebot + "/lane_controller_node/switch")
+	self.switch_sub = rospy.Subscriber(topic, BoolStamped,self.switch_callback)
         # Final zero velocity command (on shutdown).
         rospy.on_shutdown(self.stop)
         rospy.spin()
@@ -62,6 +65,7 @@ class Main(Node):
         self.control_cmds = None
         # Initialize controller to none - Set when path planned. 
         self.controller = None
+        self.controlling = True
         
     def shutdown(self): 
         pass
@@ -101,12 +105,23 @@ class Main(Node):
         self.direction_sub.unregister()
         return True
 
+    def switch_callback(self, msg):
+	if(msg.data):
+	    self.controlling=False
+	else:
+	    self.controlling=True
+		
+
     def pose_callback(self, msg):
         # If no target path has been created so far return.
         if self.path_points is None or self.controller is None:
             return False
         #print("determining pp control inputs")
         # Otherwise call pure pursuit controller.
+
+	if(not self.controlling):
+	    self.stop()
+	    return
         position = msg.pose.pose.position
         rot = msg.pose.pose.orientation
         euler = euler_from_quaternion([rot.x,rot.y,rot.z,rot.w])
@@ -120,9 +135,7 @@ class Main(Node):
         self.cmd_pub.publish(msg)
 
     def stop(self):
-        msg = WheelsCmdStamped()
-        msg.vel_left = 0.0
-        msg.vel_right = 0.0
+        msg = Twist2DStamped()
         self.cmd_pub.publish(msg)
 
 if __name__ == '__main__':
