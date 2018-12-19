@@ -64,7 +64,6 @@ class Main(Node):
         self.dir_msg = String()
         if input_type == "smart_random":
             self.direction_known = False
-            self.dir_msg.data = self.direction_random()
         elif input_type == "keyboard":
             self.direction_known = True
             self.dir_msg.data = self.direction_keyboard()
@@ -84,10 +83,14 @@ class Main(Node):
         euler = euler_from_quaternion([rot.x,rot.y,rot.z,rot.w])
         pose = (position.x, position.y, euler[2])
         print('pose callback: ', pose, 'direction', self.direction)
+        print(self.direction=="R")
+        print(self.direction=="L")
+        print(self.direction=="S")
+
         # Check switching to lane following - Right turn.
-        if((self.direction == 'R' and pose[2]<(-np.pi/2 + np.pi/20)) \
-        or (self.direction == 'L' and (pose[2] > (np.pi/2 - np.pi/20) or pose[1]>0.2)) \
-        or (self.direction == 'S' and pose[0]>0.25)):
+        if((self.direction == "R" and pose[2]<(-np.pi/2 + np.pi/20)) \
+        or (self.direction == "L" and (pose[2] > (np.pi/2 - np.pi/20) or pose[1]>0.2)) \
+        or (self.direction == "S" and pose[0]>0.25)):
             #fsm_msg = FSMState()
             #fsm_msg.state = "LANE_FOLLOWING"
             #self.fsm_pub.publish(fsm_msg)
@@ -101,8 +104,15 @@ class Main(Node):
 
     def timer_callback(self, event):
         if (self.direction_known == True):
+            print("in timer direction known")	
             self.itype_pub.publish(self.itype_msg)
             self.direction_pub.publish(self.dir_msg)
+        else:
+	    print("in timer direction unknown")
+            self.dir_msg.data = self.direction_random()
+            self.direction = self.dir_msg.data
+            print('dir_msg_data', self.dir_msg.data)
+            print('.direction', self.direction)
 
     def tag_callback(self, message):
         if (self.direction_known==False):
@@ -121,8 +131,8 @@ class Main(Node):
                 directions_pos = april_tuples[idx_max][2]
                 for i in range(20):
                         choice = int(round(np.random.rand()*(len(directions_pos)-1)))
-		                print('choice: ', choice)
-                self.dir_msg.data = directions_pos[choice]
+		        print('choice: ', choice)
+                self.dir_msg.data = str(directions_pos[choice])
                 self.direction_known = True
                 rospy.loginfo("Direction randomly chosen: "+ str(self.dir_msg.data))
 
