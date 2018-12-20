@@ -2,7 +2,7 @@
 
 DOCKER_NAME="seleschaefer"
 PACKAGE="intnav"
-TAG="0.7"
+TAG="master2018"
 
 SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 WSPATH="$SCRIPTPATH/../../../"
