@@ -14,7 +14,7 @@
                                         controls the steering angle [m/s]" />
     <arg name="target_vel_left" default="0.2" doc="output velocity as PP merely 
                                         controls the steering angle [m/s]" />
-    <arg name="target_vel_right" default="0.275" doc="output velocity as PP merely 
+    <arg name="target_vel_right" default="0.2" doc="output velocity as PP merely 
                                         controls the steering angle [m/s]" />
     <arg name="n_hist" default="3" doc="Number of points for right angle check" />
 

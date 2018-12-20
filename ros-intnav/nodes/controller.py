@@ -141,7 +141,8 @@ class Main(Node):
 	msg.v = 0
 	msg.omega = 0
 	print('STOPSTOPSTOP')
-        self.cmd_pub.publish(msg)
+	for i in range(100):
+            self.cmd_pub.publish(msg)
 
 if __name__ == '__main__':
     rospy.init_node('controller', anonymous=True)
