@@ -94,7 +94,7 @@ class Main(Node):
     def timer_callback(self, event):
         if not self.direction_known:
             return
-	    itype_msg = String()
+        itype_msg = String()
         itype_msg.data = self.itype
         self.itype_pub.publish(itype_msg)
         dir_msg = String()
