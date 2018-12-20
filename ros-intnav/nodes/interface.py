@@ -18,7 +18,7 @@ from std_msgs.msg import Bool, String, Int16MultiArray
 from apriltags2_ros.msg import AprilTagDetectionArray
 
 from duckietown_msgs.msg import BoolStamped
-#from duckietown_msgs.msg import FSMState
+from duckietown_msgs.msg import FSMState
 
 from node import Node
 
@@ -47,8 +47,8 @@ class Main(Node):
         self.lc_switch_pub = rospy.Publisher(topic, BoolStamped, queue_size=1)
         topic = str("/" + duckiebot + "/intnav/switch")
         self.int_switch_pub = rospy.Publisher(topic, Bool, queue_size=1)
-        #topic = str("/" + duckiebot + "/fsm_node/mode")
-        #self.fsm_pub = rospy.Publisher(topic, FSMState, queue_size=1)
+        topic = str("/" + duckiebot + "/fsm_node/mode")
+        self.fsm_pub = rospy.Publisher(topic, FSMState, queue_size=1)
         self.tag_sub = rospy.Subscriber("/tag_detections", AprilTagDetectionArray,
                                         self.tag_callback)
         # publish apriltag IDs to be detected
@@ -82,9 +82,9 @@ class Main(Node):
         if((self.direction == "R" and pose[2]<(-np.pi/2 + np.pi/20)) \
         or (self.direction == "L" and (pose[2] > (np.pi/2 - np.pi/20) or pose[1]>0.2)) \
         or (self.direction == "S" and pose[0]>0.2)):
-            #fsm_msg = FSMState()
-            #fsm_msg.state = "LANE_FOLLOWING"
-            #self.fsm_pub.publish(fsm_msg)
+            fsm_msg = FSMState()
+            fsm_msg.state = "LANE_FOLLOWING"
+            self.fsm_pub.publish(fsm_msg)
             switch_msg = Bool()
             switch_msg.data = False
             self.int_switch_pub.publish(switch_msg)
@@ -96,9 +96,16 @@ class Main(Node):
     def timer_callback(self, event):
         # If direction unknown ping intersection switch for camera. 
         if not self.direction_known:
-            msg = Bool()
-            msg.data = True
-            self.int_switch_pub.publish(msg)
+            fsm_msg = FSMState()
+            fsm_msg.state = "NORMAL_JOYSTICK_CONTROL"
+            self.fsm_pub.publish(fsm_msg)
+            switch_msg = Bool()
+            switch_msg.data = True
+            self.int_switch_pub.publish(switch_msg)
+            switch_msg = BoolStamped()
+            switch_msg.data = False
+            self.lc_switch_pub.publish(switch_msg)
+            rospy.loginfo("Switched to intersection navigation")
         # Else publish direction and intersection type. 
         itype_msg = String()
         itype_msg.data = self.itype
