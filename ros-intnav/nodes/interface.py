@@ -76,8 +76,6 @@ class Main(Node):
         rot = msg.pose.pose.orientation
         euler = euler_from_quaternion([rot.x,rot.y,rot.z,rot.w])
         pose = (position.x, position.y, euler[2])
-        print('pose callback: ', pose, 'direction', self.direction)
-
         # Check switching to lane following - Right turn.
         if((self.direction == "R" and pose[2]<(-np.pi/2 + np.pi/20)) \
         or (self.direction == "L" and (pose[2] > (np.pi/2 - np.pi/20) or pose[1]>0.2)) \
@@ -91,7 +89,7 @@ class Main(Node):
             switch_msg = BoolStamped()
             switch_msg.data = True
             self.lc_switch_pub.publish(switch_msg)
-            rospy.logwarn("/n Switched back to lane following")
+            rospy.logwarn("Switched back to lane following")
 
     def timer_callback(self, event):
         # If direction unknown ping intersection switch for camera. 
