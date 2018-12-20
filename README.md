@@ -16,11 +16,30 @@ duckietown-intnav contains the code to implement the intersection navigation dem
 
 4- Detects when the duckiebot has reached the intersection end (exit lane) and switches back to the duckietown lane follower.
 
-The interested reader can find more details in the [project documentation.](http://docs.duckietown.org/DT18/opmanual_duckiebot/out/demo_projectunicorn.html)
+The interested reader can find more details in the [Project documentation](http://docs.duckietown.org/DT18/opmanual_duckiebot/out/demo_projectunicorn.html).
 
 ## Software architecture
 
-TODO: Paste from the report
+The code is split into two sections:
+
+- **lib-intnav**: contains the logic architecture and algorithms of the demo implementation. It contains the following nodes:
+
+	- *camera_config*
+    - *kalman*
+	- *planner*
+	- *controller*
+	- *imap* (used for visualization purposes only)
+
+- **ros-intnav**: contains all nodes that enable the communication between lib-intnav (algorithms for calculation) and ROS (communicates with the duckiebot). It contains the following nodes:
+
+	- *image_processing*
+    - *april_activator*
+    - *localization*
+	- *controller*
+	- *interface*
+	- *tf_april_static*
+	- *tf_cam_vehicle*
+	- *visualization_imap*
 
 ## Installation from source
 
