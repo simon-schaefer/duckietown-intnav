@@ -15,4 +15,3 @@ from .imap import *
 from .kalman import *
 from .planner import *
 from .vcompass import *
-from .transition import *

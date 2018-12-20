@@ -106,6 +106,7 @@ class Main(Node):
             switch_msg.data = False
             self.lc_switch_pub.publish(switch_msg)
             rospy.loginfo("Switched to intersection navigation")
+            return
         # Else publish direction and intersection type. 
         itype_msg = String()
         itype_msg.data = self.itype
