@@ -32,14 +32,14 @@ The code is split into two sections:
 
 - **ros-intnav**: contains all nodes that enable the communication between lib-intnav (algorithms for calculation) and ROS (communicates with the duckiebot). It contains the following nodes:
 
-	- *image_processing*
-    - *april_activator*
-    - *localization*
-	- *controller*
+	- *image_processing*: Uses *image_calibration*.
+	- *april_activator*
+	- *localization*: Uses *kalman*.
+	- *controller*: Uses *controller*, *planner*.
 	- *interface*
-	- *tf_april_static*
-	- *tf_cam_vehicle*
-	- *visualization_imap*
+	- *tf_april_static*: Uses *tf* (external library).
+	- *tf_cam_vehicle*: Uses *tf* (external library).
+	- *visualization_imap*: Uses *imap*.
 
 ## Installation from source
 
