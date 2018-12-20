@@ -136,8 +136,8 @@ class Main(Node):
     def stop(self):
         msg = Twist2DStamped()
         msg.v = 0
-	    msg.omega = 0
-	    for i in range(100):
+        msg.omega = 0
+        for i in range(100):
             self.cmd_pub.publish(msg)
         rospy.signal_shutdown("Stopped controller !")
 
