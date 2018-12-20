@@ -76,8 +76,6 @@ class Main(Node):
         rot = msg.pose.pose.orientation
         euler = euler_from_quaternion([rot.x,rot.y,rot.z,rot.w])
         pose = (position.x, position.y, euler[2])
-        print('pose callback: ', pose, 'direction', self.direction)
-
         # Check switching to lane following - Right turn.
         if((self.direction == "R" and pose[2]<(-np.pi/2 + np.pi/20)) \
         or (self.direction == "L" and (pose[2] > (np.pi/2 - np.pi/20) or pose[1]>0.2)) \
@@ -96,7 +94,7 @@ class Main(Node):
     def timer_callback(self, event):
         if not self.direction_known:
             return
-	itype_msg = String()
+	    itype_msg = String()
         itype_msg.data = self.itype
         self.itype_pub.publish(itype_msg)
         dir_msg = String()

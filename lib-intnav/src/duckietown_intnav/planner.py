@@ -52,5 +52,4 @@ def path_generate(direction, n_steps=20):
     path = np.zeros((len(xs),2))
     path[:,0] = np.asarray(np.flipud(xs))
     path[:,1] = np.asarray(np.flipud(ys))
-    #print("path: ", path)
     return path

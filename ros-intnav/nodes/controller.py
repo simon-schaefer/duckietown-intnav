@@ -118,12 +118,10 @@ class Main(Node):
         # If no target path has been created so far return.
         if self.path_points is None or self.controller is None:
             return False
-        #print("determining pp control inputs")
         # Otherwise call pure pursuit controller.
-
-	if(not self.controlling):
-	    self.stop()
-	    return
+        if(not self.controlling):
+            self.stop()
+            return
         position = msg.pose.pose.position
         rot = msg.pose.pose.orientation
         euler = euler_from_quaternion([rot.x,rot.y,rot.z,rot.w])
@@ -133,17 +131,16 @@ class Main(Node):
         msg = Twist2DStamped()
         msg.v = (vl + vr)/2
         msg.omega = (vr - vl)/(self.wheel_distance)
-        #print('RW: ',self.wheel_distance,' omega: ',msg.omega)
         self.cmd_pub.publish(msg)
 
     def stop(self):
         msg = Twist2DStamped()
-	msg.v = 0
-	msg.omega = 0
-	print('STOPSTOPSTOP')
-	for i in range(100):
+        msg.v = 0
+	    msg.omega = 0
+	    for i in range(100):
             self.cmd_pub.publish(msg)
+        rospy.signal_shutdown("Stopped controller !")
 
 if __name__ == '__main__':
-    rospy.init_node('controller', anonymous=True)
+    rospy.init_node('controller', anonymous=True, disable_signals=True)
     Main()

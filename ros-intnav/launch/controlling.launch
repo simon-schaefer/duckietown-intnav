@@ -18,7 +18,7 @@
                                         controls the steering angle [m/s]" />
     <arg name="n_hist" default="3" doc="Number of points for right angle check" />
 
-    <node pkg="duckietown-intnav" type="controller.py" name="controller" output="screen" >
+    <node pkg="duckietown-intnav" type="controller.py" name="controller" output="screen" required="true" >
         <param name="duckiebot" value="$(arg duckiebot)" />
         <param name="n_path_points" value="$(arg n_path_points)" />
         <param name="adm_error" value="$(arg adm_error)" />
