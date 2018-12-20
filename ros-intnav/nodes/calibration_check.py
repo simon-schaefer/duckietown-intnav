@@ -34,7 +34,7 @@ def pose_callback(msg):
     if not passed: 
         rospy.logfatal("Calibration test failed - Please recalibrate intrinsics (esp. scale) !")
     else: 
-        rospy.loginfo("Calibration test passed - Ready to intersect !")
+        rospy.logwarn("Calibration test passed - Ready to intersect !")
     rospy.signal_shutdown("Finished calibration check !")
 
 if __name__ == '__main__':
